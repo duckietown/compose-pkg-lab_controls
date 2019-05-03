@@ -100,11 +100,12 @@ $('#off').submit(function(e){
 </script>
 
 <?php
-$cmd = sprintf(
-     'python3 '.__DIR__.'/../../modules/light_control.py');
-$output = "";
-$exit_code = 0;
+$py_script = __DIR__.'/../../modules/light_control.py';
+$cmd = sprintf('python3 "%s" 2>&1', $py_script);
+
+// $output = "";
+// $exit_code = 0;
 exec($cmd, $output, $exit_code);
-echo $output;
-echo $exit_code;
+echoArray($exit_code);
+echoArray($output);
  ?>

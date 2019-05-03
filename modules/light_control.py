@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import json, requests, time, array, yaml
+import os, json, requests, time, array, yaml
+
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
 #IP of Hue hub
 hue_ip="192.168.1.5"
@@ -12,7 +14,7 @@ area_arr=[]
 area_lit=[]
 
 #Read room layout from room_setup.yaml
-areas = yaml.load(open('room_setup.yaml'), Loader=yaml.FullLoader)
+areas = yaml.load(open('room_setup.yaml'), Loader=yaml.BaseLoader)
 for area in areas.items():
     area_arr.append(set(area[1]['lights']))
     area_lit.append(bool(area[1]['lit']))
