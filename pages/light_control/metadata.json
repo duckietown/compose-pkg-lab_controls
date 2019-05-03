@@ -1,0 +1,14 @@
+{
+  "name": "Light control",
+  "description": "Control for Philips Hue bulbs used in the ETHZ Duckietown",
+  "menu_entry": {
+    "order": -1,
+    "icon": {
+      "class": "fa",
+      "name": "lightbulb-o"
+    }
+  },
+  "access_level": [
+    "administrator"
+  ]
+}
