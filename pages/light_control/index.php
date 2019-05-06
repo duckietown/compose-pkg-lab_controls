@@ -29,6 +29,13 @@ exec($cmd, $output, $exit_code);
 echoArray($exit_code);
 echoArray($output);
 -->
+<?php
+  use \system\classes\Core;
+  $param_ip = Core::getSetting("ip_hub", "lab_controls");
+  $param_api = Core::getSetting("api_key", "lab_controls");
+  $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
+ ?>
+
 <style>
 .slider {
   -webkit-appearance: none;
@@ -87,7 +94,7 @@ echoArray($output);
 <td>
   <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
   <p>Intensity: <span id="intensity_out"></span></p>
-  <input type="range" min="153" max="500" value="300" class="slider" id="color">
+  <input type="range" min="153" max="500" value="153" class="slider" id="color">
   <p>Color: <span id="color_out"></span></p>
   <form id="change">
     <button type="submit">Change lights</button>
@@ -98,7 +105,7 @@ echoArray($output);
 </table>
 
 <script>
-//From https://www.w3schools.com/howto/howto_js_rangeslider.asp
+//Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp
 let slider_int = document.getElementById("intensity");
 let output_int = document.getElementById("intensity_out");
 let slider_col = document.getElementById("color");
@@ -121,11 +128,12 @@ slider_col.oninput = function() {
 
 //Define constants
 // Number of lightbulbs
-let light_nbr = 21;
+let light_nbr = <?php echo $param_light_nbr?>;
 //Ip address of the Hue hub
-let ip_addr = "192.168.1.5";
+let ip_addr = "<?php echo $param_ip?>";
 //API Key for the Hue hub
-let api_key = "MZk4CALygJdoNboE1dalDeEZP5TQPTLLG0FOshOQ";
+//let api_key = "MZk4CALygJdoNboE1dalDeEZP5TQPTLLG0FOshOQ";
+let api_key = "<?php echo $param_api?>";
 
 // From http://www.endmemo.com/js/pause.php
 function wait(ms){
@@ -150,6 +158,10 @@ $('#on').submit(function(e){
     });
     wait(100);
   }
+  slider_int.value=254;
+  slider_col.value=153;
+  output_int.innerHTML = 254;
+  output_col.innerHTML = 153;
   openAlert(type='success', 'All lights turned on!');
 });
 

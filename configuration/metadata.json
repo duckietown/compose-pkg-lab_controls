@@ -9,7 +9,7 @@
     "api_key" : {
       "title" : "API Key",
       "type" : "text",
-      "default" : null,
+      "default" : "This is a secret",
       "details" : "Secret API key used to communicate with the Hue Hub"
     },
     "light_nbr" : {
