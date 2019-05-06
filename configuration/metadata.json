@@ -1,0 +1,22 @@
+{
+  "configuration_content" : {
+    "ip_hub" : {
+      "title" : "IP Hue Hub",
+      "type" : "text",
+      "default" : "192.168.1.5",
+      "details" : "IP of the Hue Hub used to control the lights"
+    },
+    "api_key" : {
+      "title" : "API Key",
+      "type" : "text",
+      "default" : null,
+      "details" : "Secret API key used to communicate with the Hue Hub"
+    },
+    "light_nbr" : {
+      "title" : "Number of lightbulbs",
+      "type" : "text",
+      "default" : "21",
+      "details" : "Number of lightbuls in the robotarium"
+    }
+  }
+}

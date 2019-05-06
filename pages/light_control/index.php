@@ -21,7 +21,49 @@ $data = array("on"=>true);
 $data = json_encode($data);
 $method = "PUT";
 $test=request($url,$method,$data);
+
+$py_script = __DIR__.'/../../modules/light_control.py';
+$cmd = sprintf('python3 "%s" 2>&1', $py_script);
+
+exec($cmd, $output, $exit_code);
+echoArray($exit_code);
+echoArray($output);
 -->
+<style>
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+</style>
 
 <table>
 <tbody>
@@ -39,11 +81,44 @@ $test=request($url,$method,$data);
     <button type="submit">Turn Light off</button>
   </form>
 </td>
+<td>
+  <object hspace="10">
+</td>
+<td>
+  <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
+  <p>Intensity: <span id="intensity_out"></span></p>
+  <input type="range" min="153" max="500" value="300" class="slider" id="color">
+  <p>Color: <span id="color_out"></span></p>
+  <form id="change">
+    <button type="submit">Change lights</button>
+  </form>
+</td>
 </tr>
 </tbody>
 </table>
 
 <script>
+//From https://www.w3schools.com/howto/howto_js_rangeslider.asp
+let slider_int = document.getElementById("intensity");
+let output_int = document.getElementById("intensity_out");
+let slider_col = document.getElementById("color");
+let output_col = document.getElementById("color_out");
+output_int.innerHTML = slider_int.value;
+output_col.innerHTML = slider_col.value;
+
+let col = slider_col.value;
+let inten = slider_int.value;
+
+slider_int.oninput = function() {
+  output_int.innerHTML = this.value;
+  inten = slider_int.value;
+}
+
+slider_col.oninput = function() {
+  output_col.innerHTML = this.value;
+  col = slider_col.value;
+}
+
 //Define constants
 // Number of lightbulbs
 let light_nbr = 21;
@@ -63,26 +138,24 @@ function wait(ms){
 //adapted from https://stackoverflow.com/questions/48830933/ajax-put-request-to-phillips-hue-hub-local -->
 $('#on').submit(function(e){
   e.preventDefault();
-  let i=1;
-  for(;i<light_nbr+1;i++){
+  for(let i=1;i<light_nbr+1;i++){
     let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
     $.ajax({
       url: url_name,
       type:'PUT',
-      data: JSON.stringify({on:true}),
+      data: JSON.stringify({on:true, bri:254, ct:153}),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       failure: function(errMsg) {alert(errMsg);}
     });
     wait(100);
   }
-  openAlert(type='success', 'All lights turned on!')
+  openAlert(type='success', 'All lights turned on!');
 });
 
 $('#off').submit(function(e){
   e.preventDefault();
-  let i=1;
-  for(;i<light_nbr+1;i++){
+  for(let i=1;i<light_nbr+1;i++){
     let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
     $.ajax({
       url: url_name,
@@ -94,18 +167,25 @@ $('#off').submit(function(e){
     });
     wait(100);
   }
-  openAlert(type='success', 'All lights turned off!')
+  openAlert(type='success', 'All lights turned off!');
+});
+
+$('#change').submit(function(e){
+  e.preventDefault();
+  let api_data = {on:true, bri:parseInt(inten, 10), ct:parseInt(col, 10)};
+  for(let i=1;i<light_nbr+1;i++){
+    let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
+    $.ajax({
+      url: url_name,
+      type:'PUT',
+      data: JSON.stringify(api_data),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      failure: function(errMsg) {alert(errMsg);}
+    });
+    wait(100);
+  }
+  openAlert(type='success', 'Lights were changed!');
 });
 
 </script>
-
-<?php
-$py_script = __DIR__.'/../../modules/light_control.py';
-$cmd = sprintf('python3 "%s" 2>&1', $py_script);
-
-// $output = "";
-// $exit_code = 0;
-exec($cmd, $output, $exit_code);
-echoArray($exit_code);
-echoArray($output);
- ?>

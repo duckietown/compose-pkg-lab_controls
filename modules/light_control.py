@@ -21,6 +21,7 @@ for area in areas.items():
 
 #Lights which are turned on, will be updated via get_lit_lights()
 lit_lights=set()
+#print (area_arr)
 
 #Send a html PUT command to the hue hub, area specifies which bulbs are affected
 def execute_light_command(area, command):
