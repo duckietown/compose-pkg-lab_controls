@@ -17,6 +17,30 @@
       "type" : "text",
       "default" : "21",
       "details" : "Number of lightbuls in the robotarium"
+    },
+    "ip_cam" : {
+      "title" : "IP Foscam",
+      "type" : "text",
+      "default" : "192.168.1.3",
+      "details" : "IP of the lab Foscam"
+    },
+    "cam_port" : {
+      "title" : "Foscam http port",
+      "type" : "text",
+      "default" : "88",
+      "details" : "http port used by the Foscam"
+    },
+    "cam_usr" : {
+      "title" : "Foscam User",
+      "type" : "text",
+      "default" : "duckie",
+      "details" : "User account to access the Foscam"
+    },
+    "cam_pw" : {
+      "title" : "Foscam Password",
+      "type" : "text",
+      "default" : "This is a secret",
+      "details" : "Password to access the Foscam"
     }
   }
 }

@@ -34,6 +34,10 @@ echoArray($output);
   $param_ip = Core::getSetting("ip_hub", "lab_controls");
   $param_api = Core::getSetting("api_key", "lab_controls");
   $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
+  $param_ip_cam = Core::getSetting("ip_cam", "lab_controls");
+  $param_cam_usr = Core::getSetting("cam_usr", "lab_controls");
+  $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
+  $param_cam_port = Core::getSetting("cam_port", "lab_controls");
  ?>
 
 <style>
@@ -56,16 +60,16 @@ echoArray($output);
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #4CAF50;
   cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #4CAF50;
   cursor: pointer;
@@ -104,6 +108,8 @@ echoArray($output);
 </tbody>
 </table>
 
+<img src="" alt="No camera image available, please change the settings page" id="stream" width=100%>
+
 <script>
 //Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp
 let slider_int = document.getElementById("intensity");
@@ -132,8 +138,17 @@ let light_nbr = <?php echo $param_light_nbr?>;
 //Ip address of the Hue hub
 let ip_addr = "<?php echo $param_ip?>";
 //API Key for the Hue hub
-//let api_key = "MZk4CALygJdoNboE1dalDeEZP5TQPTLLG0FOshOQ";
 let api_key = "<?php echo $param_api?>";
+//IP address of the Foscam
+let ip_addr_cam = "<?php echo $param_ip_cam?>";
+//Foscam port
+let cam_port = "<?php echo $param_cam_port?>";
+//Foscam user
+let cam_usr = "<?php echo $param_cam_usr?>";
+//Foscam pw
+let cam_pw = "<?php echo $param_cam_pw?>";
+
+
 
 // From http://www.endmemo.com/js/pause.php
 function wait(ms){
@@ -199,5 +214,10 @@ $('#change').submit(function(e){
   }
   openAlert(type='success', 'Lights were changed!');
 });
+
+ setInterval(function() {
+   let stream = document.getElementById('stream');
+   stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random(1,);
+ }, 250);
 
 </script>
