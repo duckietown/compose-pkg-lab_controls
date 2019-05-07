@@ -4,6 +4,7 @@
 	"light_nbr": "21",
 	"ip_cam": "192.168.1.3",
 	"cam_usr": "duckie",
-	"cam_pw": "quackquack3!",
-	"ip_port": "88"
+	"cam_pw": "quackquack3",
+	"ip_port": "88",
+	"cam_port": "88"
 }
