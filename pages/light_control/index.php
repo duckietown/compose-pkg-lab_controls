@@ -79,41 +79,76 @@
     cursor: pointer;
   }
 
-  .map {
+  .map_tab {
     width: 40%;
+    position: relative;
   }
-  .camera {
+  .camera_tab {
     width: 60%;
-    height: 50%
+    height: 40%;
   }
-  .controls {
+  .controls_tab {
     width: 60%;
     height: 20%;
     padding-top: 10px;
     padding-bottom: 10px;
+
   }
-  .duckies {
-    width: 60%;
-    height: 30;
-    background-color:#ffffff;
+  .duckies_tab {
+    width: 100%;
+    overflow: scroll;
+    display: block;
+    max-height: 220px;
   }
 
-  </style>
+  .entity {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    background-color: red;
+    border-radius: 50%;
+    left: 0px;
+    top: 0px;
+    text-align: center;
+    vertical-align: middle;
+    color: #ffffff;
+  }
+
+  .camera {
+    width: 100%;
+  }
+
+  .map {
+    width: 98%;
+  }
+
+  .duckie_list {
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+    text-align: center;
+  }
+
+
+
+</style>
 
 <!-- Main html body -->
-  <table style="width: 100%; height:100%;" cellpadding="1">
+  <table style="width: 100%; height:100%">
   <tbody>
   <tr>
-    <td rowspan=3 class="map">&nbsp;
-      <img src="http://0.0.0.0/images/map.png" alt="No map available" width=98%>
+    <td rowspan=3 class="map_tab">
+      <div id="bots">
+      </div>
+      <img src="http://0.0.0.0/images/map.png" alt="No map available" class=map id="map">
     </td>
-    <td class="camera">&nbsp;
-      <img src="" alt="No camera image available, please change the settings page" id="stream" width=100%>
+    <td class="camera_tab">
+      <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera>
     </td>
   </tr>
   <tr>
-    <td class="controls">
-      <table style="width: 100%;" cellpadding="1">
+    <td class="controls_tab">
+      <table style="width: 100%;">
       <tbody>
       <tr>
       <td>
@@ -141,53 +176,21 @@
     </td>
   </tr>
   <tr>
-    <td class="duckies">
-      <table style="width: 100%; height: 100%; vertical-align: top; text-align: center;" cellpadding="1" border="2">
-      <tbody>
-      <tr style="background-color: #dddddd; height:30px;">
+    <td class="duckies_tab">
+      <table id="duckie_list" class="duckie_list" cellpadding="1" border="0">
+      <thead style="background-color: #dddddd;">
         <td>
-          <h2>Duckiebot</h2>
+          Duckiebot
         </td>
         <td>
-          <h2>Status</h2>
+          Status
         </td>
         <td>
-          <h2>Actions</h2>
+          Actions
         </td>
-      </tr>
-      <tr>
-        <td>
-          a
-        </td>
-        <td>
-          b
-        </td>
-        <td>
-          c
-        </td>
-      </tr>
-      <tr>
-        <td>
-          d
-        </td>
-        <td>
-          e
-        </td>
-        <td>
-          f
-        </td>
-      </tr>
-      <tr>
-        <td>
-          g
-        </td>
-        <td>
-          h
-        </td>
-        <td>
-          i
-        </td>
-      </tr>
+      </thead>
+      <tbody style="background-color: #ffffff; height: 50px" id="duckie_list_body">
+
       </tbody>
       </table>
     </td>
@@ -195,10 +198,15 @@
   </tbody>
   </table>
 
-
-
+<button type="submit" onclick="add_bot()">Add entity</button>
 
 <script>
+/////Update camera image at an interval
+  setInterval(function() {
+    let stream = document.getElementById('stream');
+    stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random();
+  }, 1000);
+
 /////Setting and reading slider positions
   //Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp
   let slider_int = document.getElementById("intensity");
@@ -221,7 +229,7 @@
     color = slider_col.value;
   }
 
-////Define constants
+////Define constants from settings
   // Number of lightbulbs
   let light_nbr = <?php echo $param_light_nbr?>;
   //Ip address of the Hue hub
@@ -237,6 +245,14 @@
   //Foscam pw
   let cam_pw = "<?php echo $param_cam_pw?>";
 
+
+/////Define variables
+  //Number of moving bots
+  let number_bots = 0;
+  //Bots are moving
+  let bots_moving = false;
+  //Array of bot positions (and movements, only temporary)
+  let bots_positions = [];
 
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
@@ -305,10 +321,63 @@
     openAlert(type='success', 'Lights were changed!');
   });
 
-/////Update camera image at an interval
-  setInterval(function() {
-    let stream = document.getElementById('stream');
-    stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random();
-  }, 1000);
+  function move_bots() {
+    let map = document.getElementById("map");
+    let canvas_height = map.clientHeight-18;
+    let canvas_width = map.clientWidth-18;
+    setInterval(exec_move, 10);
+    function exec_move() {
+      for(let i=0; i<number_bots; i++){
+        let bot = document.getElementById("bot_"+i);
+        if (bots_positions[i][0] <= 0) {
+          bots_positions[i][2] = 1;
+        }
+        if (bots_positions[i][0] >= canvas_height) {
+          bots_positions[i][2] = -1;
+        }
+        if (bots_positions[i][1] <= 0) {
+          bots_positions[i][3] = 1;
+        }
+        if (bots_positions[i][1] >= canvas_width) {
+          bots_positions[i][3] = -1;
+        }
+        bots_positions[i][0]+=bots_positions[i][2];
+        bots_positions[i][1]+=bots_positions[i][3];
+        bot.style.top = bots_positions[i][0] + 'px';
+        bot.style.left = bots_positions[i][1] + 'px';
+      }
+    }
+  }
+
+  function test(id){
+    alert("My ID is: "+id+"\nMy position is: "+bots_positions[id]);
+  }
+
+  function add_bot(){
+    let new_div = document.createElement('div');
+    let id = number_bots;
+    new_div.id = "bot_"+id;
+    new_div.className="entity";
+    new_div.innerHTML=id;
+    new_div.onclick= function() { test(id); };
+    document.getElementById("bots").appendChild(new_div);
+    bots_positions.push([0,0,1,1]);
+    let table = document.getElementById("duckie_list_body");
+    let row = table.insertRow();
+    row.id = "tab_"+id;
+    row.style.height = "30px";
+    let cell0 = row.insertCell(0);
+    let cell1 = row.insertCell(1);
+    let cell2 = row.insertCell(2);
+    cell0.innerHTML = id;
+    cell1.innerHTML = "Active";
+    cell2.innerHTML = "Test";
+
+    number_bots++;
+    if (bots_moving == false){
+      bots_moving=true;
+      move_bots();
+    }
+  }
 
 </script>
