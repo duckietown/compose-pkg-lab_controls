@@ -33,6 +33,10 @@
   let bots_moving = false;
   //Array of bot positions (and movements, only temporary)
   let bots_positions = [];
+  //Current Popup id
+  let current_popup;
+  //Previous highlighted id
+  let prev_id = 0;
 
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
@@ -127,12 +131,10 @@
         bot.style.top = bots_positions[i][0] + 'px';
         bot.style.left = bots_positions[i][1] + 'px';
       }
+      if (document.getElementById('thepopup').style.display=="block"){
+        document.getElementById('popcontent').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
+      }
     }
-  }
-
-///// Onclick info of each entity
-  function get_info(id){
-    alert("My ID is: "+id+"\nMy position is: "+bots_positions[id]);
   }
 
 ///// Add a new entity
@@ -142,23 +144,57 @@
     new_div.id = "bot_"+id;
     new_div.className="entity";
     new_div.innerHTML=id;
-    new_div.onclick= function() { get_info(id); };
+    new_div.onclick= function() { highlightRow(id); };
     document.getElementById("bots").appendChild(new_div);
     bots_positions.push([0,0,1,1]);
     let table = document.getElementById("duckie_list_body");
     let row = table.insertRow();
     row.id = "tab_"+id;
+    row.onclick=function() { highlightRow(id); };
     row.style.height = "30px";
     let cell0 = row.insertCell(0);
     let cell1 = row.insertCell(1);
     let cell2 = row.insertCell(2);
     cell0.innerHTML = id;
+    cell2.onclick= function() { iconPop(id); };
     cell1.innerHTML = "Active";
-    cell2.innerHTML = "Test";
+    cell2.innerHTML = "Open information window";
 
     number_bots++;
     if (bots_moving == false){
       bots_moving=true;
       move_bots();
     }
+  }
+
+/////Function to highlight different bots by clicking
+  function highlightRow(id){
+    if (prev_id != id){
+      document.getElementById('tab_'+id).style.background="#ED9C27";
+      document.getElementById('bot_'+id).style.background="#ED9C27";
+      document.getElementById('tab_'+prev_id).style.background="#ffffff";
+      document.getElementById('bot_'+prev_id).style.background="red";
+
+    } else {
+      if (document.getElementById('tab_'+id).style.backgroundColor=="rgb(237, 156, 39)"){
+        document.getElementById('tab_'+id).style.background="#ffffff";
+        document.getElementById('bot_'+id).style.background="red";
+      } else {
+        document.getElementById('tab_'+id).style.background="#ED9C27";
+        document.getElementById('bot_'+id).style.background="#ED9C27";
+      }
+    }
+    prev_id=id;
+  }
+
+/////Function to show popup on click
+  function iconPop(id){
+      current_popup = id;
+      document.getElementById('thepopup').style.display="block";
+      document.getElementById('blackoutdiv').style.display="block";
+  }
+/////Function to hide popup on click
+  function iconUnPop(){
+      document.getElementById('thepopup').style.display="none";
+      document.getElementById('blackoutdiv').style.display="none";
   }

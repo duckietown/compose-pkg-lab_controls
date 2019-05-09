@@ -83,6 +83,11 @@
 
   <button type="submit" onclick="add_bot()">Add entity</button>
 
+  <!-- Popup info for Duckiebots -->
+  <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
+  <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
+  <div id="thepopup" class=popup><span id="popcontent"></span></div>
+
 <!-- JS to import settings from php -->
   <script>
     // Number of lightbulbs
