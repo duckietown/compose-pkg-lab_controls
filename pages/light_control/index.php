@@ -82,6 +82,8 @@
   </table>
 
   <button type="submit" onclick="add_bot()">Add entity</button>
+  <input type="text" id="toRemove" style="width:60px;text-align: right;">
+  <button type="submit" onclick="remove_bot()">Remove entity</button>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->

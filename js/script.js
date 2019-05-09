@@ -113,23 +113,25 @@
     setInterval(exec_move, 10);
     function exec_move() {
       for(let i=0; i<number_bots; i++){
-        let bot = document.getElementById("bot_"+i);
-        if (bots_positions[i][0] <= 0) {
-          bots_positions[i][2] = 1;
-        }
-        if (bots_positions[i][0] >= canvas_height) {
-          bots_positions[i][2] = -1;
-        }
-        if (bots_positions[i][1] <= 0) {
-          bots_positions[i][3] = 1;
-        }
-        if (bots_positions[i][1] >= canvas_width) {
-          bots_positions[i][3] = -1;
-        }
-        bots_positions[i][0]+=bots_positions[i][2];
-        bots_positions[i][1]+=bots_positions[i][3];
-        bot.style.top = bots_positions[i][0] + 'px';
-        bot.style.left = bots_positions[i][1] + 'px';
+        try{
+          let bot = document.getElementById("bot_"+i);
+          if (bots_positions[i][0] <= 0) {
+            bots_positions[i][2] = 1;
+          }
+          if (bots_positions[i][0] >= canvas_height) {
+            bots_positions[i][2] = -1;
+          }
+          if (bots_positions[i][1] <= 0) {
+            bots_positions[i][3] = 1;
+          }
+          if (bots_positions[i][1] >= canvas_width) {
+            bots_positions[i][3] = -1;
+          }
+          bots_positions[i][0]+=bots_positions[i][2];
+          bots_positions[i][1]+=bots_positions[i][3];
+          bot.style.top = bots_positions[i][0] + 'px';
+          bot.style.left = bots_positions[i][1] + 'px';
+        } catch{}
       }
       if (document.getElementById('thepopup').style.display=="block"){
         document.getElementById('popcontent').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
@@ -144,13 +146,13 @@
     new_div.id = "bot_"+id;
     new_div.className="entity";
     new_div.innerHTML=id;
-    new_div.onclick= function() { highlightRow(id); };
+    new_div.onclick= function() { highlightBot(id); };
     document.getElementById("bots").appendChild(new_div);
     bots_positions.push([0,0,1,1]);
     let table = document.getElementById("duckie_list_body");
     let row = table.insertRow();
     row.id = "tab_"+id;
-    row.onclick=function() { highlightRow(id); };
+    row.onclick=function() { highlightBot(id); };
     row.style.height = "30px";
     let cell0 = row.insertCell(0);
     let cell1 = row.insertCell(1);
@@ -167,14 +169,28 @@
     }
   }
 
+///// Remove an entity
+  function remove_bot(){
+    try {
+      let id=parseInt(document.getElementById('toRemove').value);
+      document.getElementById("bot_"+id).remove();
+      document.getElementById("tab_"+id).remove();
+    }catch{
+      openAlert(type='warning', 'Removing not possible, entity doesn\'t exist!');
+    }
+  }
+
 /////Function to highlight different bots by clicking
-  function highlightRow(id){
+  function highlightBot(id) {
     if (prev_id != id){
       document.getElementById('tab_'+id).style.background="#ED9C27";
       document.getElementById('bot_'+id).style.background="#ED9C27";
-      document.getElementById('tab_'+prev_id).style.background="#ffffff";
-      document.getElementById('bot_'+prev_id).style.background="red";
+      try{
+        document.getElementById('tab_'+prev_id).style.background="#ffffff";
+        document.getElementById('bot_'+prev_id).style.background="red";
+      }catch{
 
+      }
     } else {
       if (document.getElementById('tab_'+id).style.backgroundColor=="rgb(237, 156, 39)"){
         document.getElementById('tab_'+id).style.background="#ffffff";
