@@ -1,0 +1,32 @@
+<!--
+//This is php
+  /////Calling the Hue API via php
+  function request($url,$method,$data)
+  {
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    if ($method == "PUT")
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    $response = curl_exec($ch);
+    return $response;
+  }
+
+  $hue_ip='192.168.1.5';
+  $api_key='MZk4CALygJdoNboE1dalDeEZP5TQPTLLG0FOshOQ';
+  $bulb_id=6;
+  $url = 'http://'.$hue_ip.'/api/'.$api_key.'/lights/'.$bulb_id.'/state/';
+  #$url = 'http://'.$hue_ip.'/api/'.$api_key.'/lights/'.$bulb_id;
+  $data = array("on"=>true);
+  $data = json_encode($data);
+  $method = "PUT";
+  $test=request($url,$method,$data);
+
+//////Executing a python script via php
+  $py_script = __DIR__.'/../../modules/light_control.py';
+  $cmd = sprintf('python3 "%s" 2>&1', $py_script);
+
+  exec($cmd, $output, $exit_code);
+  echoArray($exit_code);
+  echoArray($output);
+-->
