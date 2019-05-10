@@ -201,6 +201,7 @@
       }
     }
     prev_id=id;
+    document.getElementById('toRemove').value=id;
   }
 
 /////Function to show popup on click
