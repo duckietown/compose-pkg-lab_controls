@@ -1,6 +1,9 @@
 <!-- Get parameters from the settings tab -->
   <?php
     use \system\classes\Core;
+    use \system\packages\ros\ROS;
+    ROS::connect();
+
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
     $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
@@ -106,6 +109,18 @@
     let cam_usr = "<?php echo $param_cam_usr?>";
     //Foscam pw
     let cam_pw = "<?php echo $param_cam_pw?>";
+
+    window.listener = new ROSLIB.Topic({
+       ros : this.ros,
+       name : '/connected_clients',
+       messageType : 'rosbridge_msgs/ConnectedClients'
+     });
+
+     window.listener.subscribe(function(message) {
+       console.log('Received message on ' + window.listener.name + ': ' + window.message.data);
+       window.listener.unsubscribe();
+     });
+
   </script>
 
 <!-- Import main JS file -->
