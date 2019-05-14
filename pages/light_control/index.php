@@ -11,6 +11,57 @@
     $param_cam_usr = Core::getSetting("cam_usr", "lab_controls");
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => "HTTP://192.168.1.7/report",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => false,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "GET",
+    ));
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    if ($err) {
+      echo "cURL Error #:" . $err;
+    } else {
+      $tmp= json_decode($response);
+      echo "Power at the time of pageload: ".intval($tmp->power)." W.<br>";
+    }
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "HTTP://192.168.1.8/report",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => false,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+));
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+if ($err) {
+  echo "cURL Error #:" . $err;
+} else {
+  $tmp= json_decode($response);
+  echo "Power at the time of pageload: ".intval($tmp->power)." W.<br>";
+}
+
   ?>
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
@@ -88,6 +139,10 @@
   <input type="text" id="toRemove" style="width:60px;text-align: right;">
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
+  <form id="toggle">
+    <button type="submit">Toggle switch state</button>
+  </form>
+
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
@@ -110,16 +165,16 @@
     //Foscam pw
     let cam_pw = "<?php echo $param_cam_pw?>";
 
-    window.listener = new ROSLIB.Topic({
-       ros : this.ros,
-       name : '/connected_clients',
-       messageType : 'rosbridge_msgs/ConnectedClients'
-     });
+    // let listener = new ROSLIB.Topic({
+    //    ros : window.ros,
+    //    name : '/connected_clients',
+    //    messageType : 'rosbridge_msgs/ConnectedClients'
+    //  });
 
-     window.listener.subscribe(function(message) {
-       console.log('Received message on ' + window.listener.name + ': ' + window.message.data);
-       window.listener.unsubscribe();
-     });
+    // listener.subscribe(function(message) {
+    //    console.log('Received message on ' + listener.name + ': ' + message.data);
+    //    listener.unsubscribe();
+    //  });
 
   </script>
 

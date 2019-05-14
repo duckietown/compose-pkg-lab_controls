@@ -215,3 +215,15 @@
       document.getElementById('thepopup').style.display="none";
       document.getElementById('blackoutdiv').style.display="none";
   }
+
+  $('#toggle').submit(function(e){
+    e.preventDefault();
+    var settings = {
+      "url": "http://192.168.1.8/toggle",
+      "method": "GET",
+      "timeout": 0,
+      "success": function(data){alert(data);},
+    };
+    $.ajax(settings);
+
+  });
