@@ -216,14 +216,26 @@
       document.getElementById('blackoutdiv').style.display="none";
   }
 
-  $('#toggle').submit(function(e){
-    e.preventDefault();
-    var settings = {
-      "url": "http://192.168.1.8/toggle",
-      "method": "GET",
-      "timeout": 0,
-      "success": function(data){alert(data);},
-    };
-    $.ajax(settings);
-
-  });
+  function toggle_switch(){
+    console.log(plug_loc);
+    $.ajax({
+            url:plug_loc, //the page containing php script
+            type: "get", //request type,
+            dataType: 'json',
+            data: {},
+            success: function(result){
+            console.log(result);
+           }
+         });
+  }
+  // $('#toggle').submit(function(e){
+  //   alert(plug_loc);
+  //   $.ajax({
+  //     type: "GET",
+  //     url: plug_loc,
+  //   })
+  //   .done(function (msg) {
+  //     alert("Data Saved: " + msg);
+  //   });
+  //   return false;
+  // });

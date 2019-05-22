@@ -2,7 +2,7 @@
   <?php
     use \system\classes\Core;
     use \system\packages\ros\ROS;
-    ROS::connect();
+    //ROS::connect();
 
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
@@ -11,57 +11,8 @@
     $param_cam_usr = Core::getSetting("cam_usr", "lab_controls");
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => "HTTP://192.168.1.7/report",
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => "",
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => false,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => "GET",
-    ));
-
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($err) {
-      echo "cURL Error #:" . $err;
-    } else {
-      $tmp= json_decode($response);
-      echo "Power at the time of pageload: ".intval($tmp->power)." W.<br>";
-    }
-
-$curl = curl_init();
-
-curl_setopt_array($curl, array(
-  CURLOPT_URL => "HTTP://192.168.1.8/report",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => "",
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => false,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => "GET",
-));
-
-$response = curl_exec($curl);
-$err = curl_error($curl);
-
-curl_close($curl);
-
-if ($err) {
-  echo "cURL Error #:" . $err;
-} else {
-  $tmp= json_decode($response);
-  echo "Power at the time of pageload: ".intval($tmp->power)." W.<br>";
-}
-
+    $param_plug_loc = __DIR__.'/test/test.php';
+    //include_once $param_plug_loc;
   ?>
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
@@ -140,8 +91,9 @@ if ($err) {
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
   <form id="toggle">
-    <button type="submit">Toggle switch state</button>
+    <button type="button" onclick="toggle_switch()">Toggle switch state</button>
   </form>
+  <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
@@ -164,6 +116,8 @@ if ($err) {
     let cam_usr = "<?php echo $param_cam_usr?>";
     //Foscam pw
     let cam_pw = "<?php echo $param_cam_pw?>";
+    //Location of php file to execute
+    let plug_loc = "<?php echo $param_plug_loc?>";
 
     // let listener = new ROSLIB.Topic({
     //    ros : window.ros,
