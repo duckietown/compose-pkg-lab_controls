@@ -2,7 +2,7 @@
   setInterval(function() {
     let stream = document.getElementById('stream');
     stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random();
-  }, 1000);
+  }, 200);
 
 /////Setting and reading slider positions
   //Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp

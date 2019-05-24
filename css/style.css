@@ -78,6 +78,15 @@
     width: 100%;
   }
 
+  .camera:hover{
+    width: 1200px;
+    z-index: 5000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
 /* Resizing map image */
 
   .map {

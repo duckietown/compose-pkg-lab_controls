@@ -1,8 +1,9 @@
 <!-- Get parameters from the settings tab -->
   <?php
     use \system\classes\Core;
+    use \system\packages\duckietown_duckiebot\Duckiebot;
     use \system\packages\ros\ROS;
-    //ROS::connect();
+    ROS::connect();
 
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
@@ -119,13 +120,30 @@
     //Location of php file to execute
     let plug_loc = "<?php echo $param_plug_loc?>";
 
-    // let listener = new ROSLIB.Topic({
-    //    ros : window.ros,
+    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
+      // Subscribe to the given topic
+      subscriber = new ROSLIB.Topic({
+        ros : window.ros,
+        name : '/connected_clients',
+        messageType : 'rosbridge_msgs/ConnectedClients',
+        queue_size : 1,
+      });
+
+      subscriber.subscribe(function(message) {
+        console.log('Received message on ' + subscriber.name + ': ' +message.toSource());
+        $.each(message.clients, function(i) {
+          test = message.clients[i];
+          console.log(test.ip_address);
+        });
+      });
+    });
+    // window.test_topic = new ROSLIB.Topic({
+    //    ros : ros,
     //    name : '/connected_clients',
     //    messageType : 'rosbridge_msgs/ConnectedClients'
     //  });
-
-    // listener.subscribe(function(message) {
+    //
+    // window.test_topic.subscribe(function(message) {
     //    console.log('Received message on ' + listener.name + ': ' + message.data);
     //    listener.unsubscribe();
     //  });

@@ -1,11 +1,11 @@
 {
-  "name": "Light control",
-  "description": "Control for Philips Hue bulbs used in the ETHZ Duckietown",
+  "name": "Autolab control",
+  "description": "Control for the Duckietown autolab at ETHZ",
   "menu_entry": {
     "order": -1,
     "icon": {
       "class": "fa",
-      "name": "lightbulb-o"
+      "name": "automobile"
     }
   },
   "access_level": [
