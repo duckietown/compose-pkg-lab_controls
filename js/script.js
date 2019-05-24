@@ -216,17 +216,20 @@
       document.getElementById('blackoutdiv').style.display="none";
   }
 
-  function toggle_switch(){
-    console.log(plug_loc);
-    $.ajax({
-            url:plug_loc, //the page containing php script
-            type: "get", //request type,
-            dataType: 'json',
-            data: {},
-            success: function(result){
-            console.log(result);
-           }
-         });
+  function toggle_switch(id){
+    // console.log(plug_loc);
+    // $.ajax({
+    //         url:plug_loc, //the page containing php script
+    //         type: "get", //request type,
+    //         dataType: 'json',
+    //         data: {},
+    //         success: function(result){
+    //         console.log(result);
+    //        }
+    //      });
+     let tmp = window.open("http://192.168.1."+(parseInt(id)+6)+"/toggle");
+     wait(50);
+     tmp.close();
   }
   // $('#toggle').submit(function(e){
   //   alert(plug_loc);

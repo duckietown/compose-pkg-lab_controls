@@ -91,9 +91,8 @@
   <input type="text" id="toRemove" style="width:60px;text-align: right;">
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
-  <form id="toggle">
-    <button type="button" onclick="toggle_switch()">Toggle switch state</button>
-  </form>
+  <button type="button" onclick="toggle_switch(1)">Toggle switch 1</button>
+  <button type="button" onclick="toggle_switch(2)">Toggle switch 2</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
@@ -130,23 +129,12 @@
       });
 
       subscriber.subscribe(function(message) {
-        console.log('Received message on ' + subscriber.name + ': ' +message.toSource());
         $.each(message.clients, function(i) {
           test = message.clients[i];
-          console.log(test.ip_address);
+          console.log("Connected IP: "+test.ip_address);
         });
       });
     });
-    // window.test_topic = new ROSLIB.Topic({
-    //    ros : ros,
-    //    name : '/connected_clients',
-    //    messageType : 'rosbridge_msgs/ConnectedClients'
-    //  });
-    //
-    // window.test_topic.subscribe(function(message) {
-    //    console.log('Received message on ' + listener.name + ': ' + message.data);
-    //    listener.unsubscribe();
-    //  });
 
   </script>
 

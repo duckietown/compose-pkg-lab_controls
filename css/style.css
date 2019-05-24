@@ -79,7 +79,7 @@
   }
 
   .camera:hover{
-    width: 1200px;
+    width: 80%;
     z-index: 5000;
     position: fixed;
     top: 50%;
