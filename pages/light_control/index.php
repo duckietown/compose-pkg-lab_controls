@@ -91,8 +91,8 @@
   <input type="text" id="toRemove" style="width:60px;text-align: right;">
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
-  <button type="button" onclick="toggle_switch(1)">Toggle switch 1</button>
-  <button type="button" onclick="toggle_switch(2)">Toggle switch 2</button>
+  <button type="button" onclick="toggle_switch(7)">Toggle switch 1</button>
+  <button type="button" onclick="toggle_switch(8)">Toggle switch 2</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
@@ -116,8 +116,8 @@
     let cam_usr = "<?php echo $param_cam_usr?>";
     //Foscam pw
     let cam_pw = "<?php echo $param_cam_pw?>";
-    //Location of php file to execute
-    let plug_loc = "<?php echo $param_plug_loc?>";
+    //Worker file for light control
+    let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
 
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       // Subscribe to the given topic
