@@ -26,6 +26,15 @@
     color = slider_col.value;
   }
 
+/////Worker for running tasks in the background
+  let worker_lights = new Worker(lights_worker_file);
+  //URL called by the worker
+  let url = 'http://'+ip_addr+'/api/'+api_key+'/lights/';
+
+  worker_lights.addEventListener('message', function(e) {
+    openAlert(type='success', e.data);
+  }, false);
+
 /////Define variables
   //Number of moving bots
   let number_bots = 0;
@@ -47,62 +56,33 @@
     while(d2-d < ms);
   }
 
-/////Call Hue API with ajax
-  //adapted from https://stackoverflow.com/questions/48830933/ajax-put-request-to-phillips-hue-hub-local -->
+/////Call Hue API (using workers)
   $('#on').submit(function(e){
     e.preventDefault();
-    for(let i=1;i<light_nbr+1;i++){
-      let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
-      $.ajax({
-        url: url_name,
-        type:'PUT',
-        data: JSON.stringify({on:true, bri:254, ct:153}),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        failure: function(errMsg) {alert(errMsg);}
-      });
-      wait(100);
-    }
+    let command = JSON.stringify({on:true, bri:254, ct:153});
+    worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
+
     slider_int.value=254;
     slider_col.value=153;
     output_int.innerHTML = 254;
     output_col.innerHTML = 153;
-    openAlert(type='success', 'All lights turned on!');
   });
 
   $('#off').submit(function(e){
     e.preventDefault();
-    for(let i=1;i<light_nbr+1;i++){
-      let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
-      $.ajax({
-        url: url_name,
-        type:'PUT',
-        data: JSON.stringify({on:false}),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        failure: function(errMsg) {alert(errMsg);}
-      });
-      wait(100);
-    }
-    openAlert(type='success', 'All lights turned off!');
+    let command = JSON.stringify({on:false, bri:254, ct:153});
+    worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
+
+    slider_int.value=254;
+    slider_col.value=153;
+    output_int.innerHTML = 254;
+    output_col.innerHTML = 153;
   });
 
   $('#change').submit(function(e){
     e.preventDefault();
-    let api_data = {on:true, bri:parseInt(intensity, 10), ct:parseInt(color, 10)};
-    for(let i=1;i<light_nbr+1;i++){
-      let url_name = 'http://'+ip_addr+'/api/'+api_key+'/lights/'+i+'/state';
-      $.ajax({
-        url: url_name,
-        type:'PUT',
-        data: JSON.stringify(api_data),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        failure: function(errMsg) {alert(errMsg);}
-      });
-      wait(100);
-    }
-    openAlert(type='success', 'Lights were changed!');
+    let command = JSON.stringify({on:true, bri:parseInt(intensity, 10), ct:parseInt(color, 10)});
+    worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
   });
 
 /////Moving bots on the map (temporary function until watchtowers give positions)
@@ -217,28 +197,8 @@
   }
 
   function toggle_switch(id){
-    // console.log(plug_loc);
-    // $.ajax({
-    //         url:plug_loc, //the page containing php script
-    //         type: "get", //request type,
-    //         dataType: 'json',
-    //         data: {},
-    //         success: function(result){
-    //         console.log(result);
-    //        }
-    //      });
-     let tmp = window.open("http://192.168.1."+(parseInt(id)+6)+"/toggle");
-     wait(50);
-     tmp.close();
-  }
-  // $('#toggle').submit(function(e){
-  //   alert(plug_loc);
-  //   $.ajax({
-  //     type: "GET",
-  //     url: plug_loc,
-  //   })
-  //   .done(function (msg) {
-  //     alert("Data Saved: " + msg);
-  //   });
-  //   return false;
-  // });
+     let url  = "http://192.168.1."+id+"/toggle";
+     let xhr  = new XMLHttpRequest();
+     xhr.open('GET', url, true);
+     xhr.send(null);
+    };
