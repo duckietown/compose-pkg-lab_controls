@@ -169,9 +169,7 @@
       try{
         document.getElementById('tab_'+prev_id).style.background="#ffffff";
         document.getElementById('bot_'+prev_id).style.background="red";
-      }catch{
-
-      }
+      }catch{}
     } else {
       if (document.getElementById('tab_'+id).style.backgroundColor=="rgb(237, 156, 39)"){
         document.getElementById('tab_'+id).style.background="#ffffff";
@@ -183,6 +181,7 @@
     }
     prev_id=id;
     document.getElementById('toRemove').value=id;
+    document.getElementById('tab_'+id).scrollIntoView(true);
   }
 
 
@@ -203,7 +202,9 @@
       document.getElementById('info_tab').classList.add('active');
       document.getElementById('camera_tab').classList.remove('active');
       document.getElementById('history_tab').classList.remove('active');
-      subscriber_camera.unsubscribe();
+      try{
+        subscriber_camera.unsubscribe();
+      } catch {}
   }
 /////Tab control for popup
   function showInfo(){
@@ -213,7 +214,9 @@
     document.getElementById('info_tab').classList.add('active');
     document.getElementById('camera_tab').classList.remove('active');
     document.getElementById('history_tab').classList.remove('active');
-    subscriber_camera.unsubscribe();
+    try{
+      subscriber_camera.unsubscribe();
+    } catch {}
   }
 
   function showCamera(){
@@ -231,8 +234,8 @@
         messageType : 'sensor_msgs/CompressedImage',
         queue_size : 1,
       });
+      let stream = document.getElementById('raspi_stream');
       subscriber_camera.subscribe(function(message) {
-        let stream = document.getElementById('raspi_stream');
         stream.src = "data:image/jpeg;charset=utf-8;base64,"+message.data;
       });
     }
@@ -245,7 +248,9 @@
     document.getElementById('info_tab').classList.remove('active');
     document.getElementById('camera_tab').classList.remove('active');
     document.getElementById('history_tab').classList.add('active');
-    subscriber_camera.unsubscribe();
+    try{
+      subscriber_camera.unsubscribe();
+    } catch {}
   }
 /////In progress: controlling smart power switches
   function toggle_switch(id){
@@ -254,20 +259,3 @@
      xhr.open('GET', url, true);
      xhr.send(null);
     };
-
-  // function ROS_subscriber(){
-  //   // Subscribe to the given topic
-  //   subscriber = new ROSLIB.Topic({
-  //     ros : window.ros,
-  //     name : '/connected_clients',
-  //     messageType : 'rosbridge_msgs/ConnectedClients',
-  //     queue_size : 1,
-  //   });
-  //
-  //   subscriber.subscribe(function(message) {
-  //     $.each(message.clients, function(i) {
-  //       test = message.clients[i];
-  //       console.log("Connected IP: "+test.ip_address);
-  //     });
-  //   });
-  //}
