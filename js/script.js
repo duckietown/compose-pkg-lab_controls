@@ -205,7 +205,7 @@
       document.getElementById('history_tab').classList.remove('active');
       subscriber_camera.unsubscribe();
   }
-
+/////Tab control for popup
   function showInfo(){
     document.getElementById('info_content').style.display="block";
     document.getElementById('camera_content').style.display="none";
@@ -227,7 +227,7 @@
     if (ROS_connected){
       subscriber_camera = new ROSLIB.Topic({
         ros : window.ros,
-        name : '/watchtower21/camera_node/image/compressed',
+        name : '/watchtower33/camera_node/image/compressed',
         messageType : 'sensor_msgs/CompressedImage',
         queue_size : 1,
       });
@@ -247,7 +247,7 @@
     document.getElementById('history_tab').classList.add('active');
     subscriber_camera.unsubscribe();
   }
-
+/////In progress: controlling smart power switches
   function toggle_switch(id){
      let url  = "http://192.168.1."+id+"/toggle";
      let xhr  = new XMLHttpRequest();

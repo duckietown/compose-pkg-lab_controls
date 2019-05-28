@@ -99,7 +99,7 @@
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
   <div id="thepopup" class=popup>
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-pills">
       <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>
       <li id="camera_tab" role="presentation" onclick="showCamera();"><a href="#">Camera</a></li>
       <li id="history_tab" role="presentation" onclick="showHistory();"><a href="#">History</a></li>

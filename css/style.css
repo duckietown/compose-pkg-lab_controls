@@ -137,3 +137,12 @@
   .popup_content{
     padding-top:20px;
   }
+
+  .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus{
+  background-color:#ED9C27;
+  color: white;
+  }
+
+  .nav-pills>li>a{
+  color: black;
+  }
