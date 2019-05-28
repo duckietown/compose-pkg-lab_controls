@@ -46,6 +46,7 @@
   let current_popup;
   //Previous highlighted id
   let prev_id = 0;
+  //
 
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
@@ -114,7 +115,7 @@
         } catch{}
       }
       if (document.getElementById('thepopup').style.display=="block"){
-        document.getElementById('popcontent').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
+        document.getElementById('info_content').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
       }
     }
   }
@@ -184,16 +185,67 @@
     document.getElementById('toRemove').value=id;
   }
 
+
+
 /////Function to show popup on click
   function iconPop(id){
       current_popup = id;
       document.getElementById('thepopup').style.display="block";
       document.getElementById('blackoutdiv').style.display="block";
+      document.getElementById('info_content').style.display="block";
+      document.getElementById('camera_content').style.display="none";
+      document.getElementById('history_content').style.display="none";
   }
 /////Function to hide popup on click
   function iconUnPop(){
       document.getElementById('thepopup').style.display="none";
       document.getElementById('blackoutdiv').style.display="none";
+      document.getElementById('info_tab').classList.add('active');
+      document.getElementById('camera_tab').classList.remove('active');
+      document.getElementById('history_tab').classList.remove('active');
+      subscriber_camera.unsubscribe();
+  }
+
+  function showInfo(){
+    document.getElementById('info_content').style.display="block";
+    document.getElementById('camera_content').style.display="none";
+    document.getElementById('history_content').style.display="none";
+    document.getElementById('info_tab').classList.add('active');
+    document.getElementById('camera_tab').classList.remove('active');
+    document.getElementById('history_tab').classList.remove('active');
+    subscriber_camera.unsubscribe();
+  }
+
+  function showCamera(){
+    document.getElementById('info_content').style.display="none";
+    document.getElementById('camera_content').style.display="block";
+    document.getElementById('history_content').style.display="none";
+    document.getElementById('info_tab').classList.remove('active');
+    document.getElementById('camera_tab').classList.add('active');
+    document.getElementById('history_tab').classList.remove('active');
+
+    if (ROS_connected){
+      subscriber_camera = new ROSLIB.Topic({
+        ros : window.ros,
+        name : '/watchtower21/camera_node/image/compressed',
+        messageType : 'sensor_msgs/CompressedImage',
+        queue_size : 1,
+      });
+      subscriber_camera.subscribe(function(message) {
+        let stream = document.getElementById('raspi_stream');
+        stream.src = "data:image/jpeg;charset=utf-8;base64,"+message.data;
+      });
+    }
+  }
+
+  function showHistory(){
+    document.getElementById('info_content').style.display="none";
+    document.getElementById('camera_content').style.display="none";
+    document.getElementById('history_content').style.display="block";
+    document.getElementById('info_tab').classList.remove('active');
+    document.getElementById('camera_tab').classList.remove('active');
+    document.getElementById('history_tab').classList.add('active');
+    subscriber_camera.unsubscribe();
   }
 
   function toggle_switch(id){
@@ -202,3 +254,20 @@
      xhr.open('GET', url, true);
      xhr.send(null);
     };
+
+  // function ROS_subscriber(){
+  //   // Subscribe to the given topic
+  //   subscriber = new ROSLIB.Topic({
+  //     ros : window.ros,
+  //     name : '/connected_clients',
+  //     messageType : 'rosbridge_msgs/ConnectedClients',
+  //     queue_size : 1,
+  //   });
+  //
+  //   subscriber.subscribe(function(message) {
+  //     $.each(message.clients, function(i) {
+  //       test = message.clients[i];
+  //       console.log("Connected IP: "+test.ip_address);
+  //     });
+  //   });
+  //}

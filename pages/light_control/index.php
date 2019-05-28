@@ -92,13 +92,28 @@
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
   <button type="button" onclick="toggle_switch(7)">Toggle switch 1</button>
-  <button type="button" onclick="toggle_switch(8)">Toggle switch 2</button>
+  <button type="button" onclick="toggle_switch(8)">Toggle switch 2</button
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
-  <div id="thepopup" class=popup><span id="popcontent"></span></div>
+  <div id="thepopup" class=popup>
+    <ul class="nav nav-tabs">
+      <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>
+      <li id="camera_tab" role="presentation" onclick="showCamera();"><a href="#">Camera</a></li>
+      <li id="history_tab" role="presentation" onclick="showHistory();"><a href="#">History</a></li>
+    </ul>
+
+    <span id="info_content" class="popup_content">
+    </span>
+    <span id="camera_content" class="popup_content">
+      <img src="" alt="No camera image available, are you sure rosbridge is running?" id="raspi_stream" class=raspi_camera>
+    </span>
+    <span id="history_content" class="popup_content">
+      Just a test.
+    </span>
+  </div>
 
 <!-- JS to import settings from php -->
   <script>
@@ -118,22 +133,10 @@
     let cam_pw = "<?php echo $param_cam_pw?>";
     //Worker file for light control
     let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
-
+    //Initialize Rosbridge
+    let ROS_connected = false;
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
-      // Subscribe to the given topic
-      subscriber = new ROSLIB.Topic({
-        ros : window.ros,
-        name : '/connected_clients',
-        messageType : 'rosbridge_msgs/ConnectedClients',
-        queue_size : 1,
-      });
-
-      subscriber.subscribe(function(message) {
-        $.each(message.clients, function(i) {
-          test = message.clients[i];
-          console.log("Connected IP: "+test.ip_address);
-        });
-      });
+      ROS_connected = true;
     });
 
   </script>

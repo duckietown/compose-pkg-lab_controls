@@ -87,6 +87,9 @@
     transform: translate(-50%, -50%);
   }
 
+  .raspi_camera{
+    width:100%;
+  }
 /* Resizing map image */
 
   .map {
@@ -118,10 +121,10 @@
 
   .popup {
     position:absolute;
-    width:31%;
-    height:300px;
-    top:150px;
-    left:44.5%;
+    width:40%;
+    height:80%;
+    top:10%;
+    left:30%;
     border: 5px solid #ED9C27;
     background-color:white;
     z-index:99999;
@@ -129,4 +132,8 @@
     -webkit-border-radius:5px;
     border-radius:5px;
     display:none;"
+  }
+
+  .popup_content{
+    padding-top:20px;
   }
