@@ -62,6 +62,10 @@
     while(d2-d < ms);
   }
 
+  $.get('https://raw.githubusercontent.com/duckietown/Software/master19/catkin_ws/src/00-infrastructure/duckietown/config/baseline/fsm/fsm_node/default.yaml', function(data) {
+      alert(data);
+   });
+
 /////Call Hue API (using workers)
   $('#on').submit(function(e){
     e.preventDefault();
