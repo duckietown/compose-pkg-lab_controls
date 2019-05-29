@@ -114,6 +114,13 @@
       Just a test.
     </span>
   </div>
+<?php
+  $py_script = __DIR__.'/../../modules/ping.py';
+  $cmd = sprintf('python3 "%s" 2>&1', $py_script);
+  //exec($cmd, $output, $exit_code);
+  //echo end($output);
+?>
+<button type="button" onclick="test_ping()">Pingtest</button>
 
 <!-- JS to import settings from php -->
   <script>
@@ -138,6 +145,15 @@
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       ROS_connected = true;
     });
+    function test_ping(){
+      let python_url= '<?php echo $py_script ?>';
+      $.ajax({
+        url: python_url,
+        success: function(data) {
+          console.log(data)
+        }
+     });
+   }
 
   </script>
 
