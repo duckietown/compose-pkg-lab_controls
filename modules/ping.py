@@ -1,4 +1,4 @@
-import os
+import os,sys
 
 watchtowers_up=[]
 for i in range (1,20):

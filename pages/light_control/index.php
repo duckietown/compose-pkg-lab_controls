@@ -13,7 +13,13 @@
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
-    //include_once $param_plug_loc;
+
+    //Gathering of this array should be done in JS as soon as possible
+    $py_script = __DIR__.'/../../modules/ping.py';
+    $cmd = sprintf('python3 "%s" 2>&1', $py_script);
+    exec($cmd, $output, $exit_code);
+    $detection_string=end($output);
+    $duckiebot_array=array_map('intval', explode(',',preg_replace("/[^0-9,.]/", "", $detection_string)));
   ?>
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
@@ -26,7 +32,7 @@
     <td rowspan=3 class="map_tab">
       <div id="bots">
       </div>
-      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map">
+      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=start_bots()>
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -88,7 +94,7 @@
   </table>
 
   <button type="submit" onclick="add_bot()">Add entity</button>
-  <input type="text" id="toRemove" style="width:60px;text-align: right;">
+  <input type="text" id="toRemove" style="display:none;">
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
   <button type="button" onclick="toggle_switch(7)">Toggle switch 1</button>
@@ -114,13 +120,6 @@
       Just a test.
     </span>
   </div>
-<?php
-  $py_script = __DIR__.'/../../modules/ping.py';
-  $cmd = sprintf('python3 "%s" 2>&1', $py_script);
-  //exec($cmd, $output, $exit_code);
-  //echo end($output);
-?>
-<button type="button" onclick="test_ping()">Pingtest</button>
 
 <!-- JS to import settings from php -->
   <script>
@@ -145,16 +144,7 @@
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       ROS_connected = true;
     });
-    function test_ping(){
-      let python_url= '<?php echo $py_script ?>';
-      $.ajax({
-        url: python_url,
-        success: function(data) {
-          console.log(data)
-        }
-     });
-   }
-
+    let detected_duckiebots = <?php echo json_encode($duckiebot_array); ?>;
   </script>
 
 <!-- Import main JS file -->

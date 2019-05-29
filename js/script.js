@@ -46,7 +46,12 @@
   let current_popup;
   //Previous highlighted id
   let prev_id = 0;
-  //
+  //Add pingable bots to map
+  function start_bots(){
+    detected_duckiebots.forEach(function(entry){
+      add_bot(entry);
+    });
+  }
 
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
@@ -119,17 +124,21 @@
       }
     }
   }
-
 ///// Add a new entity
-  function add_bot(){
+  function add_bot(name){
     let new_div = document.createElement('div');
     let id = number_bots;
     new_div.id = "bot_"+id;
     new_div.className="entity";
-    new_div.innerHTML=id;
-    new_div.onclick= function() { highlightBot(id); };
+    if (name==null){
+      new_div.innerHTML=id;
+    } else {
+      new_div.innerHTML=name;
+    }
+    new_div.onclick= function() { highlightBot(id);
+                                  document.getElementById('tab_'+id).scrollIntoView(true);};
     document.getElementById("bots").appendChild(new_div);
-    bots_positions.push([0,0,1,1]);
+    bots_positions.push([Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1]);
     let table = document.getElementById("duckie_list_body");
     let row = table.insertRow();
     row.id = "tab_"+id;
@@ -138,7 +147,11 @@
     let cell0 = row.insertCell(0);
     let cell1 = row.insertCell(1);
     let cell2 = row.insertCell(2);
-    cell0.innerHTML = id;
+    if (name==null){
+      cell0.innerHTML = "Autobot"+id;
+    } else {
+      cell0.innerHTML = "Autobot"+name;
+    }
     cell2.onclick= function() { iconPop(id); };
     cell1.innerHTML = "Active";
     cell2.innerHTML = "Open information window";
@@ -156,6 +169,7 @@
       let id=parseInt(document.getElementById('toRemove').value);
       document.getElementById("bot_"+id).remove();
       document.getElementById("tab_"+id).remove();
+      document.getElementById('toRemove').value="";
     }catch{
       openAlert(type='warning', 'Removing not possible, entity doesn\'t exist!');
     }
@@ -181,10 +195,7 @@
     }
     prev_id=id;
     document.getElementById('toRemove').value=id;
-    document.getElementById('tab_'+id).scrollIntoView(true);
   }
-
-
 
 /////Function to show popup on click
   function iconPop(id){
