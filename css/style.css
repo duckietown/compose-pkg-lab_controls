@@ -144,5 +144,20 @@
   }
 
   .nav-pills>li>a{
-  color: black;
+  color: #333;
   }
+
+/* Styling for Changelog */
+.history_tab {
+  width: 100%;
+  overflow: scroll;
+  display: block;
+  max-height: 220px;
+}
+
+.history_list {
+  width: 100%;
+  height: 100%;
+  vertical-align: top;
+  text-align: center;
+}

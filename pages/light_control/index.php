@@ -84,7 +84,7 @@
           Actions
         </td>
       </thead>
-      <tbody style="background-color: #ffffff; height: 50px" id="duckie_list_body">
+      <tbody style="background-color: #ffffff" id="duckie_list_body">
 
       </tbody>
       </table>
@@ -108,7 +108,7 @@
     <ul class="nav nav-pills">
       <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>
       <li id="camera_tab" role="presentation" onclick="showCamera();"><a href="#">Camera</a></li>
-      <li id="history_tab" role="presentation" onclick="showHistory();"><a href="#">History</a></li>
+      <li id="history_tab" role="presentation" onclick="showHistory();"><a href="#">Changelog</a></li>
     </ul>
 
     <span id="info_content" class="popup_content">
@@ -117,7 +117,75 @@
       <img src="" alt="No camera image available, are you sure rosbridge is running?" id="raspi_stream" class=raspi_camera>
     </span>
     <span id="history_content" class="popup_content">
-      Just a test.
+      <h4>Configuration history </h4>
+      <span class="history_tab">
+        <table id="duckiebot_config" class="history_list" cellpadding="1" border="0">
+          <thead style="background-color: #dddddd;">
+            <td>
+              Date
+            </td>
+            <td>
+              Description
+            </td>
+          </thead>
+          <tbody style="background-color: #ffffff;" id="config_list_body">
+            <tr>
+              <td>
+                Bla
+              </td>
+              <td>
+                BlaBla
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </span>
+      <h4>Calibration history </h4>
+      <span class="history_tab">
+        <table id="duckiebot_calib" class="history_list" cellpadding="1" border="0">
+          <thead style="background-color: #dddddd;">
+            <td>
+              Date
+            </td>
+            <td>
+              Description
+            </td>
+          </thead>
+          <tbody style="background-color: #ffffff;" id="calib_list_body">
+            <tr>
+              <td>
+                Bla
+              </td>
+              <td>
+                BlaBla
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </span>
+      <h4>Experiment history </h4>
+      <span class="history_tab">
+        <table id="duckiebot_experiment" class="history_list" cellpadding="1" border="0">
+          <thead style="background-color: #dddddd;">
+            <td>
+              Date
+            </td>
+            <td>
+              Description
+            </td>
+          </thead>
+          <tbody style="background-color: #ffffff;" id="experiment_list_body">
+            <tr>
+              <td>
+                Bla
+              </td>
+              <td>
+                BlaBla
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </span>
     </span>
   </div>
 
@@ -147,5 +215,7 @@
     let detected_duckiebots = <?php echo json_encode($duckiebot_array); ?>;
   </script>
 
+<!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
+  <script src="<?php echo Core::getJSscriptURL('js-yaml.min.js', 'lab_controls') ?>" type="text/javascript"></script>
 <!-- Import main JS file -->
   <script src="<?php echo Core::getJSscriptURL('script.js', 'lab_controls') ?>" type="text/javascript"></script>

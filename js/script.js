@@ -46,6 +46,10 @@
   let current_popup;
   //Previous highlighted id
   let prev_id = 0;
+  //naming convention for bots (ETH standard: autobotXX)
+  let bot_std_name = "autobot";
+  //Location of changelog file
+  let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   //Add pingable bots to map
   function start_bots(){
     detected_duckiebots.forEach(function(entry){
@@ -61,10 +65,6 @@
     do { d2 = new Date(); }
     while(d2-d < ms);
   }
-
-  $.get('https://raw.githubusercontent.com/duckietown/Software/master19/catkin_ws/src/00-infrastructure/duckietown/config/baseline/fsm/fsm_node/default.yaml', function(data) {
-      alert(data);
-   });
 
 /////Call Hue API (using workers)
   $('#on').submit(function(e){
@@ -152,9 +152,17 @@
     let cell1 = row.insertCell(1);
     let cell2 = row.insertCell(2);
     if (name==null){
-      cell0.innerHTML = "Autobot"+id;
+      if(id<10){
+        cell0.innerHTML = bot_std_name+"0"+id;
+      } else {
+        cell0.innerHTML = bot_std_name+id;
+      }
     } else {
-      cell0.innerHTML = "Autobot"+name;
+      if(name<10){
+        cell0.innerHTML = bot_std_name+"0"+name;
+      } else {
+        cell0.innerHTML = bot_std_name+name;
+      }
     }
     cell2.onclick= function() { iconPop(id); };
     cell1.innerHTML = "Active";
@@ -263,6 +271,17 @@
     document.getElementById('info_tab').classList.remove('active');
     document.getElementById('camera_tab').classList.remove('active');
     document.getElementById('history_tab').classList.add('active');
+    $.get(changelog_file, function(data) {
+        let changelog = jsyaml.load(data);
+        try{
+          //document.getElementById('history_content').innerHTML=eval("changelog."+bot_std_name+"99"+".calibration.date_2019_05_30[0]");
+        } catch {
+          alert("No entry in the changelog file for "+document.getElementById('tab_'+current_popup).cells[0].innerHTML)
+          showInfo();
+        }
+
+    });
+
     try{
       subscriber_camera.unsubscribe();
     } catch {}
