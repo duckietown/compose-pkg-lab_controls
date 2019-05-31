@@ -166,7 +166,7 @@
       }
     }
     cell2.onclick= function() { iconPop(id); };
-    cell1.innerHTML = "Active";
+    cell1.innerHTML = detected_pings[id]+" ms";
     cell2.innerHTML = "Open information window";
 
     number_bots++;

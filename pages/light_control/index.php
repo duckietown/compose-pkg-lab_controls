@@ -18,8 +18,8 @@
     $py_script = __DIR__.'/../../modules/ping.py';
     $cmd = sprintf('python3 "%s" 2>&1', $py_script);
     exec($cmd, $output, $exit_code);
-    $detection_string=end($output);
-    $duckiebot_array=array_map('intval', explode(',',preg_replace("/[^0-9,.]/", "", $detection_string)));
+    $detection_array=array_map('intval', explode(',',preg_replace("/[^0-9,.]/", "", end($output))));
+    $detection_ping=explode(',',preg_replace("/[^0-9,.]/", "", prev($output)));
   ?>
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
@@ -78,7 +78,7 @@
           Duckiebot
         </td>
         <td>
-          Status
+          Ping
         </td>
         <td>
           Actions
@@ -191,7 +191,8 @@
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       ROS_connected = true;
     });
-    let detected_duckiebots = <?php echo json_encode($duckiebot_array); ?>;
+    let detected_duckiebots = <?php echo json_encode($detection_array); ?>;
+    let detected_pings = <?php echo json_encode($detection_ping); ?>;
   </script>
 
 <!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
