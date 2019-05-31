@@ -121,7 +121,7 @@
       <span class="history_tab">
         <table id="duckiebot_config" class="history_list" cellpadding="1" border="0">
           <thead style="background-color: #dddddd;">
-            <td>
+            <td style="width:20%">
               Date
             </td>
             <td>
@@ -129,14 +129,7 @@
             </td>
           </thead>
           <tbody style="background-color: #ffffff;" id="config_list_body">
-            <tr>
-              <td>
-                Bla
-              </td>
-              <td>
-                BlaBla
-              </td>
-            </tr>
+
           </tbody>
         </table>
       </span>
@@ -144,7 +137,7 @@
       <span class="history_tab">
         <table id="duckiebot_calib" class="history_list" cellpadding="1" border="0">
           <thead style="background-color: #dddddd;">
-            <td>
+            <td style="width:20%">
               Date
             </td>
             <td>
@@ -152,14 +145,7 @@
             </td>
           </thead>
           <tbody style="background-color: #ffffff;" id="calib_list_body">
-            <tr>
-              <td>
-                Bla
-              </td>
-              <td>
-                BlaBla
-              </td>
-            </tr>
+
           </tbody>
         </table>
       </span>
@@ -167,7 +153,7 @@
       <span class="history_tab">
         <table id="duckiebot_experiment" class="history_list" cellpadding="1" border="0">
           <thead style="background-color: #dddddd;">
-            <td>
+            <td style="width:20%">
               Date
             </td>
             <td>
@@ -175,14 +161,7 @@
             </td>
           </thead>
           <tbody style="background-color: #ffffff;" id="experiment_list_body">
-            <tr>
-              <td>
-                Bla
-              </td>
-              <td>
-                BlaBla
-              </td>
-            </tr>
+
           </tbody>
         </table>
       </span>

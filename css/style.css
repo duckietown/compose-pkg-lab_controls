@@ -104,6 +104,9 @@
     vertical-align: top;
     text-align: center;
   }
+  .duckie_list>tbody>tr{
+      border-bottom: 1px solid #ccc;
+  }
 
 /* Styling for popup */
 
@@ -152,7 +155,7 @@
   width: 100%;
   overflow: scroll;
   display: block;
-  max-height: 220px;
+  max-height: 180px;
 }
 
 .history_list {
@@ -160,4 +163,7 @@
   height: 100%;
   vertical-align: top;
   text-align: center;
+}
+.history_list>tbody>tr{
+    border-bottom: 1px solid #ccc;
 }

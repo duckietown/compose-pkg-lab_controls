@@ -49,7 +49,8 @@
   //naming convention for bots (ETH standard: autobotXX)
   let bot_std_name = "autobot";
   //Location of changelog file
-  let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
+  //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
+  let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
   //Add pingable bots to map
   function start_bots(){
     detected_duckiebots.forEach(function(entry){
@@ -229,7 +230,7 @@
         subscriber_camera.unsubscribe();
       } catch {}
   }
-/////Tab control for popup
+/////Tab control for popup,showing the Info tab
   function showInfo(){
     document.getElementById('info_content').style.display="block";
     document.getElementById('camera_content').style.display="none";
@@ -241,7 +242,7 @@
       subscriber_camera.unsubscribe();
     } catch {}
   }
-
+/////Tab control for popup,showing the Camera tab
   function showCamera(){
     document.getElementById('info_content').style.display="none";
     document.getElementById('camera_content').style.display="block";
@@ -264,7 +265,17 @@
     }
   }
 
+/////Tab control for popup,showing the History tab
   function showHistory(){
+    let table_config = document.getElementById("config_list_body");
+    empty_body(table_config);
+
+    let table_calib = document.getElementById("calib_list_body");
+    empty_body(table_calib);
+
+    let table_experiment = document.getElementById("experiment_list_body");
+    empty_body(table_experiment);
+
     document.getElementById('info_content').style.display="none";
     document.getElementById('camera_content').style.display="none";
     document.getElementById('history_content').style.display="block";
@@ -272,24 +283,52 @@
     document.getElementById('camera_tab').classList.remove('active');
     document.getElementById('history_tab').classList.add('active');
     $.get(changelog_file, function(data) {
-        let changelog = jsyaml.load(data);
+      let changelog = jsyaml.load(data);
+      try{
+        let bot_object=eval("changelog."+document.getElementById("tab_"+current_popup).cells[0].innerHTML);
         try{
-          //document.getElementById('history_content').innerHTML=eval("changelog."+bot_std_name+"99"+".calibration.date_2019_05_30[0]");
-        } catch {
-          alert("No entry in the changelog file for "+document.getElementById('tab_'+current_popup).cells[0].innerHTML)
-          showInfo();
-        }
-
+          insert_body(bot_object.configuration,table_config);
+        } catch {}
+        try{
+          insert_body(bot_object.calibration,table_calib);
+        } catch {}
+        try{
+          insert_body(bot_object.experiment,table_experiment);
+        } catch {}
+      } catch {}
     });
-
     try{
       subscriber_camera.unsubscribe();
     } catch {}
   }
+
+/////Function to empty table body
+  function empty_body(table){
+    while (table.firstChild) {
+      table.removeChild(table.firstChild);
+    }
+  }
+
+/////Insert content from object into table body
+  function insert_body(content_object,table){
+    for (const [date,content] of Object.entries(content_object)){
+      let row = table.insertRow();
+      row.style.height = "30px";
+      let cell0 = row.insertCell(0);
+      let cell1 = row.insertCell(1);
+      cell0.innerHTML=date.replace("date_","").replace(/_/g,".");
+      let description="";
+      for (const entry of content){
+        description=description+entry+"<br>";
+      }
+      cell1.innerHTML=description;
+    }
+  }
+
 /////In progress: controlling smart power switches
   function toggle_switch(id){
-     let url  = "http://192.168.1."+id+"/toggle";
-     let xhr  = new XMLHttpRequest();
-     xhr.open('GET', url, true);
-     xhr.send(null);
-    };
+   let url  = "http://192.168.1."+id+"/toggle";
+   let xhr  = new XMLHttpRequest();
+   xhr.open('GET', url, true);
+   xhr.send(null);
+  };
