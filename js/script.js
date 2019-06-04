@@ -124,7 +124,7 @@
           bot.style.left = bots_positions[i][1] + 'px';
         } catch{}
       }
-      if (document.getElementById('thepopup').style.display=="block"){
+      if (document.getElementById('info_content').style.display=="block"){
         document.getElementById('info_content').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
       }
     }
@@ -261,6 +261,7 @@
       let stream = document.getElementById('raspi_stream');
       subscriber_camera.subscribe(function(message) {
         stream.src = "data:image/jpeg;charset=utf-8;base64,"+message.data;
+        console.log("Hello");
       });
     }
   }
