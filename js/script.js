@@ -41,20 +41,18 @@
   //Bots are moving
   let bots_moving = false;
   //Array of bot positions (and movements, only temporary)
-  let bots_positions = [];
-  //Current Popup id
+  let bots_positions = {};
+  //Current Popup name
   let current_popup;
-  //Previous highlighted id
-  let prev_id = 0;
-  //naming convention for bots (ETH standard: autobotXX)
-  let bot_std_name = "autobot";
+  //Previous highlighted entity
+  let prev_name = "";
   //Location of changelog file
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
   //Add pingable bots to map
   function start_bots(){
-    detected_duckiebots.forEach(function(entry){
-      add_bot(entry);
+    detected_hosts.forEach(function(entry, index){
+      add_bot(entry, index);
     });
   }
 
@@ -103,73 +101,60 @@
     let canvas_width = map.clientWidth-18;
     setInterval(exec_move, 10);
     function exec_move() {
-      for(let i=0; i<number_bots; i++){
+      let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
+      for(let i=0; i<descendents.length; i++){
         try{
-          let bot = document.getElementById("bot_"+i);
-          if (bots_positions[i][0] <= 0) {
-            bots_positions[i][2] = 1;
+          let name = descendents[i].cells[0].innerHTML;
+          let bot = document.getElementById("entity_"+name);
+          if (bots_positions[name][0] <= 0) {
+            bots_positions[name][2] = 1;
           }
-          if (bots_positions[i][0] >= canvas_height) {
-            bots_positions[i][2] = -1;
+          if (bots_positions[name][0] >= canvas_height) {
+            bots_positions[name][2] = -1;
           }
-          if (bots_positions[i][1] <= 0) {
-            bots_positions[i][3] = 1;
+          if (bots_positions[name][1] <= 0) {
+            bots_positions[name][3] = 1;
           }
-          if (bots_positions[i][1] >= canvas_width) {
-            bots_positions[i][3] = -1;
+          if (bots_positions[name][1] >= canvas_width) {
+            bots_positions[name][3] = -1;
           }
-          bots_positions[i][0]+=bots_positions[i][2];
-          bots_positions[i][1]+=bots_positions[i][3];
-          bot.style.top = bots_positions[i][0] + 'px';
-          bot.style.left = bots_positions[i][1] + 'px';
+          bots_positions[name][0]+=bots_positions[name][2];
+          bots_positions[name][1]+=bots_positions[name][3];
+          bot.style.top = bots_positions[name][0] + 'px';
+          bot.style.left = bots_positions[name][1] + 'px';
         } catch{}
       }
       if (document.getElementById('info_content').style.display=="block"){
-        document.getElementById('info_content').innerHTML="My ID is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
+        document.getElementById('info_content').innerHTML="My name is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
       }
     }
   }
 ///// Add a new entity
-  function add_bot(name){
+  function add_bot(name, index){
     let new_div = document.createElement('div');
-    let id = number_bots;
-    new_div.id = "bot_"+id;
-    new_div.className="entity";
-    if (name==null){
-      new_div.innerHTML=id;
+    new_div.id = "entity_"+name;
+    if (name.substring(0,4)=="auto"){
+      new_div.className="duckiebot";
     } else {
-      new_div.innerHTML=name;
+      new_div.className="watchtower";
     }
-    new_div.onclick= function() { highlightBot(id);
-                                  document.getElementById('tab_'+id).scrollIntoView(true);};
+    new_div.innerHTML="";
+    new_div.onclick= function() { highlightBot(name);
+                                  document.getElementById('tab_'+name).scrollIntoView(true);};
     document.getElementById("bots").appendChild(new_div);
-    bots_positions.push([Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1]);
+    bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
     let table = document.getElementById("duckie_list_body");
     let row = table.insertRow();
-    row.id = "tab_"+id;
-    row.onclick=function() { highlightBot(id); };
+    row.id = "tab_"+name;
+    row.onclick=function() { highlightBot(name); };
     row.style.height = "30px";
     let cell0 = row.insertCell(0);
     let cell1 = row.insertCell(1);
     let cell2 = row.insertCell(2);
-    if (name==null){
-      if(id<10){
-        cell0.innerHTML = bot_std_name+"0"+id;
-      } else {
-        cell0.innerHTML = bot_std_name+id;
-      }
-    } else {
-      if(name<10){
-        cell0.innerHTML = bot_std_name+"0"+name;
-      } else {
-        cell0.innerHTML = bot_std_name+name;
-      }
-    }
-    cell2.onclick= function() { iconPop(id); };
-    cell1.innerHTML = detected_pings[id]+" ms";
+    cell0.innerHTML = name;
+    cell2.onclick= function() { iconPop(name); };
+    cell1.innerHTML = detected_pings[index]+" ms";
     cell2.innerHTML = "Open information window";
-
-    number_bots++;
     if (bots_moving == false){
       bots_moving=true;
       move_bots();
@@ -179,9 +164,9 @@
 ///// Remove an entity
   function remove_bot(){
     try {
-      let id=parseInt(document.getElementById('toRemove').value);
-      document.getElementById("bot_"+id).remove();
-      document.getElementById("tab_"+id).remove();
+      let name=document.getElementById('toRemove').value;
+      document.getElementById("entity_"+name).remove();
+      document.getElementById("tab_"+name).remove();
       document.getElementById('toRemove').value="";
     }catch{
       openAlert(type='warning', 'Removing not possible, entity doesn\'t exist!');
@@ -189,30 +174,32 @@
   }
 
 /////Function to highlight different bots by clicking
-  function highlightBot(id) {
-    if (prev_id != id){
-      document.getElementById('tab_'+id).style.background="#ED9C27";
-      document.getElementById('bot_'+id).style.background="#ED9C27";
+  function highlightBot(name) {
+    if (prev_name != name){
+      document.getElementById('tab_'+name).style.backgroundColor="#ED9C27";
+      document.getElementById('entity_'+name).style.backgroundColor="#ED9C27";
+      document.getElementById('toRemove').value=name;
       try{
-        document.getElementById('tab_'+prev_id).style.background="#ffffff";
-        document.getElementById('bot_'+prev_id).style.background="red";
+        document.getElementById('tab_'+prev_name).style.backgroundColor="";
+        document.getElementById('entity_'+prev_name).style.backgroundColor="";
       }catch{}
     } else {
-      if (document.getElementById('tab_'+id).style.backgroundColor=="rgb(237, 156, 39)"){
-        document.getElementById('tab_'+id).style.background="#ffffff";
-        document.getElementById('bot_'+id).style.background="red";
+      if (document.getElementById('tab_'+name).style.backgroundColor=="rgb(237, 156, 39)"){
+        document.getElementById('tab_'+name).style.backgroundColor="";
+        document.getElementById('entity_'+name).style.backgroundColor="";
+        document.getElementById('toRemove').value="";
       } else {
-        document.getElementById('tab_'+id).style.background="#ED9C27";
-        document.getElementById('bot_'+id).style.background="#ED9C27";
+        document.getElementById('tab_'+name).style.backgroundColor="#ED9C27";
+        document.getElementById('entity_'+name).style.backgroundColor="#ED9C27";
+        document.getElementById('toRemove').value=name;
       }
     }
-    prev_id=id;
-    document.getElementById('toRemove').value=id;
+    prev_name=name;
   }
 
 /////Function to show popup on click
-  function iconPop(id){
-      current_popup = id;
+  function iconPop(name){
+      current_popup = name;
       document.getElementById('thepopup').style.display="block";
       document.getElementById('blackoutdiv').style.display="block";
       document.getElementById('info_content').style.display="block";
@@ -244,25 +231,38 @@
   }
 /////Tab control for popup,showing the Camera tab
   function showCamera(){
+    document.getElementById('raspi_stream').src="";
     document.getElementById('info_content').style.display="none";
     document.getElementById('camera_content').style.display="block";
     document.getElementById('history_content').style.display="none";
     document.getElementById('info_tab').classList.remove('active');
     document.getElementById('camera_tab').classList.add('active');
     document.getElementById('history_tab').classList.remove('active');
-
+    let ros_tmp = window.ros.toSource();
+    //alert(ros_tmp);
     if (ROS_connected){
       subscriber_camera = new ROSLIB.Topic({
         ros : window.ros,
-        name : '/watchtower33/camera_node/image/compressed',
+        name : '/'+current_popup+'/imageSparse/compressed',
         messageType : 'sensor_msgs/CompressedImage',
         queue_size : 1,
       });
+      publisher_request_image = new ROSLIB.Topic({
+        ros : window.ros,
+        name : '/'+current_popup+'/requestImage',
+        messageType : 'std_msgs/Bool',
+        queue_size : 1,
+      });
+
       let stream = document.getElementById('raspi_stream');
+      let get_image = new ROSLIB.Message({
+        data : true
+      });
+      publisher_request_image.publish(get_image)
       subscriber_camera.subscribe(function(message) {
         stream.src = "data:image/jpeg;charset=utf-8;base64,"+message.data;
-        console.log("Hello");
       });
+
     }
   }
 
@@ -286,7 +286,7 @@
     $.get(changelog_file, function(data) {
       let changelog = jsyaml.load(data);
       try{
-        let bot_object=eval("changelog."+document.getElementById("tab_"+current_popup).cells[0].innerHTML);
+        let bot_object=eval("changelog."+current_popup);
         try{
           insert_body(bot_object.configuration,table_config);
         } catch {}

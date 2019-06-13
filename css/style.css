@@ -59,11 +59,24 @@
 
 /* Style of Duckiebot entities */
 
-  .entity {
+  .duckiebot {
     width: 18px;
     height: 18px;
     position: absolute;
     background-color: red;
+    border-radius: 50%;
+    left: 0px;
+    top: 0px;
+    text-align: center;
+    vertical-align: middle;
+    color: #ffffff;
+  }
+
+  .watchtower {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    background-color: royalblue;
     border-radius: 50%;
     left: 0px;
     top: 0px;

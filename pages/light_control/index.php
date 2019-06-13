@@ -18,7 +18,7 @@
     $py_script = __DIR__.'/../../modules/ping.py';
     $cmd = sprintf('python3 "%s" 2>&1', $py_script);
     exec($cmd, $output, $exit_code);
-    $detection_array=array_map('intval', explode(',',preg_replace("/[^0-9,.]/", "", end($output))));
+    $detection_array=explode(', ',substr(substr(str_replace("'","",end($output)),1),0,-1));
     $detection_ping=explode(',',preg_replace("/[^0-9,.]/", "", prev($output)));
   ?>
 <!-- Import stylesheet -->
@@ -93,7 +93,7 @@
   </tbody>
   </table>
 
-  <button type="submit" onclick="add_bot()">Add entity</button>
+  <!-- <button type="submit" onclick="add_bot()">Add entity</button> -->
   <input type="text" id="toRemove" style="display:none;">
   <button type="submit" onclick="remove_bot()">Remove entity</button>
 
@@ -191,7 +191,7 @@
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       ROS_connected = true;
     });
-    let detected_duckiebots = <?php echo json_encode($detection_array); ?>;
+    let detected_hosts = <?php echo json_encode($detection_array); ?>;
     let detected_pings = <?php echo json_encode($detection_ping); ?>;
   </script>
 
