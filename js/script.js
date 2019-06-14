@@ -4,6 +4,39 @@
     stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random();
   }, 200);
 
+/////Create subscribers to highlight movement in the city
+  let sub_interval=null;
+  sub_interval = setInterval(function() {
+    if (ROS_connected){
+      clearInterval(sub_interval);
+      let subs = {};
+      let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
+      for(let i=0; i<descendents.length; i++){
+        let name=descendents[i].cells[0].innerHTML;
+        if (name.substring(0,4)=="watc"){
+          subs[name]  = new ROSLIB.Topic({
+            ros : window.ros,
+            name : '/'+name+'/maskNorm',
+            messageType : 'std_msgs/Float32',
+            queue_size : 1,
+          });
+          subs[name].subscribe(function(message) {
+            let bot = document.getElementById("entity_"+name);
+            if (parseFloat(message.data)>500){
+              bot.style.width= "30px";
+              bot.style.height= "30px";
+              bot.style.backgroundColor= "LightSkyBlue";
+            }else{
+              bot.style.width= "18px";
+              bot.style.height= "18px";
+              bot.style.backgroundColor= document.getElementById('tab_'+name).style.backgroundColor;
+            }
+          });
+        }
+      }
+    }
+  }, 1000);
+
 /////Setting and reading slider positions
   //Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp
   let slider_int = document.getElementById("intensity");
@@ -36,8 +69,6 @@
   }, false);
 
 /////Define variables
-  //Number of moving bots
-  let number_bots = 0;
   //Bots are moving
   let bots_moving = false;
   //Array of bot positions (and movements, only temporary)
@@ -55,6 +86,24 @@
       add_bot(entry, index);
     });
   }
+  let watchtower_pos={
+    "watchtower01":[650,30],
+    "watchtower02":[675,60],
+    "watchtower03":[675,105],
+    "watchtower04":[675,150],
+    "watchtower05":[615,190],
+    "watchtower06":[575,1],
+    "watchtower07":[575,45],
+    "watchtower08":[575,80],
+    "watchtower09":[575,125],
+    "watchtower10":[525,1],
+    "watchtower11":[525,60],
+    "watchtower12":[525,190],
+    "watchtower13":[460,20],
+    "watchtower14":[455,80],
+    "watchtower15":[455,125],
+    "watchtower16":[490,190],
+  };
 
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
@@ -142,7 +191,16 @@
     new_div.onclick= function() { highlightBot(name);
                                   document.getElementById('tab_'+name).scrollIntoView(true);};
     document.getElementById("bots").appendChild(new_div);
-    bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
+    if (new_div.className=="duckiebot"){
+      bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
+    } else {
+      try{
+        bots_positions[name]=[watchtower_pos[name][0],watchtower_pos[name][1],0,0];
+      } catch {
+        bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),0,0];
+      }
+    }
+
     let table = document.getElementById("duckie_list_body");
     let row = table.insertRow();
     row.id = "tab_"+name;
@@ -238,8 +296,7 @@
     document.getElementById('info_tab').classList.remove('active');
     document.getElementById('camera_tab').classList.add('active');
     document.getElementById('history_tab').classList.remove('active');
-    let ros_tmp = window.ros.toSource();
-    //alert(ros_tmp);
+
     if (ROS_connected){
       subscriber_camera = new ROSLIB.Topic({
         ros : window.ros,
