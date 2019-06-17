@@ -91,18 +91,47 @@
     "watchtower02":[675,60],
     "watchtower03":[675,105],
     "watchtower04":[675,150],
-    "watchtower05":[615,190],
+    "watchtower05":[615,185],
     "watchtower06":[575,1],
     "watchtower07":[575,45],
     "watchtower08":[575,80],
     "watchtower09":[575,125],
     "watchtower10":[525,1],
     "watchtower11":[525,60],
-    "watchtower12":[525,190],
+    "watchtower12":[525,185],
     "watchtower13":[460,20],
     "watchtower14":[455,80],
     "watchtower15":[455,125],
-    "watchtower16":[490,190],
+    "watchtower16":[490,185],
+    "watchtower21":[675,240],
+    "watchtower22":[675,290],
+    "watchtower23":[675,350],
+    "watchtower24":[625,255],
+    "watchtower25":[625,310],
+    "watchtower26":[600,205],
+    "watchtower27":[575,310],
+    "watchtower28":[600,360],
+    "watchtower29":[550,205],
+    "watchtower30":[505,255],
+    "watchtower31":[505,275],
+    "watchtower32":[505,330],
+    "watchtower33":[490,205],
+    "watchtower34":[455,265],
+    "watchtower35":[460,310],
+    "watchtower41":[400,135],
+    "watchtower42":[435,200],
+    "watchtower43":[435,265],
+    "watchtower44":[415,320],
+    "watchtower45":[350,185],
+    "watchtower46":[370,330],
+    "watchtower47":[305,185],
+    "watchtower48":[310,210],
+    "watchtower49":[330,240],
+    "watchtower50":[315,295],
+    "watchtower51":[260,185],
+    "watchtower52":[260,205],
+    "watchtower53":[215,150],
+    "watchtower54":[215,240],
   };
 
 /////Wait function
@@ -184,10 +213,11 @@
     new_div.id = "entity_"+name;
     if (name.substring(0,4)=="auto"){
       new_div.className="duckiebot";
+      new_div.innerHTML=name.replace("autobot","");
     } else {
       new_div.className="watchtower";
+      new_div.innerHTML=name.replace("watchtower","");
     }
-    new_div.innerHTML="";
     new_div.onclick= function() { highlightBot(name);
                                   document.getElementById('tab_'+name).scrollIntoView(true);};
     document.getElementById("bots").appendChild(new_div);
