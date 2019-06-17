@@ -197,5 +197,6 @@
 
 <!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
   <script src="<?php echo Core::getJSscriptURL('js-yaml.min.js', 'lab_controls') ?>" type="text/javascript"></script>
-<!-- Import main JS file -->
+<!-- Import main JS file and param files-->
+  <script src="<?php echo Core::getJSscriptURL('watchtower_locations.js', 'lab_controls') ?>" type="text/javascript"></script>
   <script src="<?php echo Core::getJSscriptURL('script.js', 'lab_controls') ?>" type="text/javascript"></script>
