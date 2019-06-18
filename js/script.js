@@ -91,11 +91,22 @@
   let current_popup;
   //Previous highlighted entity
   let prev_name = "";
+  //Currently selected submission id
+  let selected_sub_id = "";
   //Flag for currently running submission
   let submission_evaluating = false;
   //Location of changelog file
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
+
+/////Enlarge camera image
+  function camera_size_toggle(){
+    if (document.getElementById('stream').classList.contains('camera_click')){
+      document.getElementById('stream').classList.remove('camera_click');
+    } else {
+      document.getElementById('stream').classList.add('camera_click');
+    }
+  }
 
 /////Add pingable bots to map
   function start_bots(){
@@ -342,13 +353,13 @@
       try{
         let bot_object=eval("changelog."+current_popup);
         try{
-          insert_body(bot_object.configuration,table_config);
+          insert_changelog_body(bot_object.configuration,table_config);
         } catch {}
         try{
-          insert_body(bot_object.calibration,table_calib);
+          insert_changelog_body(bot_object.calibration,table_calib);
         } catch {}
         try{
-          insert_body(bot_object.experiment,table_experiment);
+          insert_changelog_body(bot_object.experiment,table_experiment);
         } catch {}
       } catch {}
     });
@@ -365,7 +376,7 @@
   }
 
 /////Insert content from object into table body
-  function insert_body(content_object,table){
+  function insert_changelog_body(content_object,table){
     for (const [date,content] of Object.entries(content_object)){
       let row = table.insertRow();
       row.style.height = "30px";
@@ -405,17 +416,26 @@
 /////Open submission popup
   function open_submission_popup(){
     if (!submission_evaluating){
-      let ancestor = document.getElementById('submission_steps'), descendents = ancestor.children;
-      for(let i=1; i<=descendents.length; i++){
-        document.getElementById('submission_step_'+i).style.display="none";
-        document.getElementById('submission_tab_'+i).classList.remove('active');
-      }
-      document.getElementById('cancel_submission').style.display="none";
-      document.getElementById('submission_step_1').style.display="block";
-      document.getElementById('submission_tab_1').classList.add('active');
+      initialize_submission_popup();
     }
     document.getElementById('submissionPopup').style.display="block";
     document.getElementById('submissionblackoutdiv').style.display="block";
+  }
+
+/////Initialize submission popup
+  function initialize_submission_popup(){
+    let ancestor = document.getElementById('submission_steps'), descendents = ancestor.children;
+    for(let i=1; i<=descendents.length; i++){
+      document.getElementById('submission_step_'+i).style.display="none";
+      document.getElementById('submission_tab_'+i).classList.remove('active');
+    }
+    document.getElementById('cancel_submission').style.display="none";
+    document.getElementById('submission_step_1').style.display="block";
+    document.getElementById('submission_tab_1').classList.add('active');
+    document.getElementById('start_submission').disabled = true;
+    let submission_table = document.getElementById("submission_table_body");
+    empty_body(submission_table);
+    insert_submission_body(submission_table);
   }
 
 /////Close submission popup
@@ -435,17 +455,24 @@
       document.getElementById('submission_button').innerHTML="Currently evaluating";
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
+      //alert("Submission Nr. "+selected_sub_id+" started.")
     }
   }
 
 /////Finish Submission
-  function finish_submission(){
+  function finish_submission(status){
     reset_submission_view();
+    if (status){
+      openAlert(type='danger', 'Submission Nr. '+selected_sub_id+' failed with exit code '+status);
+    } else {
+      openAlert(type='success', 'Submission Nr. '+selected_sub_id+' successfully finished');
+    }
   }
 
 /////Cancel Submission
   function cancel_submission(){
     reset_submission_view();
+    openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
 
 /////Reset submission view
@@ -456,4 +483,29 @@
     document.getElementById('submission_button').style.background="";
     document.getElementById('submission_button').style.color="";
     submission_evaluating = false;
+    document.getElementById('start_submission').disabled = true;
+  }
+
+/////Select submission from list
+  function select_submission(id){
+    if(selected_sub_id!==""){
+      document.getElementById(selected_sub_id).style.backgroundColor="";
+    }
+    document.getElementById(id).style.backgroundColor="#ED9C27";
+    document.getElementById('start_submission').disabled = false;
+    selected_sub_id=id;
+  }
+
+/////Insert currently available submissions into body
+  function insert_submission_body(table){
+    for(let i=0; i<20; i++){
+      let row = table.insertRow();
+      row.id=i;
+      row.onclick= function() { select_submission(i);};
+      row.style.height = "30px";
+      let cell0 = row.insertCell(0);
+      let cell1 = row.insertCell(1);
+      cell0.innerHTML=i
+      cell1.innerHTML="Test"+i;
+    }
   }

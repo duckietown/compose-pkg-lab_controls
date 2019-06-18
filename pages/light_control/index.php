@@ -36,7 +36,7 @@
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
-      <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera>
+      <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera onclick=camera_size_toggle()>
     </td>
   </tr>
   <tr>
@@ -165,9 +165,8 @@
     </span>
   </div>
 
-  <div onclick="" id="submissionblackoutdiv" class=blackout></div>
+  <div onclick="close_submission_popup()" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
-    <button type="button" class="btn btn-default" onclick="close_submission_popup()">Close submission window</button>
     <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_submission()">Cancel submission</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">
@@ -182,7 +181,23 @@
     <br>
     <span id="submission_steps" class="">
       <span id="submission_step_1" class="">
-        <button type="button" class="btn btn-default" onclick="next_submission_step(1)">Start submission evaluation</button>
+        <button id="start_submission" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Start submission evaluation</button>
+        <br><br>
+        <span class="submission_tab">
+          <table id="submission_table" class="history_list" cellpadding="1" border="0" >
+            <thead style="background-color: #dddddd;">
+              <td style="width:20%">
+                Submission number
+              </td>
+              <td>
+                Description
+              </td>
+            </thead>
+            <tbody style="background-color: #ffffff;" id="submission_table_body">
+
+            </tbody>
+          </table>
+        </span>
       </span>
       <span id="submission_step_2" class="">
         <button type="button" class="btn btn-default" onclick="next_submission_step(2)">Goto step 3</button>

@@ -91,7 +91,7 @@
     width: 100%;
   }
 
-  .camera:hover{
+  .camera_click{
     width: 80%;
     z-index: 5000;
     position: fixed;
@@ -181,6 +181,10 @@
     border-bottom: 1px solid #ccc;
 }
 
-.blink {
-  background-color:#ED9C27 !important;
+/* Styling for submission table */
+.submission_tab {
+  width: 100%;
+  overflow: scroll;
+  display: block;
+  max-height: 400px;
 }
