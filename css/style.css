@@ -180,3 +180,7 @@
 .history_list>tbody>tr{
     border-bottom: 1px solid #ccc;
 }
+
+.blink {
+  background-color:#ED9C27 !important;
+}

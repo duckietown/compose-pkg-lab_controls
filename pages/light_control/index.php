@@ -47,12 +47,12 @@
       <tr>
       <td>
         <form id="on">
-          <button type="submit">Turn Light on</button>
+          <button type="submit" class="btn btn-default">Turn Light on</button>
         </form>
       </td>
       <td>
         <form id="off">
-          <button type="submit">Turn Light off</button>
+          <button type="submit" class="btn btn-default">Turn Light off</button>
         </form>
       </td>
       <td>
@@ -61,7 +61,7 @@
         <input type="range" min="153" max="500" value="153" class="slider" id="color">
         <p>Color: <span id="color_out"></span></p>
         <form id="change">
-          <button type="submit">Change lights</button>
+          <button type="submit" class="btn btn-default">Change lights</button>
         </form>
       </td>
       </tr>
@@ -93,18 +93,15 @@
   </tbody>
   </table>
 
-  <!-- <button type="submit" onclick="add_bot()">Add entity</button> -->
-  <input type="text" id="toRemove" style="display:none;">
-  <button type="submit" onclick="remove_bot()">Remove entity</button>
-
-  <button type="button" onclick="toggle_switch(7)">Toggle switch 1</button>
-  <button type="button" onclick="toggle_switch(8)">Toggle switch 2</button
+  <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()">Evaluate submission</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(7)">Toggle switch 1</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(8)">Toggle switch 2</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
-  <div id="thepopup" class=popup>
+  <div id="duckiepopup" class=popup>
     <ul class="nav nav-pills">
       <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>
       <li id="camera_tab" role="presentation" onclick="showCamera();"><a href="#">Camera</a></li>
@@ -164,6 +161,42 @@
 
           </tbody>
         </table>
+      </span>
+    </span>
+  </div>
+
+  <div onclick="" id="submissionblackoutdiv" class=blackout></div>
+  <div id="submissionPopup" class=popup>
+    <button type="button" class="btn btn-default" onclick="close_submission_popup()">Close submission window</button><br><br>
+    <span id="submission_tabs" class="popup_content">
+      <ul class="nav nav-pills">
+        <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Step 1</a></li>
+        <li id="submission_tab_2" role="presentation" onclick=""><a href="#">Step 2</a></li>
+        <li id="submission_tab_3" role="presentation" onclick=""><a href="#">Step 3</a></li>
+        <li id="submission_tab_4" role="presentation" onclick=""><a href="#">Step 4</a></li>
+        <li id="submission_tab_5" role="presentation" onclick=""><a href="#">Step 5</a></li>
+        <li id="submission_tab_6" role="presentation" onclick=""><a href="#">Step 6</a></li>
+      </ul>
+    </span>
+    <br>
+    <span id="submission_steps" class="">
+      <span id="submission_step_1" class="">
+        <button type="button" class="btn btn-default" onclick="next_submission_step(1)">Start submission evaluation</button>
+      </span>
+      <span id="submission_step_2" class="">
+        <button type="button" class="btn btn-default" onclick="next_submission_step(2)">Goto step 3</button>
+      </span>
+      <span id="submission_step_3" class="">
+        <button type="button" class="btn btn-default" onclick="next_submission_step(3)">Goto step 4</button>
+      </span>
+      <span id="submission_step_4" class="">
+        <button type="button" class="btn btn-default" onclick="next_submission_step(4)">Goto step 5</button>
+      </span>
+      <span id="submission_step_5" class="">
+        <button type="button" class="btn btn-default" onclick="next_submission_step(5)">Goto step 6</button>
+      </span>
+      <span id="submission_step_6" class="">
+        <button type="button" class="btn btn-default" onclick="finish_submission()">Finish submission</button>
       </span>
     </span>
   </div>

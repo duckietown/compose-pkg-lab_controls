@@ -37,6 +37,20 @@
     }
   }, 1000);
 
+/////Flash evaluating button while evaluating
+  setInterval(function() {
+    if(submission_evaluating){
+      let button = document.getElementById('submission_button');
+      if (button.style.background==""){
+        button.style.background="#ED9C27";
+        button.style.color="white";
+      } else {
+        button.style.background="";
+        button.style.color="";
+      }
+    }
+  }, 500);
+
 /////Setting and reading slider positions
   //Adapted from https://www.w3schools.com/howto/howto_js_rangeslider.asp
   let slider_int = document.getElementById("intensity");
@@ -77,10 +91,13 @@
   let current_popup;
   //Previous highlighted entity
   let prev_name = "";
+  //Flag for currently running submission
+  let submission_evaluating = false;
   //Location of changelog file
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
-  //Add pingable bots to map
+
+/////Add pingable bots to map
   function start_bots(){
     detected_hosts.forEach(function(entry, index){
       add_bot(entry, index);
@@ -136,23 +153,25 @@
       for(let i=0; i<descendents.length; i++){
         try{
           let name = descendents[i].cells[0].innerHTML;
-          let bot = document.getElementById("entity_"+name);
-          if (bots_positions[name][0] <= 0) {
-            bots_positions[name][2] = 1;
+          if (bots_positions[name][0] !=0){
+            let bot = document.getElementById("entity_"+name);
+            if (bots_positions[name][0] <= 0) {
+              bots_positions[name][2] = 1;
+            }
+            if (bots_positions[name][0] >= canvas_height) {
+              bots_positions[name][2] = -1;
+            }
+            if (bots_positions[name][1] <= 0) {
+              bots_positions[name][3] = 1;
+            }
+            if (bots_positions[name][1] >= canvas_width) {
+              bots_positions[name][3] = -1;
+            }
+            bots_positions[name][0]+=bots_positions[name][2];
+            bots_positions[name][1]+=bots_positions[name][3];
+            bot.style.top = bots_positions[name][0] + 'px';
+            bot.style.left = bots_positions[name][1] + 'px';
           }
-          if (bots_positions[name][0] >= canvas_height) {
-            bots_positions[name][2] = -1;
-          }
-          if (bots_positions[name][1] <= 0) {
-            bots_positions[name][3] = 1;
-          }
-          if (bots_positions[name][1] >= canvas_width) {
-            bots_positions[name][3] = -1;
-          }
-          bots_positions[name][0]+=bots_positions[name][2];
-          bots_positions[name][1]+=bots_positions[name][3];
-          bot.style.top = bots_positions[name][0] + 'px';
-          bot.style.left = bots_positions[name][1] + 'px';
         } catch{}
       }
       if (document.getElementById('info_content').style.display=="block"){
@@ -203,12 +222,10 @@
   }
 
 ///// Remove an entity
-  function remove_bot(){
+  function remove_bot(name){
     try {
-      let name=document.getElementById('toRemove').value;
       document.getElementById("entity_"+name).remove();
       document.getElementById("tab_"+name).remove();
-      document.getElementById('toRemove').value="";
     }catch{
       openAlert(type='warning', 'Removing not possible, entity doesn\'t exist!');
     }
@@ -219,7 +236,6 @@
     if (prev_name != name){
       document.getElementById('tab_'+name).style.backgroundColor="#ED9C27";
       document.getElementById('entity_'+name).style.backgroundColor="#ED9C27";
-      document.getElementById('toRemove').value=name;
       try{
         document.getElementById('tab_'+prev_name).style.backgroundColor="";
         document.getElementById('entity_'+prev_name).style.backgroundColor="";
@@ -228,11 +244,9 @@
       if (document.getElementById('tab_'+name).style.backgroundColor=="rgb(237, 156, 39)"){
         document.getElementById('tab_'+name).style.backgroundColor="";
         document.getElementById('entity_'+name).style.backgroundColor="";
-        document.getElementById('toRemove').value="";
       } else {
         document.getElementById('tab_'+name).style.backgroundColor="#ED9C27";
         document.getElementById('entity_'+name).style.backgroundColor="#ED9C27";
-        document.getElementById('toRemove').value=name;
       }
     }
     prev_name=name;
@@ -241,7 +255,7 @@
 /////Function to show popup on click
   function iconPop(name){
       current_popup = name;
-      document.getElementById('thepopup').style.display="block";
+      document.getElementById('duckiepopup').style.display="block";
       document.getElementById('blackoutdiv').style.display="block";
       document.getElementById('info_content').style.display="block";
       document.getElementById('camera_content').style.display="none";
@@ -249,7 +263,7 @@
   }
 /////Function to hide popup on click
   function iconUnPop(){
-      document.getElementById('thepopup').style.display="none";
+      document.getElementById('duckiepopup').style.display="none";
       document.getElementById('blackoutdiv').style.display="none";
       document.getElementById('info_tab').classList.add('active');
       document.getElementById('camera_tab').classList.remove('active');
@@ -373,3 +387,61 @@
    xhr.open('GET', url, true);
    xhr.send(null);
   };
+
+/////Alert before reloading (from https://stackoverflow.com/questions/7317273/warn-user-before-leaving-web-page-with-unsaved-changes)
+  window.onload = function() {
+      window.addEventListener("beforeunload", function (e) {
+           if (!submission_evaluating) {
+               return undefined;
+           }
+
+          var confirmationMessage = "This page is asking you to confirm that you want to leave - data you have entered may not be saved.";
+
+          (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+          return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+      });
+  };
+
+/////Open submission popup
+  function open_submission_popup(){
+    if (!submission_evaluating){
+      let ancestor = document.getElementById('submission_steps'), descendents = ancestor.children;
+      for(let i=1; i<=descendents.length; i++){
+        document.getElementById('submission_step_'+i).style.display="none";
+        document.getElementById('submission_tab_'+i).classList.remove('active');
+      }
+      document.getElementById('submission_step_1').style.display="block";
+      document.getElementById('submission_tab_1').classList.add('active');
+    }
+    document.getElementById('submissionPopup').style.display="block";
+    document.getElementById('submissionblackoutdiv').style.display="block";
+  }
+
+/////Close submission popup
+  function close_submission_popup(){
+    document.getElementById('submissionPopup').style.display="none";
+    document.getElementById('submissionblackoutdiv').style.display="none";
+  }
+
+/////Next submission Step
+  function next_submission_step(id){
+    document.getElementById('submission_tab_'+id).classList.remove('active');
+    document.getElementById('submission_tab_'+eval(id+1)).classList.add('active');
+    document.getElementById('submission_step_'+id).style.display="none";
+    document.getElementById('submission_step_'+eval(id+1)).style.display="block";
+    //Actual submission evaluation starts here
+    if (id==1){
+      document.getElementById('submission_button').innerHTML="Currently evaluating";
+      submission_evaluating = true;
+    }
+  }
+
+/////Finish Submission
+  function finish_submission(){
+    document.getElementById('submissionPopup').style.display="none";
+    document.getElementById('submissionblackoutdiv').style.display="none";
+    document.getElementById('submission_button').innerHTML="Evaluate submission";
+    document.getElementById('submission_button').style.background="";
+    document.getElementById('submission_button').style.color="";
+    submission_evaluating = false;
+  }
