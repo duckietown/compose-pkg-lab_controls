@@ -410,6 +410,7 @@
         document.getElementById('submission_step_'+i).style.display="none";
         document.getElementById('submission_tab_'+i).classList.remove('active');
       }
+      document.getElementById('cancel_submission').style.display="none";
       document.getElementById('submission_step_1').style.display="block";
       document.getElementById('submission_tab_1').classList.add('active');
     }
@@ -432,12 +433,23 @@
     //Actual submission evaluation starts here
     if (id==1){
       document.getElementById('submission_button').innerHTML="Currently evaluating";
+      document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
     }
   }
 
 /////Finish Submission
   function finish_submission(){
+    reset_submission_view();
+  }
+
+/////Cancel Submission
+  function cancel_submission(){
+    reset_submission_view();
+  }
+
+/////Reset submission view
+  function reset_submission_view(){
     document.getElementById('submissionPopup').style.display="none";
     document.getElementById('submissionblackoutdiv').style.display="none";
     document.getElementById('submission_button').innerHTML="Evaluate submission";

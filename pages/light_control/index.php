@@ -167,7 +167,8 @@
 
   <div onclick="" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
-    <button type="button" class="btn btn-default" onclick="close_submission_popup()">Close submission window</button><br><br>
+    <button type="button" class="btn btn-default" onclick="close_submission_popup()">Close submission window</button>
+    <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_submission()">Cancel submission</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">
         <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Step 1</a></li>
