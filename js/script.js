@@ -95,6 +95,14 @@
   let selected_sub_id = "";
   //Flag for currently running submission
   let submission_evaluating = false;
+  //Array of active bots
+  let active_bots = [];
+  //Array of passive bots
+  let passive_bots = [];
+  //Needed active bots
+  let necessary_active_bots = -1;
+  //Needed passive bots
+  let necessary_passive_bots = -1;
   //Location of changelog file
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
@@ -414,7 +422,7 @@
   };
 
 /////Open submission popup
-  function open_submission_popup(){
+  function open_submission_popup(){10
     if (!submission_evaluating){
       initialize_submission_popup();
     }
@@ -422,7 +430,7 @@
     document.getElementById('submissionblackoutdiv').style.display="block";
   }
 
-/////Initialize submission popup
+/////Initialize submission popup if no submission currently running
   function initialize_submission_popup(){
     let ancestor = document.getElementById('submission_steps'), descendents = ancestor.children;
     for(let i=1; i<=descendents.length; i++){
@@ -455,7 +463,13 @@
       document.getElementById('submission_button').innerHTML="Currently evaluating";
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
-      //alert("Submission Nr. "+selected_sub_id+" started.")
+      let duckiebot_selection = document.getElementById("duckiebot_selection_body");
+      necessary_active_bots = 2;
+      necessary_passive_bots = 2;
+      let html_necessary_bots = document.getElementById("necessary_bots");
+      html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
+      empty_body(duckiebot_selection);
+      insert_duckiebot_selection_body(duckiebot_selection);
     }
   }
 
@@ -475,7 +489,7 @@
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
 
-/////Reset submission view
+/////Reset submission view after canceling or finishing
   function reset_submission_view(){
     document.getElementById('submissionPopup').style.display="none";
     document.getElementById('submissionblackoutdiv').style.display="none";
@@ -484,10 +498,12 @@
     document.getElementById('submission_button').style.color="";
     submission_evaluating = false;
     document.getElementById('start_submission').disabled = true;
+    necessary_active_bots = -1;
+    necessary_passive_bots = -1;
   }
 
-/////Select submission from list
-  function select_submission(id){
+/////Highlight submission from list
+  function highlight_submission(id){
     if(selected_sub_id!==""){
       document.getElementById(selected_sub_id).style.backgroundColor="";
     }
@@ -498,14 +514,121 @@
 
 /////Insert currently available submissions into body
   function insert_submission_body(table){
+    //Temporary until submissions can be fetched from server
     for(let i=0; i<20; i++){
       let row = table.insertRow();
       row.id=i;
-      row.onclick= function() { select_submission(i);};
+      row.onclick= function() { highlight_submission(i);};
       row.style.height = "30px";
       let cell0 = row.insertCell(0);
       let cell1 = row.insertCell(1);
       cell0.innerHTML=i
       cell1.innerHTML="Test"+i;
+    }
+    call_server(table)
+  }
+
+/////Call server test Function, when working insert into insert_submission_body
+  function call_server(table){
+    $.ajax({
+      url: "https://challenges.duckietown.org/v4/api/submissions-list",
+      data: {},
+      type: "GET",
+      headers:{'X-Messaging-Token': dt_token},
+      success: function(result) {
+        //alert(result.toSource());
+        result.result.forEach(function (i) {
+          let row = table.insertRow();
+          row.id=i;
+          row.onclick= function() { highlight_submission(i);};
+          row.style.height = "30px";
+          let cell0 = row.insertCell(0);
+          let cell1 = row.insertCell(1);
+          cell0.innerHTML=i;
+          cell1.innerHTML="Test"+i;
+        });
+      },
+    });
+  }
+
+/////Insert currently available duckiebots into body
+  function insert_duckiebot_selection_body(table){
+    active_bots=[];
+    passive_bots=[];
+    let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
+    for(let i=0; i<descendents.length; i++){
+      let name=descendents[i].cells[0].innerHTML;
+      //needs to be changed to auto!!! JUST A TEMPORARY FIX WHILE NO DUCKIEBOTS ARE RUNNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      if (name.substring(0,4)=="watc"){
+        let row = table.insertRow();
+        row.id="select_"+name;
+        row.style.height = "30px";
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let checkbox1 = document.createElement("INPUT");
+        checkbox1.type = "checkbox";
+        checkbox1.id = "active_"+name;
+        checkbox1.name = name;
+        let checkbox2 = document.createElement("INPUT");
+        checkbox2.type = "checkbox";
+        checkbox2.id = "passive_"+name;
+        checkbox2.name = name;
+        cell0.innerHTML = name;
+        cell1.appendChild(checkbox1);
+        checkbox1.onchange = function() {select_for_evaluation(this);};
+        cell2.appendChild(checkbox2);
+        checkbox2.onchange = function() {select_for_evaluation(this);};
+      }
+    }
+  }
+
+/////Select duckiebots for evaluation
+  function select_for_evaluation(bot){
+    let active = false;
+    let checked = false;
+    if (bot.id.substring(0,6)=="active"){
+      active = true;
+    }
+    if (bot.checked){
+      checked = true;
+    }
+    let active_box = document.getElementById('active_'+bot.name);
+    let passive_box = document.getElementById('passive_'+bot.name);
+    if (checked){
+      if (active){
+        passive_box.checked = false;
+        active_bots.push(bot.name);
+        let index = passive_bots.indexOf(bot.name);
+        if (index>=0){
+          passive_bots.splice(index,1);
+        }
+      } else {
+        active_box.checked = false;
+        passive_bots.push(bot.name);
+        let index = active_bots.indexOf(bot.name);
+        if (index>=0){
+          active_bots.splice(index,1);
+        }
+      }
+    } else {
+      if (active){
+        let index = active_bots.indexOf(bot.name);
+        if (index>=0){
+          active_bots.splice(index,1);
+        }
+      } else {
+        let index = passive_bots.indexOf(bot.name);
+        if (index>=0){
+          passive_bots.splice(index,1);
+        }
+      }
+    }
+    active_bots.sort();
+    passive_bots.sort();
+    if (active_bots.length==necessary_active_bots && passive_bots.length==necessary_passive_bots){
+      document.getElementById('bots_selected').disabled = false;
+    } else {
+      document.getElementById('bots_selected').disabled = true;
     }
   }

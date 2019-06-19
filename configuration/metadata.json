@@ -41,6 +41,12 @@
       "type" : "text",
       "default" : "This is a secret",
       "details" : "Password to access the Foscam"
+    },
+    "dt_token" : {
+      "title" : "Duckietown token",
+      "type" : "text",
+      "default" : "This is a secret",
+      "details" : "Duckietown token"
     }
   }
 }

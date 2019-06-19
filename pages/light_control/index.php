@@ -12,6 +12,7 @@
     $param_cam_usr = Core::getSetting("cam_usr", "lab_controls");
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
+    $param_dt_token = Core::getSetting("dt_token", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
 
     //Gathering of this array should be done in JS as soon as possible
@@ -96,6 +97,7 @@
   <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()">Evaluate submission</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(7)">Toggle switch 1</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(8)">Toggle switch 2</button>
+  <button type="button" class="btn btn-default" onclick="call_server()">Call server</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
@@ -200,7 +202,27 @@
         </span>
       </span>
       <span id="submission_step_2" class="">
-        <button type="button" class="btn btn-default" onclick="next_submission_step(2)">Goto step 3</button>
+        <button id="bots_selected" type="button" class="btn btn-default" onclick="next_submission_step(2)" disabled>Goto step 3</button>
+        <span id="necessary_bots"></span>
+        <br><br>
+        <span class="submission_tab">
+          <table id="duckiebot_selection" class="history_list" cellpadding="1" border="0" >
+            <thead style="background-color: #dddddd;">
+              <td style="width:20%">
+                Duckiebot
+              </td>
+              <td>
+                Active
+              </td>
+              <td>
+                Passive
+              </td>
+            </thead>
+            <tbody style="background-color: #ffffff;" id="duckiebot_selection_body">
+
+            </tbody>
+          </table>
+        </span>
       </span>
       <span id="submission_step_3" class="">
         <button type="button" class="btn btn-default" onclick="next_submission_step(3)">Goto step 4</button>
@@ -233,6 +255,8 @@
     let cam_usr = "<?php echo $param_cam_usr?>";
     //Foscam pw
     let cam_pw = "<?php echo $param_cam_pw?>";
+    //DT token
+    let dt_token = "<?php echo $param_dt_token?>";
     //Worker file for light control
     let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
     //Initialize Rosbridge
