@@ -498,6 +498,7 @@
     document.getElementById('submission_button').style.color="";
     submission_evaluating = false;
     document.getElementById('start_submission').disabled = true;
+    document.getElementById('bots_selected').disabled = true;
     necessary_active_bots = -1;
     necessary_passive_bots = -1;
   }
