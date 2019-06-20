@@ -2,7 +2,7 @@
 	"ip_hub": "192.168.1.5",
 	"api_key": "MZk4CALygJdoNboE1dalDeEZP5TQPTLLG0FOshOQ",
 	"light_nbr": "21",
-	"ip_cam": "192.168.1.4",
+	"ip_cam": "172.31.168.124",
 	"cam_usr": "duckie",
 	"cam_pw": "quackquack3",
 	"ip_port": "88",

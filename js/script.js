@@ -106,6 +106,8 @@
   //Location of changelog file
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
+  //Detected pings
+  let detected_pings = [];
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -117,7 +119,7 @@
   }
 
 /////Add pingable bots to map
-  function start_bots(){
+  function start_bots(detected_hosts){
     detected_hosts.forEach(function(entry, index){
       add_bot(entry, index);
     });
@@ -632,4 +634,18 @@
     } else {
       document.getElementById('bots_selected').disabled = true;
     }
+  }
+
+  /////Test ping
+  function ping_bots(){
+    $.ajax({
+      url: "http://duckietown20.local:5000/ping",
+      data: {},
+      type: "GET",
+      header: {},
+      success: function(result) {
+        detected_pings=result.ping;
+        start_bots(result.hostname);
+      },
+    });
   }

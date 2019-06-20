@@ -2,12 +2,12 @@ import os, subprocess
 
 up=[]
 ping=[]
-for i in range (1,55):
+for i in range (1,17):
     if i<10:
-        hostname = "watchtower0"+str(i)
+        hostname = "watchtower0"+str(i)+".autolab.ethz.ch"
         # hostname2 = "autobot0"+str(i)
     else:
-        hostname = "watchtower"+str(i)
+        hostname = "watchtower"+str(i)+".autolab.ethz.ch"
         # hostname2 = "autobot"+str(i)
     proc = subprocess.Popen(["ping", "-c", "1", hostname], stdout=subprocess.PIPE)
     proc.wait()

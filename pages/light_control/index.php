@@ -14,13 +14,6 @@
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
     $param_dt_token = Core::getSetting("dt_token", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
-
-    //Gathering of this array should be done in JS as soon as possible
-    $py_script = __DIR__.'/../../modules/ping.py';
-    $cmd = sprintf('python3 "%s" 2>&1', $py_script);
-    exec($cmd, $output, $exit_code);
-    $detection_array=explode(', ',substr(substr(str_replace("'","",end($output)),1),0,-1));
-    $detection_ping=explode(',',preg_replace("/[^0-9,.]/", "", prev($output)));
   ?>
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
@@ -33,7 +26,7 @@
     <td rowspan=3 class="map_tab">
       <div id="bots">
       </div>
-      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=start_bots()>
+      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=ping_bots()>
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -98,6 +91,7 @@
   <button type="button" class="btn btn-default" onclick="toggle_switch(7)">Toggle switch 1</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(8)">Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="call_server()">Call server</button>
+  <button type="button" class="btn btn-default" onclick="ping_bots()">Test ping</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
@@ -264,8 +258,6 @@
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
       ROS_connected = true;
     });
-    let detected_hosts = <?php echo json_encode($detection_array); ?>;
-    let detected_pings = <?php echo json_encode($detection_ping); ?>;
   </script>
 
 <!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
