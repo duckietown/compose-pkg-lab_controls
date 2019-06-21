@@ -26,6 +26,7 @@
     <td rowspan=3 class="map_tab">
       <div id="bots">
       </div>
+      <div id="load_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
       <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=ping_bots()>
     </td>
     <!-- Camera image from Duckietown -->
@@ -41,12 +42,12 @@
       <tr>
       <td>
         <form id="on">
-          <button type="submit" class="btn btn-default">Turn Light on</button>
+          <button type="submit" class="btn btn-default" disabled>Turn Light on</button>
         </form>
       </td>
       <td>
         <form id="off">
-          <button type="submit" class="btn btn-default">Turn Light off</button>
+          <button type="submit" class="btn btn-default" disabled>Turn Light off</button>
         </form>
       </td>
       <td>
@@ -55,7 +56,7 @@
         <input type="range" min="153" max="500" value="153" class="slider" id="color">
         <p>Color: <span id="color_out"></span></p>
         <form id="change">
-          <button type="submit" class="btn btn-default">Change lights</button>
+          <button type="submit" class="btn btn-default" disabled>Change lights</button>
         </form>
       </td>
       </tr>
@@ -69,7 +70,7 @@
       <table id="duckie_list" class="duckie_list" cellpadding="1" border="0">
       <thead style="background-color: #dddddd;">
         <td>
-          Duckiebot
+          Hostname
         </td>
         <td>
           Ping
@@ -88,15 +89,14 @@
   </table>
 
   <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()">Evaluate submission</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(7)">Toggle switch 1</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(8)">Toggle switch 2</button>
-  <button type="button" class="btn btn-default" onclick="call_server()">Call server</button>
-  <button type="button" class="btn btn-default" onclick="ping_bots()">Test ping</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(7)" disabled>Toggle switch 1</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(8)" disabled>Toggle switch 2</button>
+  <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
   <div id="test"></div>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
-  <div onclick="iconUnPop();" id="blackoutdiv" class=blackout></div>
+  <div onclick="close_information_window();" id="blackoutdiv" class=blackout></div>
   <div id="duckiepopup" class=popup>
     <ul class="nav nav-pills">
       <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>

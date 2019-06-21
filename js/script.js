@@ -5,6 +5,7 @@
   }, 200);
 
 /////Create subscribers to highlight movement in the city
+function subscribe_mask_Norm(){
   let sub_interval=null;
   sub_interval = setInterval(function() {
     if (ROS_connected){
@@ -36,6 +37,7 @@
       }
     }
   }, 1000);
+}
 
 /////Flash evaluating button while evaluating
   setInterval(function() {
@@ -117,14 +119,6 @@
       document.getElementById('stream').classList.add('camera_click');
     }
   }
-
-/////Add pingable bots to map
-  function start_bots(detected_hosts){
-    detected_hosts.forEach(function(entry, index){
-      add_bot(entry, index);
-    });
-  }
-
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
   function wait(ms){
@@ -174,7 +168,7 @@
       for(let i=0; i<descendents.length; i++){
         try{
           let name = descendents[i].cells[0].innerHTML;
-          if (bots_positions[name][0] !=0){
+          if (bots_positions[name][2] !=0){
             let bot = document.getElementById("entity_"+name);
             if (bots_positions[name][0] <= 0) {
               bots_positions[name][2] = 1;
@@ -202,43 +196,52 @@
   }
 ///// Add a new entity
   function add_bot(name, index){
-    let new_div = document.createElement('div');
-    new_div.id = "entity_"+name;
-    if (name.substring(0,4)=="auto"){
-      new_div.className="duckiebot";
-      new_div.innerHTML=name.replace("autobot","");
+    let tmp = document.getElementById("tab_"+name);
+    if (tmp){
+      tmp.cells[1].innerHTML = detected_pings[index]+" ms";
     } else {
-      new_div.className="watchtower";
-      new_div.innerHTML=name.replace("watchtower","");
-    }
-    new_div.onclick= function() { highlightBot(name);
-                                  document.getElementById('tab_'+name).scrollIntoView(true);};
-    document.getElementById("bots").appendChild(new_div);
-    if (new_div.className=="duckiebot"){
-      bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
-    } else {
-      try{
-        bots_positions[name]=[watchtower_pos[name][0],watchtower_pos[name][1],0,0];
-      } catch {
-        bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),0,0];
+      let new_div = document.createElement('div');
+      new_div.id = "entity_"+name;
+      if (name.substring(0,4)=="auto"){
+        new_div.className="duckiebot";
+        new_div.innerHTML=name.replace("autobot","");
+      } else {
+        new_div.className="watchtower";
+        new_div.innerHTML=name.replace("watchtower","");
       }
-    }
+      new_div.onclick= function() { highlightBot(name);
+                                    document.getElementById('tab_'+name).scrollIntoView(true);};
+      document.getElementById("bots").appendChild(new_div);
+      if (new_div.className=="duckiebot"){
+        bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
+      } else {
+        try{
+          bots_positions[name]=[watchtower_pos[name][0],watchtower_pos[name][1],0,0];
+          new_div.style.top = bots_positions[name][0] + 'px';
+          new_div.style.left = bots_positions[name][1] + 'px';
+        } catch {
+          bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),0,0];
+          new_div.style.top = bots_positions[name][0] + 'px';
+          new_div.style.left = bots_positions[name][1] + 'px';
+        }
+      }
 
-    let table = document.getElementById("duckie_list_body");
-    let row = table.insertRow();
-    row.id = "tab_"+name;
-    row.onclick=function() { highlightBot(name); };
-    row.style.height = "30px";
-    let cell0 = row.insertCell(0);
-    let cell1 = row.insertCell(1);
-    let cell2 = row.insertCell(2);
-    cell0.innerHTML = name;
-    cell2.onclick= function() { iconPop(name); };
-    cell1.innerHTML = detected_pings[index]+" ms";
-    cell2.innerHTML = "Open information window";
-    if (bots_moving == false){
-      bots_moving=true;
-      move_bots();
+      let table = document.getElementById("duckie_list_body");
+      let row = table.insertRow();
+      row.id = "tab_"+name;
+      row.onclick=function() { highlightBot(name); };
+      row.style.height = "30px";
+      let cell0 = row.insertCell(0);
+      let cell1 = row.insertCell(1);
+      let cell2 = row.insertCell(2);
+      cell0.innerHTML = name;
+      cell2.onclick= function() { information_pop_up(name); };
+      cell1.innerHTML = detected_pings[index]+" ms";
+      cell2.innerHTML = "Open information window";
+      if (bots_moving == false){
+        bots_moving=true;
+        move_bots();
+      }
     }
   }
 
@@ -274,7 +277,7 @@
   }
 
 /////Function to show popup on click
-  function iconPop(name){
+  function information_pop_up(name){
       current_popup = name;
       document.getElementById('duckiepopup').style.display="block";
       document.getElementById('blackoutdiv').style.display="block";
@@ -283,7 +286,7 @@
       document.getElementById('history_content').style.display="none";
   }
 /////Function to hide popup on click
-  function iconUnPop(){
+  function close_information_window(){
       document.getElementById('duckiepopup').style.display="none";
       document.getElementById('blackoutdiv').style.display="none";
       document.getElementById('info_tab').classList.add('active');
@@ -636,8 +639,10 @@
     }
   }
 
-  /////Test ping
+  /////Ping hosts via Flex server and update the list and map
   function ping_bots(){
+    document.getElementById('load_message').style.display="block";
+
     $.ajax({
       url: "http://duckietown20.local:5000/ping",
       data: {},
@@ -645,7 +650,20 @@
       header: {},
       success: function(result) {
         detected_pings=result.ping;
-        start_bots(result.hostname);
+        result.hostname.forEach(function(entry, index){
+          add_bot(entry, index);
+        });
+        let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
+        for(let i=0; i<descendents.length; i++){
+          let host_to_test = descendents[i].cells[0].innerHTML;
+          if(!result.hostname.includes(host_to_test)){
+            remove_bot(host_to_test);
+            //Remove 1 from the counter as an element has been deleted
+            i--;
+          }
+        }
+        document.getElementById('load_message').style.display="none";
+        subscribe_mask_Norm();
       },
     });
   }

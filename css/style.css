@@ -188,3 +188,17 @@
   display: block;
   max-height: 500px;
 }
+
+/* Host loading message */
+.hosts_loading{
+  width: 80%;
+  height:10%;
+  margin-top: 60%;
+  margin-left: 10%;
+  background-color: white;
+  position: absolute;
+  border-radius: 10px;
+  border: 10px solid #ED9C27;
+  display:none;
+  text-align: center;
+}
