@@ -5,7 +5,7 @@
   }, 200);
 
 /////Create subscribers to highlight movement in the city
-function subscribe_mask_Norm(){
+function subscriber_agents(){
   let sub_interval=null;
   sub_interval = setInterval(function() {
     if (ROS_connected){
@@ -35,6 +35,40 @@ function subscribe_mask_Norm(){
           });
         }
       }
+      tf  = new ROSLIB.Topic({
+        ros : window.ros,
+        name : '/agent_poses',
+        messageType : 'geometry_msgs/TransformStamped',
+        queue_size : 1,
+      });
+      tf.subscribe(function(message) {
+        try{
+          if (message.child_frame_id.substring(0,4)=="duck"){
+            tmp = parseInt(message.child_frame_id.replace('duckiebot_',''))-399;
+            if (tmp<10){
+              name = "autobot0"+tmp;
+            } else {
+              name = "autobot"+tmp;
+            }
+          }
+          if (message.child_frame_id.substring(0,4)=="watc"){
+            tmp = parseInt(message.child_frame_id.replace('watchtower_',''));
+            if (tmp<10){
+              name = "watchtower0"+tmp;
+            } else {
+              name = "watchtower"+tmp;
+            }
+          }
+          bots_positions[name][0]=parseInt(680-message.transform.translation.y*100/58.5*35-9);
+          bots_positions[name][1]=parseInt(message.transform.translation.x*100/58.5*35+14-9);
+          bots_positions[name][2]=0;
+          bots_positions[name][3]=0;
+          let bot = document.getElementById("entity_"+name);
+          bot.style.top = bots_positions[name][0] + 'px';
+          bot.style.left = bots_positions[name][1] + 'px';
+        } catch {}
+        //alert(message.child_frame_id.toSource());
+      });
     }
   }, 1000);
 }
@@ -663,7 +697,19 @@ function subscribe_mask_Norm(){
           }
         }
         document.getElementById('load_message').style.display="none";
-        subscribe_mask_Norm();
+        subscriber_agents();
+      },
+    });
+  }
+
+  function test_api(table){
+    $.ajax({
+      url: "https://challenges.duckietown.org/v4/api/submissions",
+      data: {},
+      type: "GET",
+      headers:{'X-Messaging-Token': dt_token},
+      success: function(result) {
+        alert(result.toSource());
       },
     });
   }
