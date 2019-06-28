@@ -26,7 +26,7 @@
     <td rowspan=3 class="map_tab">
       <div id="bots">
       </div>
-      <div id="load_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
+      <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
       <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=ping_bots()>
     </td>
     <!-- Camera image from Duckietown -->
@@ -163,21 +163,21 @@
 
   <div onclick="close_submission_popup()" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
-    <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_submission()">Cancel submission</button><br><br>
+    <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_job()">Cancel submission</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">
-        <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Step 1</a></li>
-        <li id="submission_tab_2" role="presentation" onclick=""><a href="#">Step 2</a></li>
-        <li id="submission_tab_3" role="presentation" onclick=""><a href="#">Step 3</a></li>
-        <li id="submission_tab_4" role="presentation" onclick=""><a href="#">Step 4</a></li>
-        <li id="submission_tab_5" role="presentation" onclick=""><a href="#">Step 5</a></li>
-        <li id="submission_tab_6" role="presentation" onclick=""><a href="#">Step 6</a></li>
+        <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Select job</a></li>
+        <li id="submission_tab_2" role="presentation" onclick=""><a href="#">Select duckiebots</a></li>
+        <li id="submission_tab_3" role="presentation" onclick=""><a href="#">Initialize city</a></li>
+        <li id="submission_tab_4" role="presentation" onclick=""><a href="#">Run submission</a></li>
+        <li id="submission_tab_5" role="presentation" onclick=""><a href="#">Evaluation finished</a></li>
+        <li id="submission_tab_6" role="presentation" onclick=""><a href="#">Upload Data</a></li>
       </ul>
     </span>
     <br>
     <span id="submission_steps" class="">
       <span id="submission_step_1" class="">
-        <button id="start_submission" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Start submission evaluation</button>
+        <button id="btn_start_job" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Select job</button>
         <br><br>
         <span class="submission_tab">
           <table id="submission_table" class="history_list" cellpadding="1" border="0" >
@@ -196,7 +196,7 @@
         </span>
       </span>
       <span id="submission_step_2" class="">
-        <button id="bots_selected" type="button" class="btn btn-default" onclick="next_submission_step(2)" disabled>Goto step 3</button>
+        <button id="btn_bots_selected" type="button" class="btn btn-default" onclick="next_submission_step(2)" disabled>Select Duckiebots</button>
         <span id="necessary_bots"></span>
         <br><br>
         <span class="submission_tab">
@@ -219,16 +219,43 @@
         </span>
       </span>
       <span id="submission_step_3" class="">
-        <button type="button" class="btn btn-default" onclick="next_submission_step(3)">Goto step 4</button>
+        <button id="btn_submission_ready_to_start" type="button" class="btn btn-default" onclick="next_submission_step(3)" disabled>Start submission</button>
+        <br><br>
+        <span>
+            <button id="btn_test" type="button" class="btn btn-default" onclick="test_animation()">Test</button>
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+              <circle id="test_check" class="" fill="none" stroke="#73AF55" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
+              <polyline class="path check" fill="none" stroke="#73AF55" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>
+            </svg>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+              <circle class="path circle" fill="none" stroke="#D06079" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
+              <line class="path line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3"/>
+              <line class="path line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2"/>
+            </svg>
+
+        </span>
       </span>
       <span id="submission_step_4" class="">
-        <button type="button" class="btn btn-default" onclick="next_submission_step(4)">Goto step 5</button>
+        <button id="btn_submission_finished" type="button" class="btn btn-default" onclick="next_submission_step(4)" disabled>Stop submission</button>
+        <br><br>
+        <span>
+
+        </span>
       </span>
       <span id="submission_step_5" class="">
-        <button type="button" class="btn btn-default" onclick="next_submission_step(5)">Goto step 6</button>
+        <button id="btn_upload_data_ipfs" type="button" class="btn btn-default" onclick="next_submission_step(5)" disabled>Upload data</button>
+        <br><br>
+        <span>
+
+        </span>
       </span>
       <span id="submission_step_6" class="">
-        <button type="button" class="btn btn-default" onclick="finish_submission()">Finish submission</button>
+        <button id="btn_finish_job" type="button" class="btn btn-default" onclick="finish_job()" disabled>Finish job</button>
+        <br><br>
+        <span>
+
+        </span>
       </span>
     </span>
   </div>

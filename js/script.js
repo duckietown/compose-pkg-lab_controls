@@ -143,7 +143,7 @@ function subscriber_agents(){
   //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
   //Detected pings
-  let detected_pings = [];
+  let detected_pings = {};
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -229,10 +229,10 @@ function subscriber_agents(){
     }
   }
 ///// Add a new entity
-  function add_bot(name, index){
+  function add_bot(name){
     let tmp = document.getElementById("tab_"+name);
     if (tmp){
-      tmp.cells[1].innerHTML = detected_pings[index]+" ms";
+      tmp.cells[1].innerHTML = detected_pings[name]+" ms";
     } else {
       let new_div = document.createElement('div');
       new_div.id = "entity_"+name;
@@ -270,7 +270,7 @@ function subscriber_agents(){
       let cell2 = row.insertCell(2);
       cell0.innerHTML = name;
       cell2.onclick= function() { information_pop_up(name); };
-      cell1.innerHTML = detected_pings[index]+" ms";
+      cell1.innerHTML = detected_pings[name]+" ms";
       cell2.innerHTML = "Open information window";
       if (bots_moving == false){
         bots_moving=true;
@@ -281,12 +281,8 @@ function subscriber_agents(){
 
 ///// Remove an entity
   function remove_bot(name){
-    try {
-      document.getElementById("entity_"+name).remove();
-      document.getElementById("tab_"+name).remove();
-    }catch{
-      openAlert(type='warning', 'Removing not possible, entity doesn\'t exist!');
-    }
+    document.getElementById("entity_"+name).remove();
+    document.getElementById("tab_"+name).remove();
   }
 
 /////Function to highlight different bots by clicking
@@ -479,8 +475,9 @@ function subscriber_agents(){
     document.getElementById('cancel_submission').style.display="none";
     document.getElementById('submission_step_1').style.display="block";
     document.getElementById('submission_tab_1').classList.add('active');
-    document.getElementById('start_submission').disabled = true;
+    document.getElementById('btn_start_job').disabled = true;
     let submission_table = document.getElementById("submission_table_body");
+    //Fetch currently available submissions from server
     empty_body(submission_table);
     insert_submission_body(submission_table);
   }
@@ -491,7 +488,7 @@ function subscriber_agents(){
     document.getElementById('submissionblackoutdiv').style.display="none";
   }
 
-/////Next submission Step
+/////Next submission Step (next tab in the popup)
   function next_submission_step(id){
     document.getElementById('submission_tab_'+id).classList.remove('active');
     document.getElementById('submission_tab_'+eval(id+1)).classList.add('active');
@@ -503,17 +500,47 @@ function subscriber_agents(){
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
-      necessary_active_bots = 2;
-      necessary_passive_bots = 2;
+      necessary_active_bots = 0;
+      necessary_passive_bots = 0;
       let html_necessary_bots = document.getElementById("necessary_bots");
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);
       insert_duckiebot_selection_body(duckiebot_selection);
+      if (active_bots.length==necessary_active_bots && passive_bots.length==necessary_passive_bots){
+        document.getElementById('btn_bots_selected').disabled = false;
+      } else {
+        document.getElementById('btn_bots_selected').disabled = true;
+      }
+    }
+    if (id==2){
+      //Check and/or Reset Lights
+      //Mount USB
+      //Check free memory
+      //Start logging containers
+      //Check logging started
+      //Start containers on duckiebots (in parallel with logging containers)
+      //Check containers on duckiebots are ready
+    }
+    if (id==3){
+      //Get Timestamp for log_start
+      //Start duckiebots
+    }
+    if (id==4){
+      //Get Timestamp for log_stop
+      //Stop logging
+      //Stop duckiebots
+      //Kill and remove duckiebot containers (only active)
+      //Copy bags
+      //Validate bags
+      //Clear memory of agents
+    }
+    if (id==5){
+      //Upload bags to ipfs and finish job
     }
   }
 
-/////Finish Submission
-  function finish_submission(status){
+/////Finish job
+  function finish_job(status){
     reset_submission_view();
     if (status){
       openAlert(type='danger', 'Submission Nr. '+selected_sub_id+' failed with exit code '+status);
@@ -522,8 +549,8 @@ function subscriber_agents(){
     }
   }
 
-/////Cancel Submission
-  function cancel_submission(){
+/////Cancel job
+  function cancel_job(){
     reset_submission_view();
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
@@ -536,8 +563,12 @@ function subscriber_agents(){
     document.getElementById('submission_button').style.background="";
     document.getElementById('submission_button').style.color="";
     submission_evaluating = false;
-    document.getElementById('start_submission').disabled = true;
-    document.getElementById('bots_selected').disabled = true;
+    document.getElementById('btn_start_job').disabled = true;
+    document.getElementById('btn_bots_selected').disabled = true;
+    document.getElementById('btn_submission_ready_to_start').disabled = true;
+    document.getElementById('btn_submission_finished').disabled = true;
+    document.getElementById('btn_upload_data_ipfs').disabled = true;
+    document.getElementById('btn_finish_job').disabled = true;
     necessary_active_bots = -1;
     necessary_passive_bots = -1;
   }
@@ -548,11 +579,11 @@ function subscriber_agents(){
       document.getElementById(selected_sub_id).style.backgroundColor="";
     }
     document.getElementById(id).style.backgroundColor="#ED9C27";
-    document.getElementById('start_submission').disabled = false;
+    document.getElementById('btn_start_job').disabled = false;
     selected_sub_id=id;
   }
 
-/////Insert currently available submissions into body
+/////Insert currently available submissions into submission table body
   function insert_submission_body(table){
     //Temporary until submissions can be fetched from server
     for(let i=0; i<20; i++){
@@ -591,15 +622,14 @@ function subscriber_agents(){
     });
   }
 
-/////Insert currently available duckiebots into body
+/////Insert currently available/pingeable duckiebots into body
   function insert_duckiebot_selection_body(table){
     active_bots=[];
     passive_bots=[];
     let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
     for(let i=0; i<descendents.length; i++){
       let name=descendents[i].cells[0].innerHTML;
-      //needs to be changed to auto!!! JUST A TEMPORARY FIX WHILE NO DUCKIEBOTS ARE RUNNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      if (name.substring(0,4)=="watc"){
+      if (name.substring(0,4)=="auto"){
         let row = table.insertRow();
         row.id="select_"+name;
         row.style.height = "30px";
@@ -667,15 +697,15 @@ function subscriber_agents(){
     active_bots.sort();
     passive_bots.sort();
     if (active_bots.length==necessary_active_bots && passive_bots.length==necessary_passive_bots){
-      document.getElementById('bots_selected').disabled = false;
+      document.getElementById('btn_bots_selected').disabled = false;
     } else {
-      document.getElementById('bots_selected').disabled = true;
+      document.getElementById('btn_bots_selected').disabled = true;
     }
   }
 
-  /////Ping hosts via Flex server and update the list and map
+/////Ping hosts via Flex server and update the list and map
   function ping_bots(){
-    document.getElementById('load_message').style.display="block";
+    document.getElementById('ping_message').style.display="block";
 
     $.ajax({
       url: "http://duckietown20.local:5000/ping",
@@ -683,20 +713,22 @@ function subscriber_agents(){
       type: "GET",
       header: {},
       success: function(result) {
-        detected_pings=result.ping;
+        let missing_hosts = [];
         result.hostname.forEach(function(entry, index){
-          add_bot(entry, index);
-        });
-        let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
-        for(let i=0; i<descendents.length; i++){
-          let host_to_test = descendents[i].cells[0].innerHTML;
-          if(!result.hostname.includes(host_to_test)){
-            remove_bot(host_to_test);
-            //Remove 1 from the counter as an element has been deleted
-            i--;
+          detected_pings[entry]=result.ping[index];
+          if (detected_pings[entry] != 0){
+            add_bot(entry);
+          } else {
+            try{
+              remove_bot(entry);
+              missing_hosts.push(entry);
+            } catch {}
           }
+        });
+        if (missing_hosts.length!=0){
+          openAlert(type='danger', 'The following hosts are no longer reachable: '+missing_hosts);
         }
-        document.getElementById('load_message').style.display="none";
+        document.getElementById('ping_message').style.display="none";
         subscriber_agents();
       },
     });

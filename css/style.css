@@ -137,10 +137,10 @@
 
   .popup {
     position:absolute;
-    width:40%;
+    width:50%;
     height:80%;
     top:10%;
-    left:30%;
+    left:25%;
     border: 5px solid #ED9C27;
     background-color:white;
     z-index:99999;
@@ -201,4 +201,100 @@
   border: 10px solid #ED9C27;
   display:none;
   text-align: center;
+}
+/* Loading ring */
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 5px solid #ED9C27;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #ED9C27 transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation for cross and tick, adapted from https://codepen.io/sat-ui/pen/BeWbeo?&page=1 */
+svg {
+  width: 30px;
+  display: block;
+}
+
+.path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  &.circle {
+    -webkit-animation: dash 3s ease-in-out;
+    animation: dash 3s ease-in-out;
+  }
+  &.line {
+    stroke-dashoffset: 1000;
+    -webkit-animation: dash 3s 1.5s ease-in-out forwards;
+    animation: dash 3s 1.5s ease-in-out forwards;
+  }
+  &.check {
+    stroke-dashoffset: -100;
+    -webkit-animation: dash-check 3s 1.5s ease-in-out forwards;
+    animation: dash-check 3s 1.5s ease-in-out forwards;
+  }
+}
+
+@-webkit-keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@-webkit-keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
+}
+
+@keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
 }
