@@ -144,6 +144,13 @@ function subscriber_agents(){
   let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
   //Detected pings
   let detected_pings = {};
+  //Necessary job substeps to procede to the next Step
+  let necessary_substeps = 0;
+  //Currently successfully executed jobsteps
+  let current_substeps = 0;
+  //Currently disabled job button
+  let current_button = "";
+
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -516,10 +523,33 @@ function subscriber_agents(){
       //Check and/or Reset Lights
       //Mount USB
       //Check free memory
-      //Start logging containers
-      //Check logging started
-      //Start containers on duckiebots (in parallel with logging containers)
-      //Check containers on duckiebots are ready
+      //Start logging containers and check logging started
+      //Start containers on duckiebots (in parallel with logging containers) and Check containers on duckiebots are ready
+      current_substeps=0;
+      necessary_substeps=2; //Should be 5
+      current_button="btn_submission_ready_to_start";
+      element= document.getElementById('body_initialize_city');
+      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
+                          <td>Setting the room lights</td>\
+                          <td><span id="check_lights"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Mounting the USB dives</td>\
+                          <td><span id="mount_usb"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Checking memory</td>\
+                          <td><span id="memory_check"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Starting logging containers</td>\
+                          <td><span id="start_logging"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Starting duckiebot containers</td>\
+                          <td><span id="start_duckiebot"></span></td>\
+                          </tr></tbody></table>';
+      add_loading('check_lights');
+      add_loading('mount_usb');
+      add_success('memory_check');
+      add_failure('start_logging');
+      add_success('start_duckiebot');
     }
     if (id==3){
       //Get Timestamp for log_start
@@ -529,13 +559,51 @@ function subscriber_agents(){
       //Get Timestamp for log_stop
       //Stop logging
       //Stop duckiebots
-      //Kill and remove duckiebot containers (only active)
+      //Kill and remove duckiebot containers
       //Copy bags
       //Validate bags
       //Clear memory of agents
+      current_substeps=0;
+      necessary_substeps=2; //Should be 6
+      current_button="btn_upload_data_ipfs";
+      element= document.getElementById('body_submission_finished');
+      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
+                          <td>Stop logging</td>\
+                          <td><span id="stop_logging"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Stop Duckiebots</td>\
+                          <td><span id="stop_duckiebots"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Remove Duckiebot containers</td>\
+                          <td><span id="remove_containers"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Copy bags</td>\
+                          <td><span id="copy_bags"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Validate bags</td>\
+                          <td><span id="validate_bags"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Clear memory</td>\
+                          <td><span id="clear_memory"></span></td>\
+                          </tr></tbody></table>';
+      add_loading('stop_logging');
+      add_loading('stop_duckiebots');
+      add_success('remove_containers');
+      add_failure('copy_bags');
+      add_success('validate_bags');
+      add_waiting('clear_memory');
     }
     if (id==5){
       //Upload bags to ipfs and finish job
+      current_substeps=0;
+      necessary_substeps=1;
+      current_button="btn_finish_job";
+      element= document.getElementById('body_uploading_data');
+      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
+                          <td>Uploading data</td>\
+                          <td><span id="uploading_data"></span></td>\
+                          </tr></tbody></table>';
+      add_success('uploading_data');
     }
   }
 
@@ -566,7 +634,6 @@ function subscriber_agents(){
     document.getElementById('btn_start_job').disabled = true;
     document.getElementById('btn_bots_selected').disabled = true;
     document.getElementById('btn_submission_ready_to_start').disabled = true;
-    document.getElementById('btn_submission_finished').disabled = true;
     document.getElementById('btn_upload_data_ipfs').disabled = true;
     document.getElementById('btn_finish_job').disabled = true;
     necessary_active_bots = -1;
@@ -732,6 +799,35 @@ function subscriber_agents(){
         subscriber_agents();
       },
     });
+  }
+
+  function add_loading(element){
+    document.getElementById(element).innerHTML='<div class="lds-ring"><div></div><div></div><div></div><div></div></div>';
+  }
+
+  function add_success(element){
+    document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
+                                                <circle  class="circle" fill="none" stroke="#73AF55" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
+                                                <polyline class="check" fill="none" stroke="#73AF55" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>\
+                                                </svg>';
+    current_substeps+=1;
+    if (current_substeps==necessary_substeps){
+      document.getElementById(current_button).disabled = false;
+    }
+  }
+
+  function add_failure(element){
+    document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
+                                                <circle class="circle" fill="none" stroke="#D06079" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
+                                                <line class="line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3"/>\
+                                                <line class="line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2"/>\
+                                                </svg>';
+  }
+
+  function add_waiting(element){
+    document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
+                                                <circle class="path circle" fill="none" stroke="#7D7D7D" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
+                                                </svg>';
   }
 
   function test_api(table){

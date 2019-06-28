@@ -221,39 +221,28 @@
       <span id="submission_step_3" class="">
         <button id="btn_submission_ready_to_start" type="button" class="btn btn-default" onclick="next_submission_step(3)" disabled>Start submission</button>
         <br><br>
-        <span>
-            <button id="btn_test" type="button" class="btn btn-default" onclick="test_animation()">Test</button>
-            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
-              <circle id="test_check" class="" fill="none" stroke="#73AF55" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
-              <polyline class="path check" fill="none" stroke="#73AF55" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>
-            </svg>
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
-              <circle class="path circle" fill="none" stroke="#D06079" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
-              <line class="path line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3"/>
-              <line class="path line" fill="none" stroke="#D06079" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2"/>
-            </svg>
+        <span id="body_initialize_city">
 
         </span>
       </span>
       <span id="submission_step_4" class="">
-        <button id="btn_submission_finished" type="button" class="btn btn-default" onclick="next_submission_step(4)" disabled>Stop submission</button>
+        <button id="btn_submission_finished" type="button" class="btn btn-default" onclick="next_submission_step(4)">Stop submission</button>
         <br><br>
-        <span>
-
+        <span id="body_submission_running">
+          The submission is currently running. Press the 'Stop submission' button as soon as the active bot/s drive/s out of the city
         </span>
       </span>
       <span id="submission_step_5" class="">
         <button id="btn_upload_data_ipfs" type="button" class="btn btn-default" onclick="next_submission_step(5)" disabled>Upload data</button>
         <br><br>
-        <span>
+        <span id="body_submission_finished">
 
         </span>
       </span>
       <span id="submission_step_6" class="">
         <button id="btn_finish_job" type="button" class="btn btn-default" onclick="finish_job()" disabled>Finish job</button>
         <br><br>
-        <span>
+        <span id="body_uploading_data">
 
         </span>
       </span>

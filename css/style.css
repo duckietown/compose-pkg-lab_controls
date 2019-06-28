@@ -204,8 +204,8 @@
 }
 /* Loading ring */
 .lds-ring {
-  display: inline-block;
-  position: relative;
+  /* display: inline-block; */
+  /* position: relative; */
   width: 30px;
   height: 30px;
 }
@@ -244,23 +244,25 @@ svg {
   display: block;
 }
 
-.path {
+.circle {
   stroke-dasharray: 1000;
   stroke-dashoffset: 0;
-  &.circle {
-    -webkit-animation: dash 3s ease-in-out;
-    animation: dash 3s ease-in-out;
-  }
-  &.line {
-    stroke-dashoffset: 1000;
-    -webkit-animation: dash 3s 1.5s ease-in-out forwards;
-    animation: dash 3s 1.5s ease-in-out forwards;
-  }
-  &.check {
-    stroke-dashoffset: -100;
-    -webkit-animation: dash-check 3s 1.5s ease-in-out forwards;
-    animation: dash-check 3s 1.5s ease-in-out forwards;
-  }
+  -webkit-animation: dash 3s ease-in-out;
+  animation: dash 3s ease-in-out;
+}
+.line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  stroke-dashoffset: 1000;
+  -webkit-animation: dash 3s 1.5s ease-in-out forwards;
+  animation: dash 3s 1.5s ease-in-out forwards;
+}
+.check {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  stroke-dashoffset: -100;
+  -webkit-animation: dash-check 3s 1.5s ease-in-out forwards;
+  animation: dash-check 3s 1.5s ease-in-out forwards;
 }
 
 @-webkit-keyframes dash {
