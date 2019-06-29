@@ -4,7 +4,7 @@
     stream.src = 'http://'+ip_addr_cam+':'+cam_port+'/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr='+cam_usr+'&pwd='+cam_pw+'&rdn='+Math.random();
   }, 200);
 
-/////Create subscribers to highlight movement in the city
+/////Create subscribers to highlight (maskNorm) and track (tf) movement in the city
 function subscriber_agents(){
   let sub_interval=null;
   sub_interval = setInterval(function() {
@@ -150,7 +150,10 @@ function subscriber_agents(){
   let current_substeps = 0;
   //Currently disabled job button
   let current_button = "";
-
+  //Loop the current submission should be run in
+  let current_submission_loop = "";
+  //Agents necessary to run the submissions
+  let agent_list = "";
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -159,14 +162,6 @@ function subscriber_agents(){
     } else {
       document.getElementById('stream').classList.add('camera_click');
     }
-  }
-/////Wait function
-  // From http://www.endmemo.com/js/pause.php
-  function wait(ms){
-    var d = new Date();
-    var d2 = null;
-    do { d2 = new Date(); }
-    while(d2-d < ms);
   }
 
 /////Call Hue API (using workers)
@@ -238,6 +233,7 @@ function subscriber_agents(){
 ///// Add a new entity
   function add_bot(name){
     let tmp = document.getElementById("tab_"+name);
+    //If bot already known, only update its ping
     if (tmp){
       tmp.cells[1].innerHTML = detected_pings[name]+" ms";
     } else {
@@ -464,7 +460,7 @@ function subscriber_agents(){
   };
 
 /////Open submission popup
-  function open_submission_popup(){10
+  function open_submission_popup(){
     if (!submission_evaluating){
       initialize_submission_popup();
     }
@@ -526,10 +522,20 @@ function subscriber_agents(){
       //Start logging containers and check logging started
       //Start containers on duckiebots (in parallel with logging containers) and Check containers on duckiebots are ready
       current_substeps=0;
-      necessary_substeps=2; //Should be 5
+      necessary_substeps=2; //Should be 6
       current_button="btn_submission_ready_to_start";
+      agent_list = get_submission_watchtowers();
+      active_bots.forEach(function(entry){
+        agent_list.push(entry);
+      });
+      passive_bots.forEach(function(entry){
+        agent_list.push(entry);
+      });
       element= document.getElementById('body_initialize_city');
       element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
+                          <td>Pinging the agents</td>\
+                          <td><span id="ping_agents"></span></td>\
+                          </tr><tr height="40px">\
                           <td>Setting the room lights</td>\
                           <td><span id="check_lights"></span></td>\
                           </tr><tr height="40px">\
@@ -545,11 +551,14 @@ function subscriber_agents(){
                           <td>Starting duckiebot containers</td>\
                           <td><span id="start_duckiebot"></span></td>\
                           </tr></tbody></table>';
-      add_loading('check_lights');
-      add_loading('mount_usb');
-      add_success('memory_check');
-      add_failure('start_logging');
-      add_success('start_duckiebot');
+      add_waiting('ping_agents');
+      add_waiting('check_lights');
+      add_waiting('mount_usb');
+      add_waiting('memory_check');
+      add_waiting('start_logging');
+      add_waiting('start_duckiebot');
+      ping_list();
+      reset_lights();
     }
     if (id==3){
       //Get Timestamp for log_start
@@ -648,6 +657,7 @@ function subscriber_agents(){
     document.getElementById(id).style.backgroundColor="#ED9C27";
     document.getElementById('btn_start_job').disabled = false;
     selected_sub_id=id;
+    current_submission_loop=document.getElementById(id).cells[2].innerHTML;
   }
 
 /////Insert currently available submissions into submission table body
@@ -660,8 +670,10 @@ function subscriber_agents(){
       row.style.height = "30px";
       let cell0 = row.insertCell(0);
       let cell1 = row.insertCell(1);
+      let cell2 = row.insertCell(2);
       cell0.innerHTML=i
       cell1.innerHTML="Test"+i;
+      cell2.innerHTML="LFVI";
     }
     call_server(table)
   }
@@ -682,8 +694,10 @@ function subscriber_agents(){
           row.style.height = "30px";
           let cell0 = row.insertCell(0);
           let cell1 = row.insertCell(1);
+          let cell2 = row.insertCell(2);
           cell0.innerHTML=i;
           cell1.innerHTML="Test"+i;
+          cell2.innerHTML="LFVI";
         });
       },
     });
@@ -773,7 +787,7 @@ function subscriber_agents(){
 /////Ping hosts via Flex server and update the list and map
   function ping_bots(){
     document.getElementById('ping_message').style.display="block";
-
+    document.getElementById('submission_button').disabled = true;
     $.ajax({
       url: "http://duckietown20.local:5000/ping",
       data: {},
@@ -796,16 +810,21 @@ function subscriber_agents(){
           openAlert(type='danger', 'The following hosts are no longer reachable: '+missing_hosts);
         }
         document.getElementById('ping_message').style.display="none";
+        document.getElementById('submission_button').disabled = false;
         subscriber_agents();
       },
     });
   }
 
+/////Add html for loading animation
   function add_loading(element){
+    document.getElementById(element).onclick="";
     document.getElementById(element).innerHTML='<div class="lds-ring"><div></div><div></div><div></div><div></div></div>';
   }
 
+/////Add html for success animation
   function add_success(element){
+    document.getElementById(element).onclick="";
     document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
                                                 <circle  class="circle" fill="none" stroke="#73AF55" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
                                                 <polyline class="check" fill="none" stroke="#73AF55" stroke-width="10" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>\
@@ -816,6 +835,7 @@ function subscriber_agents(){
     }
   }
 
+/////Add html for failure animation
   function add_failure(element){
     document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
                                                 <circle class="circle" fill="none" stroke="#D06079" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
@@ -824,20 +844,110 @@ function subscriber_agents(){
                                                 </svg>';
   }
 
+/////Add html for waiting animation
   function add_waiting(element){
+    document.getElementById(element).onclick="";
     document.getElementById(element).innerHTML='<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">\
                                                 <circle class="path circle" fill="none" stroke="#7D7D7D" stroke-width="10" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>\
                                                 </svg>';
   }
 
-  function test_api(table){
+  function get_submission_watchtowers(){
+    if (current_submission_loop=="LF" || current_submission_loop=="LFV")
+    {
+      return ["watchtower21","watchtower22","watchtower23","watchtower24","watchtower25","watchtower26","watchtower27","watchtower28","watchtower29","watchtower30","watchtower31","watchtower32","watchtower33","watchtower34","watchtower35"]
+    } else {
+      return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
+    }
+  }
+
+/////Test api stuff
+  function test_api(){
+    let test_data = ["watchtower01","watchtower02"];
     $.ajax({
-      url: "https://challenges.duckietown.org/v4/api/submissions",
-      data: {},
-      type: "GET",
-      headers:{'X-Messaging-Token': dt_token},
+      url: "http://duckietown20.local:5000/test",
+      data: JSON.stringify({test:test_data}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
       success: function(result) {
-        alert(result.toSource());
+
+      },
+    });
+    }
+
+/////Ping specific list
+  function ping_list(){
+    add_loading('ping_agents');
+    $.ajax({
+      url: "http://duckietown20.local:5000/ping",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        let agent_not_reachable = false;
+        result.ping.forEach(function(entry){
+          if (entry == 0){
+            agent_not_reachable = true;
+          }
+        });
+        if (agent_not_reachable){
+          add_failure('ping_agents');
+          document.getElementById('ping_agents').onclick=function(){ping_list();};
+        } else {
+          add_success('ping_agents');
+          mount_drives();
+        }
       },
     });
   }
+
+/////Ping specific list
+  function reset_lights(){
+    add_loading('check_lights');
+    $.ajax({
+      url: "http://duckietown20.local:5000/lights_on",
+      data: {},
+      type: "GET",
+      header: {},
+      success: function(result) {
+        if(result.success){
+          add_success('check_lights');
+        } else {
+          add_failure('check_lights');
+          document.getElementById('check_lights').onclick=function(){reset_lights();};
+        }
+      },
+    });
+  }
+
+/////Mount drives
+function mount_drives(){
+  add_loading('mount_usb');
+  $.ajax({
+    url: "http://duckietown20.local:5000/logging_checks",
+    data: JSON.stringify({list:agent_list}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      alert(result.logging_check.toSource());
+      let device_not_mountable = false;
+      result.logging_check.forEach(function(entry){
+        if (!(entry == "No USB Device" || entry == "Writable USB")){
+          device_not_mountable = true;
+        }
+      });
+      if (device_not_mountable){
+        add_failure('mount_usb');
+        document.getElementById('mount_usb').onclick=function(){mount_drives();};
+      } else {
+        add_success('mount_usb');
+      }
+    },
+  });
+}

@@ -88,7 +88,7 @@
   </tbody>
   </table>
 
-  <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()">Evaluate submission</button>
+  <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()" disabled>Evaluate submission</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(7)" disabled>Toggle switch 1</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(8)" disabled>Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
@@ -187,6 +187,9 @@
               </td>
               <td>
                 Description
+              </td>
+              <td>
+                Type
               </td>
             </thead>
             <tbody style="background-color: #ffffff;" id="submission_table_body">
