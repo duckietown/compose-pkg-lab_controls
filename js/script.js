@@ -155,6 +155,10 @@ function subscriber_agents(){
   let agent_list = [];
   //List of currently running ajax requests
   let ajax_list = {};
+  // Timestamp at start of logging
+  let start_timestamp = 0;
+  // Timestamp at stop of logging
+  let stop_timestamp = 0;
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -563,8 +567,11 @@ function subscriber_agents(){
       reset_lights();
     }
     if (id==3){
+      //wait for all duckiebots to be ready to send commands
       //Get Timestamp for log_start
-      //Start duckiebots
+      //Start duckiebots (set flag to start moving)
+      let dt = new Date();
+      start_timestamp = dt.getTime();
     }
     if (id==4){
       //Get Timestamp for log_stop
@@ -574,8 +581,10 @@ function subscriber_agents(){
       //Copy bags
       //Validate bags
       //Clear memory of agents
+      let dt = new Date();
+      stop_timestamp = dt.getTime();
       current_substeps=0;
-      necessary_substeps=2; //Should be 6
+      necessary_substeps=5;
       current_button="btn_upload_data_ipfs";
       element= document.getElementById('body_submission_finished');
       element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
@@ -584,9 +593,6 @@ function subscriber_agents(){
                           </tr><tr height="40px">\
                           <td>Stop Duckiebots</td>\
                           <td><span id="stop_duckiebots"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Remove Duckiebot containers</td>\
-                          <td><span id="remove_containers"></span></td>\
                           </tr><tr height="40px">\
                           <td>Copy bags</td>\
                           <td><span id="copy_bags"></span></td>\
@@ -597,12 +603,13 @@ function subscriber_agents(){
                           <td>Clear memory</td>\
                           <td><span id="clear_memory"></span></td>\
                           </tr></tbody></table>';
-      add_loading('stop_logging');
-      add_loading('stop_duckiebots');
-      add_success('remove_containers');
-      add_failure('copy_bags');
-      add_success('validate_bags');
+      add_waiting('stop_logging');
+      add_waiting('stop_duckiebots');
+      add_waiting('copy_bags');
+      add_waiting('validate_bags');
       add_waiting('clear_memory');
+      stop_logging(copy_bags);
+      stop_duckiebots();
     }
     if (id==5){
       //Upload bags to ipfs and finish job
@@ -916,156 +923,205 @@ function subscriber_agents(){
   }
 
 /////Mount drives
-function mount_drives(next_function){
-  add_loading('mount_usb');
-  ajax_list["mount_drives"]=$.ajax({
-    url: "http://duckietown20.local:5000/logging_checks",
-    data: JSON.stringify({list:agent_list}),
-    dataType: "json",
-    type: "POST",
-    contentType: 'application/json',
-    header: {},
-    success: function(result) {
-      delete ajax_list["mount_drives"];
-      let device_not_mountable = false;
-      result.logging_check.forEach(function(entry){
-        if (!(entry == "No USB Device" || entry == "Writable USB")){
-          device_not_mountable = true;
+  function mount_drives(next_function){
+    add_loading('mount_usb');
+    ajax_list["mount_drives"]=$.ajax({
+      url: "http://duckietown20.local:5000/logging_checks",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["mount_drives"];
+        let device_not_mountable = false;
+        result.logging_check.forEach(function(entry){
+          if (!(entry == "No USB Device" || entry == "Writable USB")){
+            device_not_mountable = true;
+          }
+        });
+        if (device_not_mountable){
+          add_failure('mount_usb');
+          document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
+        } else {
+          add_success('mount_usb');
+          next_function(start_logging, start_duckiebot_container);
         }
-      });
-      if (device_not_mountable){
-        add_failure('mount_usb');
-        document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
-      } else {
-        add_success('mount_usb');
-        next_function(start_logging, start_duckiebot_container);
-      }
-    },
-  });
-}
+      },
+    });
+  }
 
 /////Check available memory
-function memory_check(next_function1, next_function2){
-  add_loading('memory_check');
-  ajax_list["memory_check"]=$.ajax({
-    url: "http://duckietown20.local:5000/storage_space_checks",
-    data: JSON.stringify({list:agent_list}),
-    dataType: "json",
-    type: "POST",
-    contentType: 'application/json',
-    header: {},
-    success: function(result) {
-      delete ajax_list["memory_check"];
-      let not_enough_memory = false;
-      result.space_check.forEach(function(entry, index){
-        if (result.hostname[index].substring(0,4)=="watc"){
-          let size = parseInt(entry.substring(5,entry.indexOf(',')-1));
-          if (size<80){
-            not_enough_memory = true;
+  function memory_check(next_function1, next_function2){
+    add_loading('memory_check');
+    ajax_list["memory_check"]=$.ajax({
+      url: "http://duckietown20.local:5000/storage_space_checks",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["memory_check"];
+        let not_enough_memory = false;
+        result.space_check.forEach(function(entry, index){
+          if (result.hostname[index].substring(0,4)=="watc"){
+            let size = parseInt(entry.substring(5,entry.indexOf(',')-1));
+            if (size<80){
+              not_enough_memory = true;
+            }
+          } else {
+            let size = parseInt(entry.substring(entry.indexOf(',')+7,entry.length-1));
+            if (size<25){
+              not_enough_memory = true;
+            }
           }
+        });
+        if (not_enough_memory){
+          add_failure('memory_check');
+          document.getElementById('memory_check').onclick=function(){
+            add_loading('memory_check');
+            clear_memory(mount_drives);
+          };
         } else {
-          let size = parseInt(entry.substring(entry.indexOf(',')+7,entry.length-1));
-          if (size<20){
-            not_enough_memory = true;
-          }
+          add_success('memory_check');
+          next_function1();
+          next_function2();
         }
-      });
-      if (not_enough_memory){
-        add_failure('memory_check');
-        document.getElementById('memory_check').onclick=function(){
-          add_loading('memory_check');
-          clear_memory(mount_drives);
-        };
-      } else {
-        add_success('memory_check');
-        next_function1();
-        next_function2();
-      }
-    },
-  });
-}
+      },
+    });
+  }
 
 /////Start the logging containers
-function start_logging(){
-  add_loading('start_logging');
-  // ajax_list["start_logging"]=$.ajax({
-  //   url: "http://duckietown20.local:5000/start_logging",
-  //   data: JSON.stringify({list:agent_list}),
-  //   dataType: "json",
-  //   type: "POST",
-  //   contentType: 'application/json',
-  //   header: {},
-  //   success: function(result) {
-  //     delete ajax_list["start_logging"];
-  //     let logging_started = true;
-  //     result.logging_start.forEach(function(entry){
-  //       if (!(entry == "Started container")){
-  //         logging_started = false;
-  //       }
-  //     });
-  //     if (!logging_started){
-  //       add_failure('start_logging');
-  //       document.getElementById('start_logging').onclick=function(){start_logging();};
-  //     } else {
-  //       add_success('start_logging');
-  //     }
-  //   },
-  // });
-}
+  function start_logging(){
+    add_loading('start_logging');
+    ajax_list["start_logging"]=$.ajax({
+      url: "http://duckietown20.local:5000/start_logging",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["start_logging"];
+        let logging_started = true;
+        result.logging_start.forEach(function(entry){
+          if (!(entry == "Started container")){
+            logging_started = false;
+          }
+        });
+        if (!logging_started){
+          add_failure('start_logging');
+          document.getElementById('start_logging').onclick=function(){start_logging();};
+        } else {
+          add_success('start_logging');
+        }
+      },
+    });
+  }
 
 /////Start containers on the Duckiebots
-function start_duckiebot_container(){
-  add_loading('start_duckiebot');
-  //TODO The magic happens here
-  add_success('start_duckiebot');
-}
+  function start_duckiebot_container(){
+    add_loading('start_duckiebot');
+    //TODO The magic happens here
+    add_success('start_duckiebot');
+  }
 
 /////Function to clear the memory
-function clear_memory(next_function){
-  //Animation might not be loaded when used to check memory size during initialization
-  try{
-    add_loading('clear_memory');
-  } catch {}
-  ajax_list["clear_memory"]=$.ajax({
-    url: "http://duckietown20.local:5000/clear_memory",
-    data: JSON.stringify({list:agent_list}),
-    dataType: "json",
-    type: "POST",
-    contentType: 'application/json',
-    header: {},
-    success: function(result) {
-      delete ajax_list["clear_memory"];
-      if (next_function == mount_drives){
-        //Need to substract as mount_drives will be reexecuted (and was already successfull)
-        current_substeps-=1;
-        next_function(memory_check);
-      } else {
-
-      }
-    },
-  });
-}
+  function clear_memory(next_function){
+    //Animation might not be loaded when used to check memory size during initialization
+    try{
+      add_loading('clear_memory');
+    } catch {}
+    ajax_list["clear_memory"]=$.ajax({
+      url: "http://duckietown20.local:5000/clear_memory",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["clear_memory"];
+        if (next_function == mount_drives){
+          //Need to substract as mount_drives will be reexecuted (and was already successfull)
+          current_substeps-=1;
+          next_function(memory_check);
+        } else {
+          let memory_cleared = true;
+          result.clear_memory.forEach(function(entry, index){
+            if (!(entry=="Success")){
+              memory_cleared = false;
+            }
+          });
+          if (!memory_cleared){
+            add_failure('clear_memory');
+            document.getElementById('clear_memory').onclick=function(){
+              add_loading('clear_memory');
+              clear_memory();
+            };
+          } else {
+            add_success('clear_memory');
+          }
+        }
+      },
+    });
+  }
 
 /////Function to stop logging
-function stop_logging(next_function){
-  //Animation might not be loaded when used to cancel job
-  try{
-    add_loading('stop_logging');
-  } catch {}
-  ajax_list["stop_logging"]=$.ajax({
-    url: "http://duckietown20.local:5000/stop_logging",
-    data: JSON.stringify({list:agent_list}),
-    dataType: "json",
-    type: "POST",
-    contentType: 'application/json',
-    header: {},
-    success: function(result) {
-      delete ajax_list["stop_logging"];
-      if (next_function === undefined){
-        //Executed when canceling the job
-      } else {
+  function stop_logging(next_function){
+    //Animation might not be loaded when used to cancel job
+    try{
+      add_loading('stop_logging');
+    } catch {}
+    ajax_list["stop_logging"]=$.ajax({
+      url: "http://duckietown20.local:5000/stop_logging",
+      data: JSON.stringify({list:agent_list}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["stop_logging"];
+        if (next_function === undefined){
+          //Executed when canceling the job
+        } else {
+          let logging_stopped = true;
+          result.logging_stop.forEach(function(entry, index){
+            if (!(entry=="Already stopped"||entry=="Stopped")){
+              logging_stopped = false;
+            }
+          });
+          if (!logging_stopped){
+            add_failure('stop_logging');
+            document.getElementById('memory_check').onclick=function(){
+              add_loading('stop_logging');
+              stop_logging(mount_drives);
+            };
+          } else {
+            add_success('stop_logging');
+            next_function(validate_bags);
+          }
+        }
+      },
+    });
+  }
 
-      }
-    },
-  });
+/////Stop the containers from duckiebots (active duckiebots should their container get removed)
+  function stop_duckiebots(){
+    add_loading('stop_duckiebots');
+    add_success('stop_duckiebots');
+  }
+
+/////Copy the bags to the server
+  function copy_bags(next_function){
+    add_loading('copy_bags');
+    add_success('copy_bags');
+    validate_bags(clear_memory)
+  }
+
+/////Validate the bags pulled from the agents
+function validate_bags(next_function){
+  add_loading('validate_bags');
+  add_success('validate_bags');
+  next_function();
 }
