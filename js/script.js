@@ -67,7 +67,6 @@ function subscriber_agents(){
           bot.style.top = bots_positions[name][0] + 'px';
           bot.style.left = bots_positions[name][1] + 'px';
         } catch {}
-        //alert(message.child_frame_id.toSource());
       });
     }
   }, 1000);
@@ -153,7 +152,9 @@ function subscriber_agents(){
   //Loop the current submission should be run in
   let current_submission_loop = "";
   //Agents necessary to run the submissions
-  let agent_list = "";
+  let agent_list = [];
+  //List of currently running ajax requests
+  let ajax_list = {};
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -503,7 +504,7 @@ function subscriber_agents(){
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
-      necessary_active_bots = 0;
+      necessary_active_bots = 1;
       necessary_passive_bots = 0;
       let html_necessary_bots = document.getElementById("necessary_bots");
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
@@ -516,13 +517,14 @@ function subscriber_agents(){
       }
     }
     if (id==2){
+      //Ping bots
       //Check and/or Reset Lights
       //Mount USB
       //Check free memory
       //Start logging containers and check logging started
       //Start containers on duckiebots (in parallel with logging containers) and Check containers on duckiebots are ready
       current_substeps=0;
-      necessary_substeps=2; //Should be 6
+      necessary_substeps=6;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
       active_bots.forEach(function(entry){
@@ -557,7 +559,7 @@ function subscriber_agents(){
       add_waiting('memory_check');
       add_waiting('start_logging');
       add_waiting('start_duckiebot');
-      ping_list();
+      ping_list(mount_drives);
       reset_lights();
     }
     if (id==3){
@@ -628,7 +630,11 @@ function subscriber_agents(){
 
 /////Cancel job
   function cancel_job(){
+    for (let ajax_call in ajax_list){
+      ajax_list[ajax_call].abort();
+    }
     reset_submission_view();
+    stop_logging();
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
 
@@ -686,7 +692,6 @@ function subscriber_agents(){
       type: "GET",
       headers:{'X-Messaging-Token': dt_token},
       success: function(result) {
-        //alert(result.toSource());
         result.result.forEach(function (i) {
           let row = table.insertRow();
           row.id=i;
@@ -861,26 +866,10 @@ function subscriber_agents(){
     }
   }
 
-/////Test api stuff
-  function test_api(){
-    let test_data = ["watchtower01","watchtower02"];
-    $.ajax({
-      url: "http://duckietown20.local:5000/test",
-      data: JSON.stringify({test:test_data}),
-      dataType: "json",
-      type: "POST",
-      contentType: 'application/json',
-      header: {},
-      success: function(result) {
-
-      },
-    });
-    }
-
 /////Ping specific list
-  function ping_list(){
+  function ping_list(next_function){
     add_loading('ping_agents');
-    $.ajax({
+    ajax_list["ping_list"]=$.ajax({
       url: "http://duckietown20.local:5000/ping",
       data: JSON.stringify({list:agent_list}),
       dataType: "json",
@@ -888,6 +877,7 @@ function subscriber_agents(){
       contentType: 'application/json',
       header: {},
       success: function(result) {
+        delete ajax_list["ping_list"];
         let agent_not_reachable = false;
         result.ping.forEach(function(entry){
           if (entry == 0){
@@ -896,10 +886,10 @@ function subscriber_agents(){
         });
         if (agent_not_reachable){
           add_failure('ping_agents');
-          document.getElementById('ping_agents').onclick=function(){ping_list();};
+          document.getElementById('ping_agents').onclick=function(){ping_list(next_function);};
         } else {
           add_success('ping_agents');
-          mount_drives();
+          next_function(memory_check);
         }
       },
     });
@@ -908,12 +898,13 @@ function subscriber_agents(){
 /////Ping specific list
   function reset_lights(){
     add_loading('check_lights');
-    $.ajax({
+    ajax_list["reset_lights"]=$.ajax({
       url: "http://duckietown20.local:5000/lights_on",
       data: {},
       type: "GET",
       header: {},
       success: function(result) {
+        delete ajax_list["reset_lights"];
         if(result.success){
           add_success('check_lights');
         } else {
@@ -925,9 +916,9 @@ function subscriber_agents(){
   }
 
 /////Mount drives
-function mount_drives(){
+function mount_drives(next_function){
   add_loading('mount_usb');
-  $.ajax({
+  ajax_list["mount_drives"]=$.ajax({
     url: "http://duckietown20.local:5000/logging_checks",
     data: JSON.stringify({list:agent_list}),
     dataType: "json",
@@ -935,7 +926,7 @@ function mount_drives(){
     contentType: 'application/json',
     header: {},
     success: function(result) {
-      alert(result.logging_check.toSource());
+      delete ajax_list["mount_drives"];
       let device_not_mountable = false;
       result.logging_check.forEach(function(entry){
         if (!(entry == "No USB Device" || entry == "Writable USB")){
@@ -944,9 +935,136 @@ function mount_drives(){
       });
       if (device_not_mountable){
         add_failure('mount_usb');
-        document.getElementById('mount_usb').onclick=function(){mount_drives();};
+        document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
       } else {
         add_success('mount_usb');
+        next_function(start_logging, start_duckiebot_container);
+      }
+    },
+  });
+}
+
+/////Check available memory
+function memory_check(next_function1, next_function2){
+  add_loading('memory_check');
+  ajax_list["memory_check"]=$.ajax({
+    url: "http://duckietown20.local:5000/storage_space_checks",
+    data: JSON.stringify({list:agent_list}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["memory_check"];
+      let not_enough_memory = false;
+      result.space_check.forEach(function(entry, index){
+        if (result.hostname[index].substring(0,4)=="watc"){
+          let size = parseInt(entry.substring(5,entry.indexOf(',')-1));
+          if (size<80){
+            not_enough_memory = true;
+          }
+        } else {
+          let size = parseInt(entry.substring(entry.indexOf(',')+7,entry.length-1));
+          if (size<20){
+            not_enough_memory = true;
+          }
+        }
+      });
+      if (not_enough_memory){
+        add_failure('memory_check');
+        document.getElementById('memory_check').onclick=function(){
+          add_loading('memory_check');
+          clear_memory(mount_drives);
+        };
+      } else {
+        add_success('memory_check');
+        next_function1();
+        next_function2();
+      }
+    },
+  });
+}
+
+/////Start the logging containers
+function start_logging(){
+  add_loading('start_logging');
+  // ajax_list["start_logging"]=$.ajax({
+  //   url: "http://duckietown20.local:5000/start_logging",
+  //   data: JSON.stringify({list:agent_list}),
+  //   dataType: "json",
+  //   type: "POST",
+  //   contentType: 'application/json',
+  //   header: {},
+  //   success: function(result) {
+  //     delete ajax_list["start_logging"];
+  //     let logging_started = true;
+  //     result.logging_start.forEach(function(entry){
+  //       if (!(entry == "Started container")){
+  //         logging_started = false;
+  //       }
+  //     });
+  //     if (!logging_started){
+  //       add_failure('start_logging');
+  //       document.getElementById('start_logging').onclick=function(){start_logging();};
+  //     } else {
+  //       add_success('start_logging');
+  //     }
+  //   },
+  // });
+}
+
+/////Start containers on the Duckiebots
+function start_duckiebot_container(){
+  add_loading('start_duckiebot');
+  //TODO The magic happens here
+  add_success('start_duckiebot');
+}
+
+/////Function to clear the memory
+function clear_memory(next_function){
+  //Animation might not be loaded when used to check memory size during initialization
+  try{
+    add_loading('clear_memory');
+  } catch {}
+  ajax_list["clear_memory"]=$.ajax({
+    url: "http://duckietown20.local:5000/clear_memory",
+    data: JSON.stringify({list:agent_list}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["clear_memory"];
+      if (next_function == mount_drives){
+        //Need to substract as mount_drives will be reexecuted (and was already successfull)
+        current_substeps-=1;
+        next_function(memory_check);
+      } else {
+
+      }
+    },
+  });
+}
+
+/////Function to stop logging
+function stop_logging(next_function){
+  //Animation might not be loaded when used to cancel job
+  try{
+    add_loading('stop_logging');
+  } catch {}
+  ajax_list["stop_logging"]=$.ajax({
+    url: "http://duckietown20.local:5000/stop_logging",
+    data: JSON.stringify({list:agent_list}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["stop_logging"];
+      if (next_function === undefined){
+        //Executed when canceling the job
+      } else {
+
       }
     },
   });
