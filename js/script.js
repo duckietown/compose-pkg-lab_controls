@@ -134,6 +134,8 @@ function subscriber_agents(){
   let active_bots = [];
   //Array of passive bots
   let passive_bots = [];
+  //Array of all the bots (active and passive) running in the submissions
+  let submission_bots = [];
   //Needed active bots
   let necessary_active_bots = -1;
   //Needed passive bots
@@ -159,6 +161,12 @@ function subscriber_agents(){
   let start_timestamp = 0;
   // Timestamp at stop of logging
   let stop_timestamp = 0;
+  //List of emergency stop publishers
+  let pub_emergency_stop = {}
+  //List of subscribers to check if the autobot is ready to move
+  let sub_ready_to_move = {}
+  //List of autobot readiness to move
+  let i_am_ready = {}
 
 /////Enlarge camera image
   function camera_size_toggle(){
@@ -528,7 +536,7 @@ function subscriber_agents(){
       //Start logging containers and check logging started
       //Start containers on duckiebots (in parallel with logging containers) and Check containers on duckiebots are ready
       current_substeps=0;
-      necessary_substeps=6;
+      necessary_substeps=8;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
       active_bots.forEach(function(entry){
@@ -551,18 +559,31 @@ function subscriber_agents(){
                           <td>Checking memory</td>\
                           <td><span id="memory_check"></span></td>\
                           </tr><tr height="40px">\
+                          <td>Preventing Duckiebot movement</td>\
+                          <td><span id="duckiebot_stop"></span></td>\
+                          </tr><tr height="40px">\
                           <td>Starting logging containers</td>\
                           <td><span id="start_logging"></span></td>\
                           </tr><tr height="40px">\
                           <td>Starting duckiebot containers</td>\
                           <td><span id="start_duckiebot"></span></td>\
+                          </tr><tr height="40px">\
+                          <td>Duckiebots ready to move</td>\
+                          <td><span id="ready_to_move"></span></td>\
                           </tr></tbody></table>';
       add_waiting('ping_agents');
       add_waiting('check_lights');
       add_waiting('mount_usb');
       add_waiting('memory_check');
+      add_waiting('duckiebot_stop');
       add_waiting('start_logging');
       add_waiting('start_duckiebot');
+      add_waiting('ready_to_move');
+
+      submission_bots = active_bots;
+      passive_bots.forEach(function(entry){
+        submission_bots.push(entry);
+      });
       ping_list(mount_drives);
       reset_lights();
     }
@@ -592,7 +613,7 @@ function subscriber_agents(){
                           <td><span id="stop_logging"></span></td>\
                           </tr><tr height="40px">\
                           <td>Stop Duckiebots</td>\
-                          <td><span id="stop_duckiebots"></span></td>\
+                          <td><span id="stop_duckiebot_containers"></span></td>\
                           </tr><tr height="40px">\
                           <td>Copy bags</td>\
                           <td><span id="copy_bags"></span></td>\
@@ -604,12 +625,12 @@ function subscriber_agents(){
                           <td><span id="clear_memory"></span></td>\
                           </tr></tbody></table>';
       add_waiting('stop_logging');
-      add_waiting('stop_duckiebots');
+      add_waiting('stop_duckiebot_containers');
       add_waiting('copy_bags');
       add_waiting('validate_bags');
       add_waiting('clear_memory');
       stop_logging(copy_bags);
-      stop_duckiebots();
+      stop_duckiebot_containers();
     }
     if (id==5){
       //Upload bags to ipfs and finish job
@@ -640,8 +661,11 @@ function subscriber_agents(){
     for (let ajax_call in ajax_list){
       ajax_list[ajax_call].abort();
     }
-    reset_submission_view();
     stop_logging();
+    submission_bots.forEach(function(bot){
+      sub_ready_to_move[bot].unsubscribe();
+    });
+    reset_submission_view();
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
 
@@ -945,7 +969,7 @@ function subscriber_agents(){
           document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
         } else {
           add_success('mount_usb');
-          next_function(start_logging, start_duckiebot_container);
+          next_function(start_logging, stop_duckiebots);
         }
       },
     });
@@ -986,7 +1010,7 @@ function subscriber_agents(){
         } else {
           add_success('memory_check');
           next_function1();
-          next_function2();
+          next_function2(start_duckiebot_container);
         }
       },
     });
@@ -995,36 +1019,95 @@ function subscriber_agents(){
 /////Start the logging containers
   function start_logging(){
     add_loading('start_logging');
-    ajax_list["start_logging"]=$.ajax({
-      url: "http://duckietown20.local:5000/start_logging",
-      data: JSON.stringify({list:agent_list}),
-      dataType: "json",
-      type: "POST",
-      contentType: 'application/json',
-      header: {},
-      success: function(result) {
-        delete ajax_list["start_logging"];
-        let logging_started = true;
-        result.logging_start.forEach(function(entry){
-          if (!(entry == "Started container")){
-            logging_started = false;
-          }
-        });
-        if (!logging_started){
-          add_failure('start_logging');
-          document.getElementById('start_logging').onclick=function(){start_logging();};
-        } else {
-          add_success('start_logging');
-        }
-      },
-    });
+    // ajax_list["start_logging"]=$.ajax({
+    //   url: "http://duckietown20.local:5000/start_logging",
+    //   data: JSON.stringify({list:agent_list}),
+    //   dataType: "json",
+    //   type: "POST",
+    //   contentType: 'application/json',
+    //   header: {},
+    //   success: function(result) {
+    //     delete ajax_list["start_logging"];
+    //     let logging_started = true;
+    //     result.logging_start.forEach(function(entry){
+    //       if (!(entry == "Started container")){
+    //         logging_started = false;
+    //       }
+    //     });
+    //     if (!logging_started){
+    //       add_failure('start_logging');
+    //       document.getElementById('start_logging').onclick=function(){start_logging();};
+    //     } else {
+    //       add_success('start_logging');
+    //     }
+    //   },
+    // });
+    add_success('start_logging');
   }
 
+/////Engage the emergency stop of all duckiebots
+function stop_duckiebots(next_function){
+  add_loading('duckiebot_stop');
+  if (ROS_connected){
+    let emergency = new ROSLIB.Message({
+      data : true
+    });
+    submission_bots.forEach(function(entry){
+      if (!(entry in pub_emergency_stop)){
+        pub_emergency_stop[entry] = new ROSLIB.Topic({
+          ros : window.ros,
+          name : '/'+entry+'/toggleEmergencyStop',
+          messageType : 'std_msgs/Bool',
+          queue_size : 1,
+        });
+      }
+      pub_emergency_stop[entry].publish(emergency)
+    });
+  }
+  if (next_function == start_duckiebot_container){
+    next_function(wait_for_all_bots)
+    add_success('duckiebot_stop');
+  }
+}
+
 /////Start containers on the Duckiebots
-  function start_duckiebot_container(){
+  function start_duckiebot_container(next_function){
     add_loading('start_duckiebot');
     //TODO The magic happens here
     add_success('start_duckiebot');
+    next_function();
+  }
+
+/////Wait until all bots are ready to move
+  function wait_for_all_bots(){
+    add_loading('ready_to_move');
+    if (ROS_connected){
+      submission_bots.forEach(function(entry){
+        if (!(entry in sub_ready_to_move)){
+          sub_ready_to_move[entry] = new ROSLIB.Topic({
+            ros : window.ros,
+            name : '/'+entry+'/ready_to_start',
+            messageType : 'std_msgs/Bool',
+            queue_size : 1,
+          });
+        }
+        sub_ready_to_move[entry].subscribe(function(message) {
+          i_am_ready[entry] = message.data;
+          let ready = true;
+          submission_bots.forEach(function(bot){
+            if(!i_am_ready[bot]){
+              ready = false;
+            }
+          });
+          if (ready){
+            add_success('ready_to_move');
+            submission_bots.forEach(function(bot){
+              sub_ready_to_move[bot].unsubscribe();
+            });
+          }
+        });
+      });
+    }
   }
 
 /////Function to clear the memory
@@ -1107,9 +1190,9 @@ function subscriber_agents(){
   }
 
 /////Stop the containers from duckiebots (active duckiebots should their container get removed)
-  function stop_duckiebots(){
-    add_loading('stop_duckiebots');
-    add_success('stop_duckiebots');
+  function stop_duckiebot_containers(){
+    add_loading('stop_duckiebot_containers');
+    add_success('stop_duckiebot_containers');
   }
 
 /////Copy the bags to the server
@@ -1124,4 +1207,17 @@ function validate_bags(next_function){
   add_loading('validate_bags');
   add_success('validate_bags');
   next_function();
+}
+
+function test_emergency_stop(){
+  publisher_emergency = new ROSLIB.Topic({
+    ros : window.ros,
+    name : '/autobot03/toggleEmergencyStop',
+    messageType : 'std_msgs/Bool',
+    queue_size : 1,
+  });
+  let emergency = new ROSLIB.Message({
+    data : true
+  });
+  publisher_emergency.publish(emergency)
 }
