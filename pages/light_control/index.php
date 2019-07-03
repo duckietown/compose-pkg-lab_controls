@@ -283,4 +283,19 @@
   <script src="<?php echo Core::getJSscriptURL('js-yaml.min.js', 'lab_controls') ?>" type="text/javascript"></script>
 <!-- Import main JS file and param files-->
   <script src="<?php echo Core::getJSscriptURL('watchtower_locations.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('script.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('global_variables.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('ip_cam.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('information_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('create_bots.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('map_visualization.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('misc_utils.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_master.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_select_job.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_select_duckiebots.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_animations.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_initialization.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_running.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_terminating.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_uploading.js', 'lab_controls') ?>" type="text/javascript"></script>
