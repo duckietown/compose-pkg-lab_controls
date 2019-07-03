@@ -10,8 +10,8 @@
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
-      necessary_active_bots = 1;
-      necessary_passive_bots = 0;
+      necessary_active_bots = 2;
+      necessary_passive_bots = 2;
       let html_necessary_bots = document.getElementById("necessary_bots");
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);
@@ -23,12 +23,6 @@
       }
     }
     if (id==2){
-      //Ping bots
-      //Check and/or Reset Lights
-      //Mount USB
-      //Check free memory
-      //Start logging containers and check logging started
-      //Start containers on duckiebots (in parallel with logging containers) and Check containers on duckiebots are ready
       current_substeps=0;
       necessary_substeps=8;
       current_button="btn_submission_ready_to_start";
@@ -39,39 +33,13 @@
       passive_bots.forEach(function(entry){
         agent_list.push(entry);
       });
-      element= document.getElementById('body_initialize_city');
-      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
-                          <td>Pinging the agents</td>\
-                          <td><span id="ping_agents"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Setting the room lights</td>\
-                          <td><span id="check_lights"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Mounting the USB dives</td>\
-                          <td><span id="mount_usb"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Checking memory</td>\
-                          <td><span id="memory_check"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Preventing Duckiebot movement</td>\
-                          <td><span id="duckiebot_stop"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Starting logging containers</td>\
-                          <td><span id="start_logging"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Starting duckiebot containers</td>\
-                          <td><span id="start_duckiebot"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Duckiebots ready to move</td>\
-                          <td><span id="ready_to_move"></span></td>\
-                          </tr></tbody></table>';
       add_waiting('ping_agents');
       add_waiting('check_lights');
       add_waiting('mount_usb');
       add_waiting('memory_check');
-      add_waiting('duckiebot_stop');
+      add_waiting('duckiebot_hold');
       add_waiting('start_logging');
-      add_waiting('start_duckiebot');
+      add_waiting('start_duckiebot_container');
       add_waiting('ready_to_move');
 
       submission_bots = active_bots;
@@ -82,11 +50,14 @@
       reset_lights();
     }
     if (id==3){
-      //wait for all duckiebots to be ready to send commands
-      //Get Timestamp for log_start
-      //Start duckiebots (set flag to start moving)
+      current_substeps=0;
+      necessary_substeps=1;
+      current_button="btn_submission_finished";
       let dt = new Date();
       start_timestamp = dt.getTime();
+      add_waiting('duckiebot_start');
+      start_duckiebots();
+      subscribe_cameras();
     }
     if (id==4){
       //Get Timestamp for log_stop
@@ -99,43 +70,25 @@
       let dt = new Date();
       stop_timestamp = dt.getTime();
       current_substeps=0;
-      necessary_substeps=5;
+      necessary_substeps=6;
       current_button="btn_upload_data_ipfs";
-      element= document.getElementById('body_submission_finished');
-      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
-                          <td>Stop logging</td>\
-                          <td><span id="stop_logging"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Stop Duckiebots</td>\
-                          <td><span id="stop_duckiebot_containers"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Copy bags</td>\
-                          <td><span id="copy_bags"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Validate bags</td>\
-                          <td><span id="validate_bags"></span></td>\
-                          </tr><tr height="40px">\
-                          <td>Clear memory</td>\
-                          <td><span id="clear_memory"></span></td>\
-                          </tr></tbody></table>';
       add_waiting('stop_logging');
+      add_waiting('duckiebot_stop')
       add_waiting('stop_duckiebot_containers');
       add_waiting('copy_bags');
       add_waiting('validate_bags');
       add_waiting('clear_memory');
       stop_logging(copy_bags);
+      stop_duckiebots();
       stop_duckiebot_containers();
+      unsubscribe_cameras();
     }
     if (id==5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
       necessary_substeps=1;
       current_button="btn_finish_job";
-      element= document.getElementById('body_uploading_data');
-      element.innerHTML=  '<table width="300px"><tbody><tr height="40px">\
-                          <td>Uploading data</td>\
-                          <td><span id="uploading_data"></span></td>\
-                          </tr></tbody></table>';
-      add_success('uploading_data');
+      add_waiting('uploading_data');
+      upload_data();
     }
   }

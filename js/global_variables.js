@@ -48,3 +48,5 @@
   let sub_ready_to_move = {}
   //List of autobot readiness to move
   let i_am_ready = {}
+  //List of autobot camera subscribers
+  let sub_duckiebot_cameras = {}

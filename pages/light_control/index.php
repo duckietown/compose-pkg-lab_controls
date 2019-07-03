@@ -225,28 +225,119 @@
         <button id="btn_submission_ready_to_start" type="button" class="btn btn-default" onclick="next_submission_step(3)" disabled>Start submission</button>
         <br><br>
         <span id="body_initialize_city">
-
+          <table width="300px"><tbody>
+            <tr height="40px">
+              <td>Pinging the agents</td>
+              <td><span id="ping_agents"></span></td>
+            </tr><tr height="40px">
+              <td>Setting the room lights</td>
+              <td><span id="check_lights"></span></td>
+            </tr><tr height="40px">
+              <td>Mounting the USB dives</td>
+              <td><span id="mount_usb"></span></td>
+            </tr><tr height="40px">
+              <td>Checking memory</td>
+              <td><span id="memory_check"></span></td>
+            </tr><tr height="40px">
+              <td>Preventing Duckiebot movement</td>
+              <td><span id="duckiebot_hold"></span></td>
+            </tr><tr height="40px">
+              <td>Starting logging containers</td>
+              <td><span id="start_logging"></span></td>
+            </tr><tr height="40px">
+              <td>Starting duckiebot containers</td>
+              <td><span id="start_duckiebot_container"></span></td>
+            </tr><tr height="40px">
+              <td>Duckiebots ready to move</td>
+              <td><span id="ready_to_move"></span></td>
+            </tr>
+          </tbody></table>
         </span>
       </span>
       <span id="submission_step_4" class="">
-        <button id="btn_submission_finished" type="button" class="btn btn-default" onclick="next_submission_step(4)">Stop submission</button>
+        <button id="btn_submission_finished" type="button" class="btn btn-default" onclick="next_submission_step(4)" disabled>Stop submission</button>
         <br><br>
         <span id="body_submission_running">
-          The submission is currently running. Press the 'Stop submission' button as soon as the active bot/s drive/s out of the city
+          The submission is currently running. Press the \'Stop submission\' button as soon as the active bot/s drive/s out of the city
+          <table width="300px"><tbody>
+            <tr height="40px">
+              <td>Enabling Duckiebot movement</td>
+              <td><span id="duckiebot_start"></span></td>
+            </tr>
+          </tbody></table>
+          <table width=65%><tbody>
+            <tr>
+              <td width=50%>
+                <span id="submission_bot_title0"></span>
+              </td>
+              <td width=50%>
+                <span id="submission_bot_title1"></span>
+              </td>
+            </tr>
+            <tr>
+              <td width=50%>
+                <img src="" alt="No camera image available" id="submission_bot_stream0" class=raspi_camera>
+              </td>
+              <td width=50%>
+                <img src="" alt="No camera image available" id="submission_bot_stream1" class=raspi_camera>
+              </td>
+            </tr>
+            <tr>
+              <td width=50%>
+                <span id="submission_bot_title2"></span>
+              </td>
+              <td width=50%>
+                <span id="submission_bot_title3"></span>
+              </td>
+            </tr>
+            <tr>
+              <td width=50%>
+                <img src="" alt="No camera image available" id="submission_bot_stream2" class=raspi_camera>
+              </td>
+              <td width=50%>
+                <img src="" alt="No camera image available" id="submission_bot_stream3" class=raspi_camera>
+              </td>
+            </tr>
+          </tbody></table>
         </span>
       </span>
       <span id="submission_step_5" class="">
         <button id="btn_upload_data_ipfs" type="button" class="btn btn-default" onclick="next_submission_step(5)" disabled>Upload data</button>
         <br><br>
         <span id="body_submission_finished">
-
+          <table width="300px">
+            <tbody><tr height="40px">
+              <td>Stop logging</td>
+              <td><span id="stop_logging"></span></td>
+            </tr><tr height="40px">
+              <td>Stop Duckiebots</td>
+              <td><span id="duckiebot_stop"></span></td>
+            </tr><tr height="40px">
+              <td>Stop Duckiebot containers</td>
+              <td><span id="stop_duckiebot_containers"></span></td>
+            </tr><tr height="40px">
+              <td>Copy bags</td>
+              <td><span id="copy_bags"></span></td>
+            </tr><tr height="40px">
+              <td>Validate bags</td>
+              <td><span id="validate_bags"></span></td>
+            </tr><tr height="40px">
+              <td>Clear memory</td>
+              <td><span id="clear_memory"></span></td>
+            </tr>
+          </tbody></table>
         </span>
       </span>
       <span id="submission_step_6" class="">
         <button id="btn_finish_job" type="button" class="btn btn-default" onclick="finish_job()" disabled>Finish job</button>
         <br><br>
         <span id="body_uploading_data">
-
+          <table width="300px"><tbody>
+            <tr height="40px">
+              <td>Uploading data</td>
+              <td><span id="uploading_data"></span></td>
+            </tr>
+          </tbody></table>
         </span>
       </span>
     </span>

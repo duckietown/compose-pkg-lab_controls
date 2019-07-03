@@ -73,6 +73,7 @@
       } catch {}
     });
     reset_submission_view();
+    unsubscribe_cameras();
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');
   }
 

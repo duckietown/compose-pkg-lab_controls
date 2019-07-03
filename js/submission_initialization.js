@@ -148,7 +148,12 @@
 
 /////Engage the emergency stop of all duckiebots
 function stop_duckiebots(next_function){
-  add_loading('duckiebot_stop');
+  if (next_function == start_duckiebot_container){
+    add_loading('duckiebot_hold');
+  } else {
+    add_loading('duckiebot_stop');
+  }
+  
   if (ROS_connected){
     let emergency = new ROSLIB.Message({
       data : true
@@ -167,15 +172,17 @@ function stop_duckiebots(next_function){
   }
   if (next_function == start_duckiebot_container){
     next_function(wait_for_all_bots)
+    add_success('duckiebot_hold');
+  } else {
     add_success('duckiebot_stop');
   }
 }
 
 /////Start containers on the Duckiebots
   function start_duckiebot_container(next_function){
-    add_loading('start_duckiebot');
+    add_loading('start_duckiebot_container');
     //TODO The magic happens here
-    add_success('start_duckiebot');
+    add_success('start_duckiebot_container');
     next_function();
   }
 
@@ -192,8 +199,11 @@ function stop_duckiebots(next_function){
             queue_size : 1,
           });
         }
+        i_am_ready[entry] = false
         sub_ready_to_move[entry].subscribe(function(message) {
-          i_am_ready[entry] = message.data;
+          if (message.data){
+            i_am_ready[entry] = true;
+          }
           let ready = true;
           submission_bots.forEach(function(bot){
             if(!i_am_ready[bot]){
