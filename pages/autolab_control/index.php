@@ -42,12 +42,12 @@
       <tr>
       <td>
         <form id="on">
-          <button type="submit" class="btn btn-default" disabled>Turn Light on</button>
+          <button type="submit" class="btn btn-default">Turn Light on</button>
         </form>
       </td>
       <td>
         <form id="off">
-          <button type="submit" class="btn btn-default" disabled>Turn Light off</button>
+          <button type="submit" class="btn btn-default">Turn Light off</button>
         </form>
       </td>
       <td>
@@ -56,7 +56,7 @@
         <input type="range" min="153" max="500" value="153" class="slider" id="color">
         <p>Color: <span id="color_out"></span></p>
         <form id="change">
-          <button type="submit" class="btn btn-default" disabled>Change lights</button>
+          <button type="submit" class="btn btn-default">Change lights</button>
         </form>
       </td>
       </tr>
