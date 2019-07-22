@@ -21,9 +21,6 @@
   let necessary_active_bots = -1;
   //Needed passive bots
   let necessary_passive_bots = -1;
-  //Location of changelog file
-  //let changelog_file = 'https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/aido2/changelog/default.yaml';
-  let changelog_file="https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml";
   //Detected pings
   let detected_pings = {};
   //Necessary job substeps to procede to the next Step

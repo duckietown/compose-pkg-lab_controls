@@ -12,12 +12,21 @@
 
 /////In progress: controlling smart power switches
   function toggle_switch(id){
-   let url  = "http://192.168.1."+id+"/toggle";
-   let xhr  = new XMLHttpRequest();
-   xhr.open('GET', url, true);
-   xhr.send(null);
+    $.ajax({
+      url: flask_url+":"+flask_port+"/toggle_switch",
+      data: "",
+      dataType: "json",
+      type: "GET",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        alert(result["temperature"]);
+      },
+    });
   };
 
+
+//TODO: remove if no longer needed
 /////Test for emergency stop
 function test_emergency_stop(){
   publisher_emergency = new ROSLIB.Topic({

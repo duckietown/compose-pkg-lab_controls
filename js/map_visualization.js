@@ -3,7 +3,7 @@
     document.getElementById('ping_message').style.display="block";
     document.getElementById('submission_button').disabled = true;
     $.ajax({
-      url: "http://duckietown20.local:5000/ping",
+      url: flask_url+":"+flask_port+"/ping",
       data: {},
       type: "GET",
       header: {},
@@ -85,6 +85,7 @@ function subscriber_agents(){
               name = "watchtower"+tmp;
             }
           }
+          // TODO: better coordinate transform
           bots_positions[name][0]=parseInt(680-message.transform.translation.y*100/58.5*35-9);
           bots_positions[name][1]=parseInt(message.transform.translation.x*100/58.5*35+14-9);
           bots_positions[name][2]=0;

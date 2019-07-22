@@ -5,7 +5,7 @@
       add_loading('stop_logging');
     } catch {}
     ajax_list["stop_logging"]=$.ajax({
-      url: "http://duckietown20.local:5000/stop_logging",
+      url: flask_url+":"+flask_port+"/stop_logging",
       data: JSON.stringify({list:agent_list}),
       dataType: "json",
       type: "POST",
@@ -64,7 +64,7 @@ function clear_memory(next_function){
     add_loading('clear_memory');
   } catch {}
   ajax_list["clear_memory"]=$.ajax({
-    url: "http://duckietown20.local:5000/clear_memory",
+    url: flask_url+":"+flask_port+"/clear_memory",
     data: JSON.stringify({list:agent_list}),
     dataType: "json",
     type: "POST",

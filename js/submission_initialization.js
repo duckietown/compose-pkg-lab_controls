@@ -2,7 +2,7 @@
   function ping_list(next_function){
     add_loading('ping_agents');
     ajax_list["ping_list"]=$.ajax({
-      url: "http://duckietown20.local:5000/ping",
+      url: flask_url+":"+flask_port+"/ping",
       data: JSON.stringify({list:agent_list}),
       dataType: "json",
       type: "POST",
@@ -27,11 +27,11 @@
     });
   }
 
-/////Ping specific list
+/////Control lights for submission
   function reset_lights(){
     add_loading('check_lights');
     ajax_list["reset_lights"]=$.ajax({
-      url: "http://duckietown20.local:5000/lights_on",
+      url: flask_url+":"+flask_port+"/lights_on",
       data: {},
       type: "GET",
       header: {},
@@ -51,7 +51,7 @@
   function mount_drives(next_function){
     add_loading('mount_usb');
     ajax_list["mount_drives"]=$.ajax({
-      url: "http://duckietown20.local:5000/logging_checks",
+      url: flask_url+":"+flask_port+"/logging_checks",
       data: JSON.stringify({list:agent_list}),
       dataType: "json",
       type: "POST",
@@ -80,7 +80,7 @@
   function memory_check(next_function1, next_function2){
     add_loading('memory_check');
     ajax_list["memory_check"]=$.ajax({
-      url: "http://duckietown20.local:5000/storage_space_checks",
+      url: flask_url+":"+flask_port+"/storage_space_checks",
       data: JSON.stringify({list:agent_list}),
       dataType: "json",
       type: "POST",
@@ -121,7 +121,7 @@
   function start_logging(){
     add_loading('start_logging');
     // ajax_list["start_logging"]=$.ajax({
-    //   url: "http://duckietown20.local:5000/start_logging",
+    //   url: flask_url+":"+flask_port+"/start_logging",
     //   data: JSON.stringify({list:agent_list}),
     //   dataType: "json",
     //   type: "POST",

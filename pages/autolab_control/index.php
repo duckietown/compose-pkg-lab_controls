@@ -13,6 +13,10 @@
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
     $param_dt_token = Core::getSetting("dt_token", "lab_controls");
+    $param_flask_url = Core::getSetting("flask_url", "lab_controls");
+    $param_flask_port = Core::getSetting("flask_port", "lab_controls");
+    $param_changelog_file = Core::getSetting("changelog_file", "lab_controls");
+    $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
   ?>
 <!-- Import stylesheet -->
@@ -89,8 +93,8 @@
   </table>
 
   <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()" disabled>Evaluate submission</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(7)" disabled>Toggle switch 1</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(8)" disabled>Toggle switch 2</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(15)">Toggle switch 1</button>
+  <button type="button" class="btn btn-default" onclick="toggle_switch(16)" disabled>Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
   <button type="button" class="btn btn-default" onclick="test_emergency_stop()">Emergency stop</button>
 
@@ -361,6 +365,14 @@
     let cam_pw = "<?php echo $param_cam_pw?>";
     //DT token
     let dt_token = "<?php echo $param_dt_token?>";
+    //Flask url
+    let flask_url = "<?php echo $param_flask_url?>";
+    //Flask port
+    let flask_port = "<?php echo $param_flask_port?>";
+    //Flask port
+    let changelog_file = "<?php echo $param_changelog_file?>";
+    //Submission server url
+    let submission_server_url = "<?php echo $param_submission_server?>";
     //Worker file for light control
     let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
     //Initialize Rosbridge

@@ -47,6 +47,30 @@
       "type" : "text",
       "default" : "This is a secret",
       "details" : "Duckietown token"
+    },
+    "flask_url" : {
+      "title" : "Flask url",
+      "type" : "text",
+      "default" : "http://duckietown20.local",
+      "details" : "URL of Flask server"
+    },
+    "flask_port" : {
+      "title" : "Flask port",
+      "type" : "text",
+      "default" : "5050",
+      "details" : "Port for Flask server interaction"
+    },
+    "changelog_file" : {
+      "title" : "Changelog file",
+      "type" : "text",
+      "default" : "https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml",
+      "details" : "Location of changelog file for Duckiebots"
+    },
+    "submission_server_url" : {
+      "title" : "Submission server url",
+      "type" : "text",
+      "default" : "http://localhost:6544",
+      "details" : "URL of submission server"
     }
   }
 }

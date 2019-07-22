@@ -7,5 +7,9 @@
 	"cam_pw": "quackquack3",
 	"ip_port": "88",
 	"cam_port": "88",
-	"dt_token": "dt1-daZUHiuSz7CUfsyDk2mmFCK9ddeiSS9DCs5LZUa9t3xxC-43dzqWFnWd8KBa1yev1g3UKnzVxZkkTbfjk6cvfSkMG4PVC9XVcFm7j8AR2LfGKZ3T"
+	"dt_token": "dt1-daZUHiuSz7CUfsyDk2mmFCK9ddeiSS9DCs5LZUa9t3xxC-43dzqWFnWd8KBa1yev1g3UKnzVxZkkTbfjk6cvfSkMG4PVC9XVcFm7j8AR2LfGKZ3T",
+	"flask_url": "http:\/\/duckietown20.local",
+	"flask_port": "5050",
+	"changelog_file": "https:\/\/raw.githubusercontent.com\/duckietown\/ETHZ-autolab-fleet-roster\/webeben_test\/changelog\/default.yaml",
+	"submission_server_url": "http:\/\/localhost:6544"
 }

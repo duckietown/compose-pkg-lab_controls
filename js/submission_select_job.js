@@ -12,7 +12,7 @@
 /////Insert currently available submissions into submission table body
   function insert_submission_body(table){
     //Temporary until submissions can be fetched from server
-    for(let i=0; i<20; i++){
+    for(let i=0; i<1; i++){
       let row = table.insertRow();
       row.id=i;
       row.onclick= function() { highlight_submission(i);};
@@ -29,26 +29,60 @@
 
 /////Call server test Function, when working insert into insert_submission_body
   function call_server(table){
-    $.ajax({
-      url: "https://challenges.duckietown.org/v4/api/submissions-list",
-      data: {},
-      type: "GET",
-      headers:{'X-Messaging-Token': dt_token},
-      success: function(result) {
-        result.result.forEach(function (i) {
-          let row = table.insertRow();
-          row.id=i;
-          row.onclick= function() { highlight_submission(i);};
-          row.style.height = "30px";
-          let cell0 = row.insertCell(0);
-          let cell1 = row.insertCell(1);
-          let cell2 = row.insertCell(2);
-          cell0.innerHTML=i;
-          cell1.innerHTML="Test"+i;
-          cell2.innerHTML="LFVI";
-        });
-      },
-    });
+    let job_server_interval=null;
+
+    let features = {'disk_available_mb': 100000,
+                'disk_total_mb': 256000,
+                'processor_free_percent' : 95,
+                'nduckiebots' : 6,
+                'x86_64' : 1,
+                'processor_frequency_mhz' : 3500,
+                'map_aido2_LF_pub': 1,
+                'map_aido2_LFV_pub': 1,
+                'map_aido2_LFVI_pub': 1,
+                'gpu': 0,
+                'mac': 0,
+                'armv7l': 0,
+                'ram_total_mb':16000,
+                'ram_available_mb':10000,
+                'nprocessors':12,
+                'p1': 1,
+                'picamera': 0,
+                'ipfs': 1};
+
+    let data_get = {'submission_id': null,
+                'machine_id': 'autolab_server',
+                'process_id': 'autolab_server-1',
+                'evaluator_version': 1,
+                'features': features,
+                'reset': false};
+    job_server_interval = setInterval(function() {
+      $.ajax({
+        url: submission_server_url+"/api/take-submission",
+        dataType: "json",
+        type: "GET",
+        headers:{'X-Messaging-Token': dt_token},
+        contentType: "application/json; charset=utf-8",
+        data: data_get,
+        success: function(result) {
+          // result.result.forEach(function (i) {
+          //   let row = table.insertRow();
+          //   row.id=i;
+          //   row.onclick= function() { highlight_submission(i);};
+          //   row.style.height = "30px";
+          //   let cell0 = row.insertCell(0);
+          //   let cell1 = row.insertCell(1);
+          //   let cell2 = row.insertCell(2);
+          //   cell0.innerHTML=i;
+          //   cell1.innerHTML="Test"+i;
+          //   cell2.innerHTML="LFVI";
+          // });
+        },
+      });
+      // if (ROS_connected){
+      //   clearInterval(job_server_interval);
+      //}
+    }, 1000);
   }
 
 /////Watchtowers necessary for certain job
