@@ -97,6 +97,7 @@
   <button type="button" class="btn btn-default" onclick="toggle_switch(16)" disabled>Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
   <button type="button" class="btn btn-default" onclick="test_emergency_stop()">Emergency stop</button>
+  <button type="button" class="btn btn-default" onclick="call_server()">Test API</button>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
@@ -165,6 +166,7 @@
     </span>
   </div>
 
+ <!-- Popup for Submissions -->
   <div onclick="close_submission_popup()" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
     <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_job()">Cancel submission</button><br><br>
@@ -183,6 +185,7 @@
       <span id="submission_step_1" class="">
         <button id="btn_start_job" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Select job</button>
         <br><br>
+        <span id="submission_server_time_info">Currently pinging the submission server. The server answers in <span id="server_answer_time">999</span> seconds.</span>
         <span class="submission_tab">
           <table id="submission_table" class="history_list" cellpadding="1" border="0" >
             <thead style="background-color: #dddddd;">
@@ -190,7 +193,7 @@
                 Submission number
               </td>
               <td>
-                Description
+                Container Name
               </td>
               <td>
                 Type

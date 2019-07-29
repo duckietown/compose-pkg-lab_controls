@@ -10,8 +10,14 @@
       document.getElementById('cancel_submission').style.display="inline";
       submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
-      necessary_active_bots = 0;
-      necessary_passive_bots = 0;
+      if (current_submission_loop=="LF"){
+        necessary_active_bots = 1;
+        necessary_passive_bots = 0;
+      } else {
+        necessary_active_bots = 1;
+        necessary_passive_bots = 2;
+      }
+      
       let html_necessary_bots = document.getElementById("necessary_bots");
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);

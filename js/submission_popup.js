@@ -30,6 +30,8 @@
     }
     document.getElementById('cancel_submission').style.display="none";
     document.getElementById('submission_step_1').style.display="block";
+    document.getElementById('submission_server_time_info').style.display="block";
+    document.getElementById('server_answer_time').innerHTML=999;
     document.getElementById('submission_tab_1').classList.add('active');
     document.getElementById('btn_start_job').disabled = true;
     let submission_table = document.getElementById("submission_table_body");
