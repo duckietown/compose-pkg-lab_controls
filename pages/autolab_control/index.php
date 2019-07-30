@@ -97,7 +97,7 @@
   <button type="button" class="btn btn-default" onclick="toggle_switch(16)" disabled>Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
   <button type="button" class="btn btn-default" onclick="test_emergency_stop()">Emergency stop</button>
-  <button type="button" class="btn btn-default" onclick="call_server()">Test API</button>
+  <button type="button" class="btn btn-default" onclick="start_duckiebot_container_test()">Test API</button>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->

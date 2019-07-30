@@ -181,9 +181,32 @@ function stop_duckiebots(next_function){
 /////Start containers on the Duckiebots
   function start_duckiebot_container(next_function){
     add_loading('start_duckiebot_container');
-    //TODO The magic happens here
-    add_success('start_duckiebot_container');
-    next_function();
+    ajax_list["start_active_containers"]=$.ajax({
+      url: flask_url+":"+flask_port+"/start_active_bots",
+      data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        let not_started = false;
+        result.container.forEach(function(entry, index){
+          if (entry!="Started evaluation"){
+              not_started = true;
+          }
+        });
+        if (not_started){
+          add_failure('start_duckiebot_container');
+          document.getElementById('start_duckiebot_container').onclick=function(){
+            add_loading('start_duckiebot_container');
+            start_duckiebot_container(next_function);
+          };
+        } else {
+          add_success('start_duckiebot_container');
+          next_function();
+        }
+      },
+    });
   }
 
 /////Wait until all bots are ready to move
@@ -219,4 +242,33 @@ function stop_duckiebots(next_function){
         });
       });
     }
+  }
+
+
+  function start_duckiebot_container_test(){
+    add_loading('start_duckiebot_container');
+    active_bots = ["autobot03"];
+    current_submission_container = "localhost:5000/webbe035/aido-submissions:2019_07_23_15_41_34";
+    ajax_list["start_active_containers"]=$.ajax({
+      url: flask_url+":"+flask_port+"/start_active_bots",
+      data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        alert(result.toSource())
+        let not_started = false;
+        result.container.forEach(function(entry, index){
+          if (entry!="Started evaluation"){
+              not_started = true;
+          }
+        });
+        if (not_started){
+          alert("Failure");
+        } else {
+          alert("Success");
+        }
+      },
+    });
   }

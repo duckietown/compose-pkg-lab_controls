@@ -31,6 +31,8 @@
   let current_button = "";
   //Loop the current submission should be run in
   let current_submission_loop = "";
+  //Container to use in the current submission 
+  let current_submission_container = "";
   //Agents necessary to run the submissions
   let agent_list = [];
   //List of currently running ajax requests

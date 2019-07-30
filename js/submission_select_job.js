@@ -6,7 +6,8 @@
     document.getElementById(id).style.backgroundColor="#ED9C27";
     document.getElementById('btn_start_job').disabled = false;
     selected_sub_id=id;
-    current_submission_loop=document.getElementById(id).cells[2].innerHTML;
+    current_submission_container = document.getElementById(id).cells[1].innerHTML;
+    current_submission_loop = document.getElementById(id).cells[2].innerHTML;
   }
 
 /////Insert currently available submissions into submission table body
