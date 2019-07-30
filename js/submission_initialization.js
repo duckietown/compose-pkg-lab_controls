@@ -244,7 +244,7 @@ function stop_duckiebots(next_function){
     }
   }
 
-
+/////Test function only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   function start_duckiebot_container_test(){
     add_loading('start_duckiebot_container');
     active_bots = ["autobot03"];
