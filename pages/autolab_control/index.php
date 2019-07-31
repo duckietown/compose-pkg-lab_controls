@@ -241,6 +241,9 @@
               <td>Checking memory</td>
               <td><span id="memory_check"></span></td>
             </tr><tr height="40px">
+              <td>Restart Duckiebot interface</td>
+              <td><span id="restart_interface"></span></td>
+            </tr><tr height="40px">
               <td>Preventing Duckiebot movement</td>
               <td><span id="duckiebot_hold"></span></td>
             </tr><tr height="40px">

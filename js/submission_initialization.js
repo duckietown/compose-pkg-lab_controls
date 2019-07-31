@@ -68,19 +68,28 @@
             device_not_mountable = true;
           }
         });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>USB device</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+            debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_check[index]+"</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
         if (device_not_mountable){
           add_failure('mount_usb');
           document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
         } else {
           add_success('mount_usb');
-          next_function(start_logging, stop_duckiebots);
+          next_function(restart_duckiebot_interface);
         }
       },
     });
   }
 
 /////Check available memory
-  function memory_check(next_function1, next_function2){
+  function memory_check(next_function){
     add_loading('memory_check');
     ajax_list["memory_check"]=$.ajax({
       url: flask_url+":"+flask_port+"/storage_space_checks",
@@ -105,6 +114,15 @@
             }
           }
         });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Memory</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+            debug_string+="<tr><td>"+entry+"</td><td>"+result.space_check[index]+"</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
         if (not_enough_memory){
           add_failure('memory_check');
           document.getElementById('memory_check').onclick=function(){
@@ -113,10 +131,51 @@
           };
         } else {
           add_success('memory_check');
-          next_function1();
-          next_function2(start_duckiebot_container);
+          next_function(stop_duckiebots, start_logging);
         }
       },
+    });
+  }
+
+/////Restart duckiebot interface and acquisition node
+  function restart_duckiebot_interface(next_function1, next_function2){
+    add_loading('restart_interface');
+    ajax_list["restart_interface"]=$.ajax({
+      url: flask_url+":"+flask_port+"/reset_duckiebot",
+      data: JSON.stringify({list:submission_bots}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["restart_interface"];
+        let not_started = false;
+        result.outcome.forEach(function(entry, index){
+          if (entry!="Duckiebot reset"){
+              not_started = true;
+          }
+        });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Status</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+            debug_string+="<tr><td>"+entry+"</td><td>"+result.outcome[index]+"</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+
+        if (not_started){
+          add_failure('restart_interface');
+          document.getElementById('restart_interface').onclick=function(){
+            restart_duckiebot_interface(next_function1, next_function2);
+          };
+        } else {
+          add_success('restart_interface');
+          next_function1(start_duckiebot_container);
+          next_function2();
+        }
+      }
     });
   }
 
@@ -138,6 +197,15 @@
     //         logging_started = false;
     //       }
     //     });
+
+    //       let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Logging</b></td></tr>";
+    //       result.hostname.forEach(function(entry, index){
+    //           debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_start[index]+"</td></tr>";
+    //       });
+    //       debug_string+="</table><br><br> ####################################### <br>"
+    //       document.getElementById('debug_window').innerHTML += debug_string;
+    //       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
     //     if (!logging_started){
     //       add_failure('start_logging');
     //       document.getElementById('start_logging').onclick=function(){start_logging();};
@@ -173,6 +241,16 @@ function stop_duckiebots(next_function){
       pub_emergency_stop[entry].publish(emergency)
     });
   }
+
+  let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Emergency stop</b></td></tr>";
+  submission_bots.forEach(function(entry){
+      debug_string+="<tr><td>"+entry+"</td><td>Emergency stop engaged</td></tr>";
+  });
+  debug_string+="</table><br><br> ####################################### <br>"
+  document.getElementById('debug_window').innerHTML += debug_string;
+  document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+
   if (next_function == start_duckiebot_container){
     next_function(wait_for_all_bots)
     add_success('duckiebot_hold');
@@ -198,6 +276,15 @@ function stop_duckiebots(next_function){
               not_started = true;
           }
         });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Container</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+            debug_string+="<tr><td>"+entry+"</td><td>"+result.container[index]+"</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
         if (not_started){
           add_failure('start_duckiebot_container');
           document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
@@ -261,7 +348,7 @@ function stop_duckiebots(next_function){
       success: function(result) {
         alert(result.toSource())
         let not_started = false;
-        result.container.forEach(function(entry, index){
+        result.outcome.forEach(function(entry, index){
           if (entry!="Duckiebot reset"){
               not_started = true;
           }

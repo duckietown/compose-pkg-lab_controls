@@ -30,7 +30,7 @@
     }
     if (id==2){
       current_substeps=0;
-      necessary_substeps=8;
+      necessary_substeps=9;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
       active_bots.forEach(function(entry){
@@ -41,11 +41,13 @@
       });
       let debug_string = "Chose the following Duckiebots as active: <br> "+active_bots+"<br> Chose the following Duckiebots as passive: <br> "+passive_bots+"<br><br> ####################################### <br>";
       document.getElementById('debug_window').innerHTML += debug_string;
+      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
       add_waiting('ping_agents');
       add_waiting('check_lights');
       add_waiting('mount_usb');
       add_waiting('memory_check');
+      add_waiting('restart_interface');
       add_waiting('duckiebot_hold');
       add_waiting('start_logging');
       add_waiting('start_duckiebot_container');
