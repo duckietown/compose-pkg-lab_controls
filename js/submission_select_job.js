@@ -12,7 +12,8 @@
 
 /////Insert currently available submissions into submission table body
   function insert_submission_body(table){
-    let job_server_interval=null;
+    let debug_string = "Currently pinging the submission server <br><br>";
+    document.getElementById('debug_window').innerHTML += debug_string;
     endpoint_string = "/api/take-submission";
     url_string = "http://localhost:6544";
     job_server_interval = setInterval(function() {
@@ -32,8 +33,8 @@
             document.getElementById('submission_server_time_info').style.display="none";
             clearInterval(job_server_interval);
             let row = table.insertRow();
-            row.id="submission_to_evaluate";
-            row.onclick= function() { highlight_submission("submission_to_evaluate");};
+            row.id=response.result.submission_id;
+            row.onclick= function() { highlight_submission(response.result.submission_id);};
             row.style.height = "30px";
             let cell0 = row.insertCell(0);
             let cell1 = row.insertCell(1);
@@ -51,6 +52,11 @@
             else {
               cell2.innerHTML="LFVI";
             }
+            let debug_string = "Received submission from the server: <br> "+response.toSource()+
+                                "<br><br>Running on the "+cell2.innerHTML+" loop."+
+                                "<br><br> ####################################### <br>";
+            document.getElementById('debug_window').innerHTML += debug_string;
+            document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
           }
           
         },

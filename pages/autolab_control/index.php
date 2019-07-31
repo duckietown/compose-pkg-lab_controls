@@ -45,28 +45,22 @@
       <tbody>
       <tr>
       <td>
-        <form id="on">
-          <button type="submit" class="btn btn-default">Turn Light on</button>
-        </form>
+        <button type="button" class="btn btn-default" onclick="lights_on()">Turn Light on</button>
       </td>
       <td>
-        <form id="off">
-          <button type="submit" class="btn btn-default">Turn Light off</button>
-        </form>
+        <button type="button" class="btn btn-default" onclick="lights_off()">Turn Light off</button>
       </td>
       <td>
         <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
         <p>Intensity: <span id="intensity_out"></span></p>
         <input type="range" min="153" max="500" value="153" class="slider" id="color">
         <p>Color: <span id="color_out"></span></p>
-        <form id="change">
-          <button type="submit" class="btn btn-default">Change lights</button>
-        </form>
+        <button type="button" class="btn btn-default" onclick="lights_change()">Change lights</button>
       </td>
       </tr>
       </tbody>
       </table>
-    </td>
+    </td> 
   </tr>
   <tr>
     <!-- Different Duckiebots currently in town -->
@@ -169,7 +163,8 @@
  <!-- Popup for Submissions -->
   <div onclick="close_submission_popup()" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
-    <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_job()">Cancel submission</button><br><br>
+    <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_job()">Cancel submission</button>
+    <button id="btn_open_debug" type="button" class="btn btn-default pull-right" onclick="toggle_debug()">Open debug</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">
         <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Select job</a></li>
@@ -348,6 +343,10 @@
         </span>
       </span>
     </span>
+  </div>
+
+  <div id="debug_window" class=popup_debug>
+
   </div>
 
 <!-- JS to import settings from php -->

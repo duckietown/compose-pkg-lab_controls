@@ -16,6 +16,19 @@
             agent_not_reachable = true;
           }
         });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td align='right'><b>Ping</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+          if (result.ping[index]==0){
+            debug_string+="<tr><td>"+entry+"</td><td align='right'>Not reachable</td></tr>";
+          } else {
+            debug_string+="<tr><td>"+entry+"</td><td align='right'>"+result.ping[index]+" ms</td></tr>";
+          }
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
         if (agent_not_reachable){
           add_failure('ping_agents');
           document.getElementById('ping_agents').onclick=function(){ping_list(next_function);};
@@ -30,21 +43,11 @@
 /////Control lights for submission
   function reset_lights(){
     add_loading('check_lights');
-    ajax_list["reset_lights"]=$.ajax({
-      url: flask_url+":"+flask_port+"/lights_on",
-      data: {},
-      type: "GET",
-      header: {},
-      success: function(result) {
-        delete ajax_list["reset_lights"];
-        if(result.success){
-          add_success('check_lights');
-        } else {
-          add_failure('check_lights');
-          document.getElementById('check_lights').onclick=function(){reset_lights();};
-        }
-      },
-    });
+    lights_on();
+    let debug_string="Lights turned on<br><br> ####################################### <br>"
+    document.getElementById('debug_window').innerHTML += debug_string;
+    document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+    add_success('check_lights');
   }
 
 /////Mount drives
@@ -105,7 +108,7 @@
         if (not_enough_memory){
           add_failure('memory_check');
           document.getElementById('memory_check').onclick=function(){
-            add_loading('memory_check');
+            add_waiting('memory_check');
             clear_memory(mount_drives);
           };
         } else {
@@ -197,10 +200,7 @@ function stop_duckiebots(next_function){
         });
         if (not_started){
           add_failure('start_duckiebot_container');
-          document.getElementById('start_duckiebot_container').onclick=function(){
-            add_loading('start_duckiebot_container');
-            start_duckiebot_container(next_function);
-          };
+          document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
         } else {
           add_success('start_duckiebot_container');
           next_function();
@@ -250,8 +250,10 @@ function stop_duckiebots(next_function){
     active_bots = ["autobot03"];
     current_submission_container = "localhost:5000/webbe035/aido-submissions:2019_07_23_15_41_34";
     ajax_list["start_active_containers"]=$.ajax({
-      url: flask_url+":"+flask_port+"/start_active_bots",
-      data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+      // url: flask_url+":"+flask_port+"/start_active_bots",
+      // data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+      url: flask_url+":"+flask_port+"/reset_duckiebot",
+      data: JSON.stringify({list:active_bots}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
@@ -260,7 +262,7 @@ function stop_duckiebots(next_function){
         alert(result.toSource())
         let not_started = false;
         result.container.forEach(function(entry, index){
-          if (entry!="Started evaluation"){
+          if (entry!="Duckiebot reset"){
               not_started = true;
           }
         });

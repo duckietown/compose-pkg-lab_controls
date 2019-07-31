@@ -30,8 +30,7 @@
   }, false);
 
 /////Call Hue API (using workers)
-  $('#on').submit(function(e){
-    e.preventDefault();
+  function lights_on(){
     let command = JSON.stringify({on:true, bri:254, ct:153});
     worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
 
@@ -39,10 +38,9 @@
     slider_col.value=153;
     output_int.innerHTML = 254;
     output_col.innerHTML = 153;
-  });
+  }
 
-  $('#off').submit(function(e){
-    e.preventDefault();
+  function lights_off(){
     let command = JSON.stringify({on:false, bri:254, ct:153});
     worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
 
@@ -50,10 +48,9 @@
     slider_col.value=153;
     output_int.innerHTML = 254;
     output_col.innerHTML = 153;
-  });
+  }
 
-  $('#change').submit(function(e){
-    e.preventDefault();
+  function lights_change(){
     let command = JSON.stringify({on:true, bri:parseInt(intensity, 10), ct:parseInt(color, 10)});
     worker_lights.postMessage({'url': url, 'light_nbr': light_nbr, 'command': command});
-  });
+  }

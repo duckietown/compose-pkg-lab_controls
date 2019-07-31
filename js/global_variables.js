@@ -49,3 +49,5 @@
   let i_am_ready = {}
   //List of autobot camera subscribers
   let sub_duckiebot_cameras = {}
+  //Interval object to ping the server for new submissions
+  let job_server_interval=null;

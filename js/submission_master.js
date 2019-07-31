@@ -39,6 +39,9 @@
       passive_bots.forEach(function(entry){
         agent_list.push(entry);
       });
+      let debug_string = "Chose the following Duckiebots as active: <br> "+active_bots+"<br> Chose the following Duckiebots as passive: <br> "+passive_bots+"<br><br> ####################################### <br>";
+      document.getElementById('debug_window').innerHTML += debug_string;
+
       add_waiting('ping_agents');
       add_waiting('check_lights');
       add_waiting('mount_usb');

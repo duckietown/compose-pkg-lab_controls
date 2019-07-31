@@ -150,6 +150,23 @@
     display:none;"
   }
 
+  .popup_debug {
+    position:absolute;
+    width:20%;
+    height:80%;
+    top:10%;
+    left:78%;
+    border: 5px solid white;
+    background-color:black;
+    color: white;
+    z-index:99999;
+    padding:15px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    display:none;
+    overflow:auto;
+  }
+
   .popup_content{
     padding-top:20px;
   }
