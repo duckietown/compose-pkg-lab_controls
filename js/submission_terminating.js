@@ -22,6 +22,15 @@
               logging_stopped = false;
             }
           });
+
+          let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Logging status</b></td></tr>";
+          result.hostname.forEach(function(entry, index){
+              debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_stop[index]+"</td></tr>";
+          });
+          debug_string+="</table><br><br> ####################################### <br>"
+          document.getElementById('debug_window').innerHTML += debug_string;
+          document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
           if (!logging_stopped){
             add_failure('stop_logging');
             document.getElementById('memory_check').onclick=function(){
@@ -47,7 +56,7 @@
   function copy_bags(next_function){
     add_loading('copy_bags');
     add_success('copy_bags');
-    validate_bags(clear_memory)
+    next_function(clear_memory)
   }
 
 /////Validate the bags pulled from the agents
@@ -83,6 +92,15 @@ function clear_memory(next_function){
             memory_cleared = false;
           }
         });
+
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Memory cleared</b></td></tr>";
+        result.hostname.forEach(function(entry, index){
+            debug_string+="<tr><td>"+entry+"</td><td>"+result.clear_memory[index]+"</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
         if (!memory_cleared){
           add_failure('clear_memory');
           document.getElementById('clear_memory').onclick=function(){

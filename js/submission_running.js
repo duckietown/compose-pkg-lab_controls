@@ -2,21 +2,29 @@
 function start_duckiebots(){
     add_loading('duckiebot_start');
     if (ROS_connected){
-      let emergency = new ROSLIB.Message({
-        data : false
-      });
-      submission_bots.forEach(function(entry){
-        if (!(entry in pub_emergency_stop)){
-          pub_emergency_stop[entry] = new ROSLIB.Topic({
-            ros : window.ros,
-            name : '/'+entry+'/toggleEmergencyStop',
-            messageType : 'std_msgs/Bool',
-            queue_size : 1,
-          });
-        }
-        pub_emergency_stop[entry].publish(emergency)
-      });
-      add_success('duckiebot_start');
+        let emergency = new ROSLIB.Message({
+            data : false
+        });
+        submission_bots.forEach(function(entry){
+            if (!(entry in pub_emergency_stop)){
+                pub_emergency_stop[entry] = new ROSLIB.Topic({
+                    ros : window.ros,
+                    name : '/'+entry+'/toggleEmergencyStop',
+                    messageType : 'std_msgs/Bool',
+                    queue_size : 1,
+                });
+            }
+            pub_emergency_stop[entry].publish(emergency)
+        });
+        add_success('duckiebot_start');
+        
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Emergency stop</b></td></tr>";
+        submission_bots.forEach(function(entry){
+            debug_string+="<tr><td>"+entry+"</td><td>Emergency stop released</td></tr>";
+        });
+        debug_string+="</table><br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
     }
   }
 

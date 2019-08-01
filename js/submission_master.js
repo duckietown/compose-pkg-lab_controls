@@ -11,8 +11,9 @@
       submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
       if (current_submission_loop=="LF"){
-        necessary_active_bots = 1;
-        necessary_passive_bots = 0;
+        //TODO: Only for testing, LF needs other bot setup
+        necessary_active_bots = 0;
+        necessary_passive_bots = 1;
       } else {
         necessary_active_bots = 1;
         necessary_passive_bots = 2;
@@ -30,7 +31,7 @@
     }
     if (id==2){
       current_substeps=0;
-      necessary_substeps=9;
+      necessary_substeps=10;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
       active_bots.forEach(function(entry){
@@ -50,10 +51,14 @@
       add_waiting('restart_interface');
       add_waiting('duckiebot_hold');
       add_waiting('start_logging');
+      add_waiting('start_passive_duckiebots');
       add_waiting('start_duckiebot_container');
       add_waiting('ready_to_move');
 
-      submission_bots = active_bots;
+      submission_bots = [];
+      active_bots.forEach(function(entry){
+        submission_bots.push(entry);
+      });
       passive_bots.forEach(function(entry){
         submission_bots.push(entry);
       });
@@ -66,6 +71,11 @@
       current_button="btn_submission_finished";
       let dt = new Date();
       start_timestamp = dt.getTime();
+
+      let debug_string="Evaluation started with timestamp: "+start_timestamp+"<br><br> ####################################### <br>"
+      document.getElementById('debug_window').innerHTML += debug_string;
+      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
       add_waiting('duckiebot_start');
       start_duckiebots();
       subscribe_cameras();
@@ -80,6 +90,11 @@
       //Clear memory of agents
       let dt = new Date();
       stop_timestamp = dt.getTime();
+
+      let debug_string="Evaluation stopped with timestamp: "+stop_timestamp+"<br><br> ####################################### <br>"
+      document.getElementById('debug_window').innerHTML += debug_string;
+      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
       current_substeps=0;
       necessary_substeps=6;
       current_button="btn_upload_data_ipfs";

@@ -250,7 +250,10 @@
               <td>Starting logging containers</td>
               <td><span id="start_logging"></span></td>
             </tr><tr height="40px">
-              <td>Starting duckiebot containers</td>
+              <td>Starting passive Duckiebots</td>
+              <td><span id="start_passive_duckiebots"></span></td>
+            </tr><tr height="40px">
+              <td>Starting active Duckiebots</td>
               <td><span id="start_duckiebot_container"></span></td>
             </tr><tr height="40px">
               <td>Duckiebots ready to move</td>

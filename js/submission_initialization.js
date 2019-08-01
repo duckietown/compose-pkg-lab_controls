@@ -156,7 +156,7 @@
           }
         });
 
-        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Status</b></td></tr>";
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Duckiebot-interface Status</b></td></tr>";
         result.hostname.forEach(function(entry, index){
             debug_string+="<tr><td>"+entry+"</td><td>"+result.outcome[index]+"</td></tr>";
         });
@@ -172,7 +172,7 @@
           };
         } else {
           add_success('restart_interface');
-          next_function1(start_duckiebot_container);
+          next_function1(start_passive_duckiebots);
           next_function2();
         }
       }
@@ -198,7 +198,7 @@
     //       }
     //     });
 
-    //       let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Logging</b></td></tr>";
+    //       let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Logging status</b></td></tr>";
     //       result.hostname.forEach(function(entry, index){
     //           debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_start[index]+"</td></tr>";
     //       });
@@ -251,8 +251,8 @@ function stop_duckiebots(next_function){
   document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
 
-  if (next_function == start_duckiebot_container){
-    next_function(wait_for_all_bots)
+  if (next_function == start_passive_duckiebots){
+    next_function(start_duckiebot_container)
     add_success('duckiebot_hold');
   } else {
     add_success('duckiebot_stop');
@@ -261,23 +261,70 @@ function stop_duckiebots(next_function){
 
 /////Start containers on the Duckiebots
   function start_duckiebot_container(next_function){
-    add_loading('start_duckiebot_container');
-    ajax_list["start_active_containers"]=$.ajax({
-      url: flask_url+":"+flask_port+"/start_active_bots",
-      data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+    if (active_bots.length!=0){
+      add_loading('start_duckiebot_container');
+      ajax_list["start_active_containers"]=$.ajax({
+        url: flask_url+":"+flask_port+"/start_active_bots",
+        data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+        dataType: "json",
+        type: "POST",
+        contentType: 'application/json',
+        header: {},
+        success: function(result) {
+          let not_started = false;
+          delete ajax_list["start_active_containers"];
+          result.container.forEach(function(entry, index){
+            if (entry!="Started evaluation"){
+                not_started = true;
+            }
+          });
+
+          let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Active Container</b></td></tr>";
+          result.hostname.forEach(function(entry, index){
+              debug_string+="<tr><td>"+entry+"</td><td>"+result.container[index]+"</td></tr>";
+          });
+          debug_string+="</table><br><br> ####################################### <br>"
+          document.getElementById('debug_window').innerHTML += debug_string;
+          document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+          if (not_started){
+            add_failure('start_duckiebot_container');
+            document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
+          } else {
+            add_success('start_duckiebot_container');
+            next_function();
+          }
+        },
+      });
+    } else {
+      //If no active bots wanted, i.e. standard DEMO started from the interface
+      add_success('start_duckiebot_container');
+      next_function();
+    }
+  }
+
+
+/////Start containers on the Duckiebots
+function start_passive_duckiebots(next_function){
+  if (passive_bots.length!=0){
+    add_loading('start_passive_duckiebots');
+    ajax_list["start_passive_duckiebots"]=$.ajax({
+      url: flask_url+":"+flask_port+"/start_passive_bots",
+      data: JSON.stringify({list:passive_bots, demo:"indefinite_navigation"}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
       header: {},
       success: function(result) {
         let not_started = false;
+        delete ajax_list["start_passive_duckiebots"];
         result.container.forEach(function(entry, index){
-          if (entry!="Started evaluation"){
+          if (entry!="Started demo"){
               not_started = true;
           }
         });
 
-        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Container</b></td></tr>";
+        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Demo status</b></td></tr>";
         result.hostname.forEach(function(entry, index){
             debug_string+="<tr><td>"+entry+"</td><td>"+result.container[index]+"</td></tr>";
         });
@@ -286,15 +333,20 @@ function stop_duckiebots(next_function){
         document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
         if (not_started){
-          add_failure('start_duckiebot_container');
-          document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
+          add_failure('start_passive_duckiebots');
+          document.getElementById('start_passive_duckiebots').onclick=function(){start_passive_duckiebots(next_function);};
         } else {
-          add_success('start_duckiebot_container');
-          next_function();
+          add_success('start_passive_duckiebots');
+          next_function(wait_for_all_bots);
         }
       },
     });
+  } else {
+    add_success('start_passive_duckiebots');
+    next_function(wait_for_all_bots);
   }
+  
+}
 
 /////Wait until all bots are ready to move
   function wait_for_all_bots(){
@@ -312,6 +364,11 @@ function stop_duckiebots(next_function){
         i_am_ready[entry] = false
         sub_ready_to_move[entry].subscribe(function(message) {
           if (message.data){
+            if (i_am_ready[entry]== false){
+              let debug_string=entry+" ready to move<br><br> ####################################### <br>"
+              document.getElementById('debug_window').innerHTML += debug_string;
+              document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+            }
             i_am_ready[entry] = true;
           }
           let ready = true;
@@ -322,6 +379,11 @@ function stop_duckiebots(next_function){
           });
           if (ready){
             add_success('ready_to_move');
+
+            let debug_string="All submission bots ready to move, evaluation can be started<br><br> ####################################### <br>"
+            document.getElementById('debug_window').innerHTML += debug_string;
+            document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
             submission_bots.forEach(function(bot){
               sub_ready_to_move[bot].unsubscribe();
             });
@@ -334,7 +396,7 @@ function stop_duckiebots(next_function){
 /////Test function only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   function start_duckiebot_container_test(){
     add_loading('start_duckiebot_container');
-    active_bots = ["autobot03"];
+    // active_bots = ["autobot03"];
     current_submission_container = "localhost:5000/webbe035/aido-submissions:2019_07_23_15_41_34";
     ajax_list["start_active_containers"]=$.ajax({
       // url: flask_url+":"+flask_port+"/start_active_bots",
