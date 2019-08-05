@@ -181,7 +181,7 @@
 
 /////Start the logging containers
   function start_logging(){
-    add_loading('start_logging');
+     add_loading('start_logging');
     // ajax_list["start_logging"]=$.ajax({
     //   url: flask_url+":"+flask_port+"/start_logging",
     //   data: JSON.stringify({list:agent_list}),
@@ -391,35 +391,4 @@ function start_passive_duckiebots(next_function){
         });
       });
     }
-  }
-
-/////Test function only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  function start_duckiebot_container_test(){
-    add_loading('start_duckiebot_container');
-    // active_bots = ["autobot03"];
-    current_submission_container = "localhost:5000/webbe035/aido-submissions:2019_07_23_15_41_34";
-    ajax_list["start_active_containers"]=$.ajax({
-      // url: flask_url+":"+flask_port+"/start_active_bots",
-      // data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
-      url: flask_url+":"+flask_port+"/reset_duckiebot",
-      data: JSON.stringify({list:active_bots}),
-      dataType: "json",
-      type: "POST",
-      contentType: 'application/json',
-      header: {},
-      success: function(result) {
-        alert(result.toSource())
-        let not_started = false;
-        result.outcome.forEach(function(entry, index){
-          if (entry!="Duckiebot reset"){
-              not_started = true;
-          }
-        });
-        if (not_started){
-          alert("Failure");
-        } else {
-          alert("Success");
-        }
-      },
-    });
   }

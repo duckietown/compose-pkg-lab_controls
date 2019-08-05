@@ -13,6 +13,7 @@
 /////Insert currently available submissions into submission table body
   function insert_submission_body(table){
     let debug_string = "Currently pinging the submission server <br><br>";
+    let step_start_time = Date.now();
     document.getElementById('debug_window').innerHTML += debug_string;
     endpoint_string = "/api/take-submission";
     url_string = "http://localhost:6544";
@@ -30,6 +31,7 @@
           let stop_time_ajax = Date.now();
           document.getElementById('server_answer_time').innerHTML=(stop_time_ajax-start_time_ajax)/1000;
           if (response.result.submission_id != null){
+            let step_stop_time = Date.now();
             document.getElementById('submission_server_time_info').style.display="none";
             clearInterval(job_server_interval);
             let row = table.insertRow();
@@ -57,6 +59,13 @@
                                 "<br><br> ####################################### <br>";
             document.getElementById('debug_window').innerHTML += debug_string;
             document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+            logging_object.job = {};
+            logging_object.job.submission_id = response.result.submission_id;
+            logging_object.job.container = container;
+            logging_object.job.challenge_name = challenge_name;
+            logging_object.job.step_start_time = step_start_time;
+            logging_object.job.step_stop_time = step_stop_time;
+            logging_object.job.duration = (step_stop_time-step_start_time)/1000;
           }
           
         },

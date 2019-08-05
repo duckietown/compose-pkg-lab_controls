@@ -23,6 +23,7 @@
 
 /////Initialize submission popup if no submission currently running
   function initialize_submission_popup(){
+    logging_object = {};
     let ancestor = document.getElementById('submission_steps'), descendents = ancestor.children;
     for(let i=1; i<=descendents.length; i++){
       document.getElementById('submission_step_'+i).style.display="none";

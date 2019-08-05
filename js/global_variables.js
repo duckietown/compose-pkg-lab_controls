@@ -51,3 +51,5 @@
   let sub_duckiebot_cameras = {}
   //Interval object to ping the server for new submissions
   let job_server_interval=null;
+  //Object to store information to be written into the logfile
+  let logging_object = {};

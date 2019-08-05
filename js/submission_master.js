@@ -34,12 +34,38 @@
       necessary_substeps=10;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
+
+      let watchtowers=[];
+
+      agent_list.forEach(function(entry){
+        watchtowers.push(entry);
+      });
+
       active_bots.forEach(function(entry){
         agent_list.push(entry);
       });
       passive_bots.forEach(function(entry){
         agent_list.push(entry);
       });
+
+      logging_object.watchtowers = {};
+      logging_object.duckiebots = {};
+      logging_object.duckiebots.active = {};
+      logging_object.duckiebots.passive = {};
+
+      watchtowers.forEach(function(entry){
+        logging_object.watchtowers[entry] = {};
+        logging_object.watchtowers[entry].ping = parseFloat(detected_pings[entry]);
+      });
+      active_bots.forEach(function(entry){
+        logging_object.duckiebots.active[entry] = {};
+        logging_object.duckiebots.active[entry].ping = parseFloat(detected_pings[entry]);
+      });
+      passive_bots.forEach(function(entry){
+        logging_object.duckiebots.passive[entry] = {};
+        logging_object.duckiebots.passive[entry].ping = parseFloat(detected_pings[entry]);
+      });
+
       let debug_string = "Chose the following Duckiebots as active: <br> "+active_bots+"<br> Chose the following Duckiebots as passive: <br> "+passive_bots+"<br><br> ####################################### <br>";
       document.getElementById('debug_window').innerHTML += debug_string;
       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
