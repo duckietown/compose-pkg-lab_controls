@@ -167,12 +167,12 @@
     <button id="btn_open_debug" type="button" class="btn btn-default pull-right" onclick="toggle_debug()">Open debug</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">
-        <li id="submission_tab_1" role="presentation" class="active" onclick=""><a href="#">Select job</a></li>
-        <li id="submission_tab_2" role="presentation" onclick=""><a href="#">Select duckiebots</a></li>
-        <li id="submission_tab_3" role="presentation" onclick=""><a href="#">Initialize city</a></li>
-        <li id="submission_tab_4" role="presentation" onclick=""><a href="#">Run submission</a></li>
-        <li id="submission_tab_5" role="presentation" onclick=""><a href="#">Evaluation finished</a></li>
-        <li id="submission_tab_6" role="presentation" onclick=""><a href="#">Upload Data</a></li>
+        <li id="submission_tab_1" role="presentation" class="active no_hover" onclick=""><a href="#">Select job</a></li>
+        <li id="submission_tab_2" role="presentation" class="no_hover" onclick=""><a href="#">Select duckiebots</a></li>
+        <li id="submission_tab_3" role="presentation" class="no_hover" onclick=""><a href="#">Initialize city</a></li>
+        <li id="submission_tab_4" role="presentation" class="no_hover" onclick=""><a href="#">Run submission</a></li>
+        <li id="submission_tab_5" role="presentation" class="no_hover" onclick=""><a href="#">Evaluation finished</a></li>
+        <li id="submission_tab_6" role="presentation" class="no_hover" onclick=""><a href="#">Upload Data</a></li>
       </ul>
     </span>
     <br>
@@ -180,7 +180,7 @@
       <span id="submission_step_1" class="">
         <button id="btn_start_job" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Select job</button>
         <br><br>
-        <span id="submission_server_time_info">Currently pinging the submission server. The server answers in <span id="server_answer_time">999</span> seconds.</span>
+        <span id="submission_server_time_info">Currently pinging the submission server. The server answers in <span id="server_answer_time">999</span> seconds. Please wait</span>
         <span class="submission_tab">
           <table id="submission_table" class="history_list" cellpadding="1" border="0" >
             <thead style="background-color: #dddddd;">

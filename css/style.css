@@ -180,6 +180,10 @@
   color: #333;
   }
 
+  .nav .no_hover a:hover {
+    background:rgba(0,0,0,0);
+  }
+
 /* Styling for Changelog */
 .history_tab {
   width: 100%;

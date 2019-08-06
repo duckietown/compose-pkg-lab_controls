@@ -48,22 +48,21 @@
         agent_list.push(entry);
       });
 
-      logging_object.watchtowers = {};
-      logging_object.duckiebots = {};
-      logging_object.duckiebots.active = {};
-      logging_object.duckiebots.passive = {};
+      logging_object.agent = {};
 
       watchtowers.forEach(function(entry){
-        logging_object.watchtowers[entry] = {};
-        logging_object.watchtowers[entry].ping = parseFloat(detected_pings[entry]);
+        logging_object.agent[entry] = {};
+        logging_object.agent[entry].type = "watchtower";
       });
       active_bots.forEach(function(entry){
-        logging_object.duckiebots.active[entry] = {};
-        logging_object.duckiebots.active[entry].ping = parseFloat(detected_pings[entry]);
+        logging_object.agent[entry] = {};
+        logging_object.agent[entry].type = "duckiebot";
+        logging_object.agent[entry].role = "active";
       });
       passive_bots.forEach(function(entry){
-        logging_object.duckiebots.passive[entry] = {};
-        logging_object.duckiebots.passive[entry].ping = parseFloat(detected_pings[entry]);
+        logging_object.agent[entry] = {};
+        logging_object.agent[entry].type = "duckiebot";
+        logging_object.agent[entry].role = "passive";
       });
 
       let debug_string = "Chose the following Duckiebots as active: <br> "+active_bots+"<br> Chose the following Duckiebots as passive: <br> "+passive_bots+"<br><br> ####################################### <br>";

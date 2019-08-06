@@ -63,9 +63,11 @@
             logging_object.job.submission_id = response.result.submission_id;
             logging_object.job.container = container;
             logging_object.job.challenge_name = challenge_name;
-            logging_object.job.step_start_time = step_start_time;
-            logging_object.job.step_stop_time = step_stop_time;
-            logging_object.job.duration = (step_stop_time-step_start_time)/1000;
+            logging_object.steps = {};
+            logging_object.steps.job_selection = {};
+            logging_object.steps.job_selection.step_start_time = step_start_time;
+            logging_object.steps.job_selection.step_stop_time = step_stop_time;
+            logging_object.steps.job_selection.duration = (step_stop_time-step_start_time)/1000;
           }
           
         },
