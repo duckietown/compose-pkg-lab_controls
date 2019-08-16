@@ -87,6 +87,7 @@
   </table>
 
   <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()" disabled>Evaluate submission</button>
+  <button type="button" class="btn btn-default" onclick="open_docker_maintenance_popup()">Docker maintenance</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(15)">Toggle switch 1</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(16)" disabled>Toggle switch 2</button>
   <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
@@ -354,6 +355,21 @@
   <div id="debug_window" class=popup_debug>
 
   </div>
+  <div onclick="close_docker_maintenance_popup()" id="maintenance_blackout_div" class=blackout></div>
+  <div id="docker_maintenance" class=popup>
+    Enter docker command: 
+    <div class="input-group">
+      <span class="input-group-addon" id="basic-addon1">docker -H Hostname </span>
+      <input id="docker_command" type="text" class="form-control" placeholder="command" aria-describedby="basic-addon1">
+    </div>
+    <br>
+    <div class = "docker_entities" id="docker_entitites">
+
+    </div>
+    <br>
+    <button id="start_docker_command" type="button" class="btn btn-default" onclick="start_docker_command()">Execute docker command</button>
+  </div>
+
 
 <!-- JS to import settings from php -->
   <script>
@@ -410,3 +426,4 @@
   <script src="<?php echo Core::getJSscriptURL('submission_running.js', 'lab_controls') ?>" type="text/javascript"></script>
   <script src="<?php echo Core::getJSscriptURL('submission_terminating.js', 'lab_controls') ?>" type="text/javascript"></script>
   <script src="<?php echo Core::getJSscriptURL('submission_uploading.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('maintenance_popup.js', 'lab_controls') ?>" type="text/javascript"></script>

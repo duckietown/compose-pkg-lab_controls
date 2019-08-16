@@ -53,3 +53,7 @@
   let job_server_interval=null;
   //Object to store information to be written into the logfile
   let logging_object = {};
+  //Array of entities to be called in docker maintenance
+  let docker_hosts = [];
+  //Needed to enable shift clicking inside the docker host selection for docker maintenance
+  let last_clicked_docker_host = "";

@@ -147,7 +147,7 @@
     padding:15px;
     -webkit-border-radius:5px;
     border-radius:5px;
-    display:none;"
+    display:none;
   }
 
   .popup_debug {
@@ -321,4 +321,20 @@ svg {
   100% {
     stroke-dashoffset: 900;
   }
+}
+
+/* Smart wrapping of many entities, taken from: https://stackoverflow.com/questions/39124661/content-inside-a-div-in-a-new-column-on-overflow */
+.docker_entities {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  height: 250px;
+}
+
+.docker_entity {
+  height: 25px;
+  width: 120px;
+  text-align: center;
+  line-height: 25px;
 }
