@@ -30,9 +30,6 @@
           }
         } catch{}
       }
-      if (document.getElementById('info_content').style.display=="block"){
-        document.getElementById('info_content').innerHTML="My name is: "+current_popup+"<br>My position is: "+bots_positions[current_popup];
-      }
     }
   }
 ///// Add a new entity

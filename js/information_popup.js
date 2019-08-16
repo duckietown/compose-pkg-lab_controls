@@ -6,6 +6,7 @@
       document.getElementById('info_content').style.display="block";
       document.getElementById('camera_content').style.display="none";
       document.getElementById('history_content').style.display="none";
+      showInfo();
   }
 /////Function to hide popup on click
   function close_information_window(){
@@ -26,6 +27,9 @@
     document.getElementById('info_tab').classList.add('active');
     document.getElementById('camera_tab').classList.remove('active');
     document.getElementById('history_tab').classList.remove('active');
+    document.getElementById('info_content').innerHTML="hostname: "+current_popup;
+    //TODO: add health state from 8085 site
+
     try{
       subscriber_camera.unsubscribe();
     } catch {}
