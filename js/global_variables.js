@@ -57,3 +57,9 @@
   let docker_hosts = [];
   //Needed to enable shift clicking inside the docker host selection for docker maintenance
   let last_clicked_docker_host = "";
+  //Logging bag name
+  let logging_bag_name = "";
+  //Logging bag mount directory
+  let logging_bag_mount = "";
+  //Current demo to be run on duckiebots
+  let current_demo = "";

@@ -71,6 +71,18 @@
       "type" : "text",
       "default" : "http://localhost:6544",
       "details" : "URL of submission server"
+    },
+    "logging_server_hostname" : {
+      "title" : "Hostname of the logging server",
+      "type" : "text",
+      "default" : "",
+      "details" : "Hostname of the logging server"
+    },
+    "logging_server_username" : {
+      "title" : "Username of the logging server, needs passwordless ssh",
+      "type" : "text",
+      "default" : "",
+      "details" : "Username of the logging server, needs passwordless ssh"
     }
   }
 }

@@ -31,7 +31,7 @@
     }
     if (id==2){
       current_substeps=0;
-      necessary_substeps=10;
+      necessary_substeps=8;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
 
@@ -71,11 +71,9 @@
 
       add_waiting('ping_agents');
       add_waiting('check_lights');
-      add_waiting('mount_usb');
       add_waiting('memory_check');
       add_waiting('restart_interface');
       add_waiting('duckiebot_hold');
-      add_waiting('start_logging');
       add_waiting('start_passive_duckiebots');
       add_waiting('start_duckiebot_container');
       add_waiting('ready_to_move');
@@ -87,32 +85,20 @@
       passive_bots.forEach(function(entry){
         submission_bots.push(entry);
       });
-      ping_list(mount_drives);
+      ping_list(memory_check);
       reset_lights();
     }
     if (id==3){
       current_substeps=0;
-      necessary_substeps=1;
+      necessary_substeps=2;
       current_button="btn_submission_finished";
-      let dt = new Date();
-      start_timestamp = dt.getTime();
 
-      let debug_string="Evaluation started with timestamp: "+start_timestamp+"<br><br> ####################################### <br>"
-      document.getElementById('debug_window').innerHTML += debug_string;
-      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-
+      add_waiting('start_logging');
       add_waiting('duckiebot_start');
-      start_duckiebots();
+      start_logging(start_duckiebots);
       subscribe_cameras();
     }
     if (id==4){
-      //Get Timestamp for log_stop
-      //Stop logging
-      //Stop duckiebots
-      //Kill and remove duckiebot containers
-      //Copy bags
-      //Validate bags
-      //Clear memory of agents
       let dt = new Date();
       stop_timestamp = dt.getTime();
 
@@ -121,15 +107,14 @@
       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
       current_substeps=0;
-      necessary_substeps=6;
+      necessary_substeps=5;
       current_button="btn_upload_data_ipfs";
       add_waiting('stop_logging');
       add_waiting('duckiebot_stop')
       add_waiting('stop_duckiebot_containers');
-      add_waiting('copy_bags');
-      add_waiting('validate_bags');
-      add_waiting('clear_memory');
-      stop_logging(copy_bags);
+      add_waiting('process_bags')
+      add_waiting('process_localization')
+      stop_logging(process_bags);
       stop_duckiebots();
       stop_duckiebot_containers();
       unsubscribe_cameras();

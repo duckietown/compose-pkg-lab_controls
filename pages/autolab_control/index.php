@@ -17,6 +17,8 @@
     $param_flask_port = Core::getSetting("flask_port", "lab_controls");
     $param_changelog_file = Core::getSetting("changelog_file", "lab_controls");
     $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
+    $param_logging_server_hostname = Core::getSetting("logging_server_hostname", "lab_controls");
+    $param_logging_server_username = Core::getSetting("logging_server_username", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
   ?>
 <!-- Import stylesheet -->
@@ -236,9 +238,6 @@
               <td>Setting the room lights</td>
               <td><span id="check_lights"></span></td>
             </tr><tr height="40px">
-              <td>Mounting the USB dives</td>
-              <td><span id="mount_usb"></span></td>
-            </tr><tr height="40px">
               <td>Checking memory</td>
               <td><span id="memory_check"></span></td>
             </tr><tr height="40px">
@@ -247,9 +246,6 @@
             </tr><tr height="40px">
               <td>Preventing Duckiebot movement</td>
               <td><span id="duckiebot_hold"></span></td>
-            </tr><tr height="40px">
-              <td>Starting logging containers</td>
-              <td><span id="start_logging"></span></td>
             </tr><tr height="40px">
               <td>Starting passive Duckiebots</td>
               <td><span id="start_passive_duckiebots"></span></td>
@@ -269,6 +265,9 @@
         <span id="body_submission_running">
           The submission is currently running. Press the \'Stop submission\' button as soon as the active bot/s drive/s out of the city
           <table width="300px"><tbody>
+            </tr><tr height="40px">
+                <td>Starting logging</td>
+                <td><span id="start_logging"></span></td>
             <tr height="40px">
               <td>Enabling Duckiebot movement</td>
               <td><span id="duckiebot_start"></span></td>
@@ -325,14 +324,11 @@
               <td>Stop Duckiebot containers</td>
               <td><span id="stop_duckiebot_containers"></span></td>
             </tr><tr height="40px">
-              <td>Copy bags</td>
-              <td><span id="copy_bags"></span></td>
+              <td>Process bags</td>
+              <td><span id="process_bags"></span></td>
             </tr><tr height="40px">
-              <td>Validate bags</td>
-              <td><span id="validate_bags"></span></td>
-            </tr><tr height="40px">
-              <td>Clear memory</td>
-              <td><span id="clear_memory"></span></td>
+              <td>Process localization</td>
+              <td><span id="process_localization"></span></td>
             </tr>
           </tbody></table>
         </span>
@@ -397,6 +393,10 @@
     let changelog_file = "<?php echo $param_changelog_file?>";
     //Submission server url
     let submission_server_url = "<?php echo $param_submission_server?>";
+    //Logging server hostname
+    let logging_server_hostname = "<?php echo $param_logging_server_hostname?>";
+    //Logging server username
+    let logging_server_username = "<?php echo $param_logging_server_username?>";
     //Worker file for light control
     let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
     //Initialize Rosbridge

@@ -42,7 +42,7 @@
           document.getElementById('ping_agents').onclick=function(){ping_list(next_function);};
         } else {
           add_success('ping_agents');
-          next_function(memory_check);
+          next_function(restart_duckiebot_interface);
         }
       },
     });
@@ -64,86 +64,27 @@
     logging_object.steps.lights.duration = (step_stop_time-step_start_time)/1000;
   }
 
-/////Mount drives
-  function mount_drives(next_function){
-    add_loading('mount_usb');
-    let step_start_time = Date.now();
-    ajax_list["mount_drives"]=$.ajax({
-      url: flask_url+":"+flask_port+"/logging_checks",
-      data: JSON.stringify({list:agent_list}),
-      dataType: "json",
-      type: "POST",
-      contentType: 'application/json',
-      header: {},
-      success: function(result) {
-        delete ajax_list["mount_drives"];
-        let device_not_mountable = false;
-        result.logging_check.forEach(function(entry){
-          if (!(entry == "No USB Device" || entry == "Writable USB")){
-            device_not_mountable = true;
-          }
-        });
-
-        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>USB device</b></td></tr>";
-        result.hostname.forEach(function(entry, index){
-            debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_check[index]+"</td></tr>";
-            logging_object.agent[entry].drive_mount = result.logging_check[index];
-        });
-        debug_string+="</table><br><br> ####################################### <br>"
-        document.getElementById('debug_window').innerHTML += debug_string;
-        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-
-        let step_stop_time = Date.now();
-        logging_object.steps.mount_drives = {};
-        logging_object.steps.mount_drives.step_start_time = step_start_time;
-        logging_object.steps.mount_drives.step_stop_time = step_stop_time;
-        logging_object.steps.mount_drives.duration = (step_stop_time-step_start_time)/1000;
-
-        if (device_not_mountable){
-          add_failure('mount_usb');
-          document.getElementById('mount_usb').onclick=function(){mount_drives(next_function);};
-        } else {
-          add_success('mount_usb');
-          next_function(restart_duckiebot_interface);
-        }
-      },
-    });
-  }
-
 /////Check available memory
   function memory_check(next_function){
     add_loading('memory_check');
     let step_start_time = Date.now();
     ajax_list["memory_check"]=$.ajax({
-      url: flask_url+":"+flask_port+"/storage_space_checks",
-      data: JSON.stringify({list:agent_list}),
-      dataType: "json",
+      url: flask_url+":"+flask_port+"/space_check",
       type: "POST",
       contentType: 'application/json',
       header: {},
       success: function(result) {
         delete ajax_list["memory_check"];
         let not_enough_memory = false;
-        result.space_check.forEach(function(entry, index){
-          if (result.hostname[index].substring(0,4)=="watc"){
-            let size = parseInt(entry.substring(5,entry.indexOf(',')-1));
-            if (size<80){
-              not_enough_memory = true;
-            }
-          } else {
-            let size = parseInt(entry.substring(entry.indexOf(',')+7,entry.length-1));
-            if (size<25){
-              not_enough_memory = true;
-            }
-          }
-        });
+        let size = parseInt(result.outcome);
+        let debug_string = "Available space on the logging PC: "+size/1048576.0+" GB. This is ";
 
-        let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Memory</b></td></tr>";
-        result.hostname.forEach(function(entry, index){
-            debug_string+="<tr><td>"+entry+"</td><td>"+result.space_check[index]+"</td></tr>";
-            logging_object.agent[entry].memory = result.space_check[index];
-        });
-        debug_string+="</table><br><br> ####################################### <br>"
+        if (size<30000000){
+          not_enough_memory = true;
+          debug_string+="NOT ";
+        }
+
+        debug_string+="sufficient to run a submission.<br><br> ####################################### <br>"
         document.getElementById('debug_window').innerHTML += debug_string;
         document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
@@ -152,28 +93,29 @@
         logging_object.steps.memory_check.step_start_time = step_start_time;
         logging_object.steps.memory_check.step_stop_time = step_stop_time;
         logging_object.steps.memory_check.duration = (step_stop_time-step_start_time)/1000;
+        logging_object.steps.memory_check.available_space_GB = size/1048576.0;
 
         if (not_enough_memory){
           add_failure('memory_check');
           document.getElementById('memory_check').onclick=function(){
             add_waiting('memory_check');
-            clear_memory(mount_drives);
+            memory_check(restart_duckiebot_interface);
           };
         } else {
           add_success('memory_check');
-          next_function(stop_duckiebots, start_logging);
+          next_function(stop_duckiebots);
         }
       },
     });
   }
 
 /////Restart duckiebot interface and acquisition node
-  function restart_duckiebot_interface(next_function1, next_function2){
+  function restart_duckiebot_interface(next_function){
     add_loading('restart_interface');
     let step_start_time = Date.now();
     ajax_list["restart_interface"]=$.ajax({
       url: flask_url+":"+flask_port+"/reset_duckiebot",
-      data: JSON.stringify({list:submission_bots}),
+      data: JSON.stringify({list:agent_list}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
@@ -205,61 +147,14 @@
         if (not_started){
           add_failure('restart_interface');
           document.getElementById('restart_interface').onclick=function(){
-            restart_duckiebot_interface(next_function1, next_function2);
+            restart_duckiebot_interface(next_function);
           };
         } else {
           add_success('restart_interface');
-          next_function1(start_passive_duckiebots);
-          next_function2();
+          next_function(start_passive_duckiebots);
         }
       }
     });
-  }
-
-/////Start the logging containers
-  function start_logging(){
-     add_loading('start_logging');
-    //let step_start_time = Date.now();
-    // ajax_list["start_logging"]=$.ajax({
-    //   url: flask_url+":"+flask_port+"/start_logging",
-    //   data: JSON.stringify({list:agent_list}),
-    //   dataType: "json",
-    //   type: "POST",
-    //   contentType: 'application/json',
-    //   header: {},
-    //   success: function(result) {
-    //     delete ajax_list["start_logging"];
-    //     let logging_started = true;
-    //     result.logging_start.forEach(function(entry){
-    //       if (!(entry == "Started container")){
-    //         logging_started = false;
-    //       }
-    //     });
-
-    //       let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Logging status</b></td></tr>";
-    //       result.hostname.forEach(function(entry, index){
-    //           debug_string+="<tr><td>"+entry+"</td><td>"+result.logging_start[index]+"</td></tr>";
-    //           logging_object.agent[entry].logging_start = result.logging_start[index];
-    //       });
-    //       debug_string+="</table><br><br> ####################################### <br>"
-    //       document.getElementById('debug_window').innerHTML += debug_string;
-    //       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-
-    //       let step_stop_time = Date.now();
-    //       logging_object.steps.start_logging = {};
-    //       logging_object.steps.start_logging.step_start_time = step_start_time;
-    //       logging_object.steps.start_logging.step_stop_time = step_stop_time;
-    //       logging_object.steps.start_logging.duration = (step_stop_time-step_start_time)/1000;
-
-    //     if (!logging_started){
-    //       add_failure('start_logging');
-    //       document.getElementById('start_logging').onclick=function(){start_logging();};
-    //     } else {
-    //       add_success('start_logging');
-    //     }
-    //   },
-    // });
-    add_success('start_logging');
   }
 
 /////Engage the emergency stop of all duckiebots
@@ -303,8 +198,8 @@
     logging_object.steps.prevent_movement_pre_evaluation.duration = (step_stop_time-step_start_time)/1000;
 
     if (next_function == start_passive_duckiebots){
-      next_function(start_duckiebot_container)
       add_success('duckiebot_hold');
+      next_function(start_duckiebot_container)
     } else {
       add_success('duckiebot_stop');
     }
@@ -317,7 +212,7 @@ function start_passive_duckiebots(next_function){
     let step_start_time = Date.now();
     ajax_list["start_passive_duckiebots"]=$.ajax({
       url: flask_url+":"+flask_port+"/start_passive_bots",
-      data: JSON.stringify({list:passive_bots, demo:"indefinite_navigation"}),
+      data: JSON.stringify({list:passive_bots, demo:current_demo}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
@@ -417,6 +312,8 @@ function start_passive_duckiebots(next_function){
 /////Wait until all bots are ready to move
   function wait_for_all_bots(){
     add_loading('ready_to_move');
+    //Stop again to be sure
+    stop_duckiebots();
     let step_start_time = Date.now();
     if (ROS_connected){
       submission_bots.forEach(function(entry){

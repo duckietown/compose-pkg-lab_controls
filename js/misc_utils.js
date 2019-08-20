@@ -40,3 +40,12 @@ function test_emergency_stop(){
   });
   publisher_emergency.publish(emergency)
 }
+
+/////Wait function
+  // From http://www.endmemo.com/js/pause.php
+  function wait(ms){
+    var d = new Date();
+    var d2 = null;
+    do { d2 = new Date(); }
+    while(d2-d < ms);
+  }
