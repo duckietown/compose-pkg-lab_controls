@@ -87,7 +87,16 @@
   </tr>
   </tbody>
   </table>
-
+  <table>
+  <tbody>
+    <tr>
+      <td style="padding-right: 10px; padding-top:5px;"><div id="Watchtower_legend" class="watchtower" style="position: relative">XX</div> Watchtower number XX</td>
+      <td style="padding-right: 10px; padding-top:5px;"><div id="Duckiebot_legend" class="duckiebot" style="position: relative">XX</div> Duckiebot number XX</td>
+      <td style="padding-top:5px;"><div id="Duckiebot_legend" class="duckiebot" style="position: relative; background-color: rgb(237, 156, 39);">XX</div> Highlighted Duckiebot/Watchtower number XX</td>
+    </tr>
+  </tbody>
+  </table>
+  <br>
   <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()" disabled>Evaluate submission</button>
   <button type="button" class="btn btn-default" onclick="open_docker_maintenance_popup()">Docker maintenance</button>
   <button type="button" class="btn btn-default" onclick="toggle_switch(15)">Toggle switch 1</button>
@@ -109,7 +118,7 @@
     <span id="info_content" class="popup_content">
     </span>
     <span id="camera_content" class="popup_content">
-      <img src="" alt="No camera image available, are you sure rosbridge is running?" id="raspi_stream" class=raspi_camera>
+      <img src="" alt="No camera image available, are you sure rosbridge and acquisition-bridge are running?" id="raspi_stream" class=raspi_camera>
     </span>
     <span id="history_content" class="popup_content">
       <h4>Configuration history </h4>
@@ -325,10 +334,10 @@
               <td><span id="stop_duckiebot_containers"></span></td>
             </tr><tr height="40px">
               <td>Process bags</td>
-              <td><span id="process_bags"></span></td>
+              <td><span id="process_bags"></span><span id="process_bags_update"></span></td>
             </tr><tr height="40px">
               <td>Process localization</td>
-              <td><span id="process_localization"></span></td>
+              <td><span id="process_localization"></span><span id="localization_update"></span></td>
             </tr>
           </tbody></table>
         </span>

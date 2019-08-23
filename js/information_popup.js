@@ -29,7 +29,10 @@
     document.getElementById('history_tab').classList.remove('active');
     document.getElementById('info_content').innerHTML="hostname: "+current_popup;
     //TODO: add health state from 8085 site
-
+    $.get("http://"+current_popup+".local:8085/", function(data) {
+      let data_string = JSON.stringify(data, null, 4);
+      document.getElementById('info_content').innerHTML+='<br><pre class="health_box"><code>'+data_string+'</code></pre>'
+    });
     try{
       subscriber_camera.unsubscribe();
     } catch {}

@@ -313,6 +313,7 @@ function start_passive_duckiebots(next_function){
   function wait_for_all_bots(){
     add_loading('ready_to_move');
     //Stop again to be sure
+    current_substeps-=1;
     stop_duckiebots();
     let step_start_time = Date.now();
     if (ROS_connected){

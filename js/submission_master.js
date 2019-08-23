@@ -95,8 +95,8 @@
 
       add_waiting('start_logging');
       add_waiting('duckiebot_start');
-      start_logging(start_duckiebots);
       subscribe_cameras();
+      start_logging(start_duckiebots);
     }
     if (id==4){
       let dt = new Date();

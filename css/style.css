@@ -338,3 +338,11 @@ svg {
   text-align: center;
   line-height: 25px;
 }
+
+/* Wrapping of health status in the information popup */
+.health_box {
+  width: 100%;
+  overflow: scroll;
+  display: block;
+  max-height: 600px;
+}

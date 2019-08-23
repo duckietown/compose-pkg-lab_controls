@@ -3,7 +3,7 @@ function start_logging(next_function){
     add_loading('start_logging');
     let step_start_time = Date.now();
     let time = new Date();
-    let time_stamp = String(time.getFullYear())+String(time.getMonth()+1)+String(time.getDate())+"_"+String(time.getHours())+String(time.getMinutes())+String(time.getSeconds());
+    let time_stamp = time.getFullYear().toString()+(time.getMonth()+1).toString().padStart(2,'0')+time.getDate().toString().padStart(2,'0')+"_"+time.getHours().toString().padStart(2,'0')+time.getMinutes().toString().padStart(2,'0')+time.getSeconds().toString().padStart(2,'0');
     logging_bag_name = "submission"+logging_object.job.submission_id+"_"+logging_object.job.step_name+"_"+time_stamp;
     logging_bag_mount = "/home/"+logging_server_username+"/AIDO3_experiment_data/submission"+logging_object.job.submission_id+"/"+logging_object.job.step_name;
     ajax_list["start_logging"]=$.ajax({
@@ -39,6 +39,7 @@ function start_logging(next_function){
         } else {
           add_success('start_logging');
           wait(3000);
+          next_function();
           next_function();
         }
       },

@@ -63,3 +63,7 @@
   let logging_bag_mount = "";
   //Current demo to be run on duckiebots
   let current_demo = "";
+  //Interval to check if bag processing is done
+  let check_process_interval=null;
+  //Interval to check if bag processing is done
+  let check_localization_interval=null;

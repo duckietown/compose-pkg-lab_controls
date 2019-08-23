@@ -4,6 +4,7 @@
     try{
       add_loading('stop_logging');
     } catch {}
+    let step_start_time = Date.now();
     ajax_list["stop_logging"]=$.ajax({
       url: flask_url+":"+flask_port+"/stop_logging",
       data: JSON.stringify({"computer":logging_server_hostname}),
@@ -27,6 +28,12 @@
           debug_string+="<br><br> ####################################### <br>"
           document.getElementById('debug_window').innerHTML += debug_string;
           document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+          let step_stop_time = Date.now();
+          logging_object.steps.stop_logging = {};
+          logging_object.steps.stop_logging.step_start_time = step_start_time;
+          logging_object.steps.stop_logging.step_stop_time = step_stop_time;
+          logging_object.steps.stop_logging.duration = (step_stop_time-step_start_time)/1000;
 
           if (!logging_stopped){
             add_failure('stop_logging');
@@ -97,6 +104,7 @@
 function process_bags(next_function){
   add_loading('process_bags');
   wait(3000);
+  let step_start_time = Date.now();
   ajax_list["process_bags"]=$.ajax({
     url: flask_url+":"+flask_port+"/start_bag_processing",
     data: JSON.stringify({"input_bag_name":logging_bag_name,"output_bag_name":"processed_"+logging_bag_name, "mount_computer_side":logging_bag_mount, "mount_container_side":"/data" }),
@@ -108,9 +116,8 @@ function process_bags(next_function){
       delete ajax_list["process_bags"];
       let process_successfull = true;
       let debug_string = ""
-      alert(result.toSource());
       if (result.outcome=="Success"){
-        debug_string = "Processed experiment bag successfully";
+        debug_string = "Started experiment bag processing successfully";
       } else {
         debug_string = "Error while processing bag";
         process_successfull = false;
@@ -119,6 +126,9 @@ function process_bags(next_function){
       document.getElementById('debug_window').innerHTML += debug_string;
       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
+      logging_object.steps.process_bags = {};
+      logging_object.steps.process_bags.step_start_time = step_start_time;
+
       if (!process_successfull){
         add_failure('process_bags');
         document.getElementById('process_bags').onclick=function(){
@@ -126,7 +136,42 @@ function process_bags(next_function){
           process_bags(next_function);
         };
       } else {
+          check_process_interval = setInterval(function() {
+            check_process_bags(next_function)
+          }, 1000);
+      }
+    },
+  });
+}
+
+/////Check progress of bag processing
+function check_process_bags(next_function){
+  ajax_list["check_process_bags"]=$.ajax({
+    url: flask_url+":"+flask_port+"/check_bag_processing",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["check_process_bags"];
+      let process_successfull = true;
+      if (result.outcome=="Success"){
+        let debug_string = "Bag processing finished successfully";
+        debug_string+="<br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+      } else {
+        process_successfull = false;
+      }
+      let step_stop_time = Date.now();
+      if (!process_successfull){
+        let tmp_time = (step_stop_time-logging_object.steps.process_bags.step_start_time)/1000;
+        document.getElementById('process_bags_update').innerHTML = "Running for "+tmp_time+" seconds, getting status update from the server";
+      } else {
+        clearInterval(check_process_interval);
         add_success('process_bags');
+        document.getElementById('process_bags_update').innerHTML = "";
+        logging_object.steps.process_bags.step_stop_time = step_stop_time;
+        logging_object.steps.process_bags.duration = (step_stop_time-logging_object.steps.process_bags.step_start_time)/1000;
         next_function();
       }
     },
@@ -136,6 +181,7 @@ function process_bags(next_function){
 /////Process the bags generated during the experiment
 function process_localization(){
   add_loading('process_localization');
+  let step_start_time = Date.now();
   ajax_list["process_localization"]=$.ajax({
     url: flask_url+":"+flask_port+"/process_localization",
     data: JSON.stringify({"input_bag_name":"processed_"+logging_bag_name,"output_dir":"/data", "mount_computer_side":logging_bag_mount, "mount_container_side":"/data" }),
@@ -148,7 +194,7 @@ function process_localization(){
       let process_successfull = true;
       let debug_string = ""
       if (result.outcome=="Success"){
-        debug_string = "Localization computed successfully";
+        debug_string = "Localization started successfully";
       } else {
         debug_string = "Error while processing localization";
         process_successfull = false;
@@ -157,6 +203,9 @@ function process_localization(){
       document.getElementById('debug_window').innerHTML += debug_string;
       document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
+      logging_object.steps.localization = {};
+      logging_object.steps.localization.step_start_time = step_start_time;
+
       if (!process_successfull){
         add_failure('process_localization');
         document.getElementById('process_localization').onclick=function(){
@@ -164,7 +213,42 @@ function process_localization(){
           process_localization();
         };
       } else {
+        check_localization_interval = setInterval(function() {
+          check_localization()
+        }, 1000);
+      }
+    },
+  });
+}
+
+/////Check progress of bag processing
+function check_localization(){
+  ajax_list["check_localization"]=$.ajax({
+    url: flask_url+":"+flask_port+"/check_localization",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["check_localization"];
+      let process_successfull = true;
+      if (result.outcome=="Success"){
+        let debug_string = "Localization finished successfully";
+        debug_string+="<br><br> ####################################### <br>"
+        document.getElementById('debug_window').innerHTML += debug_string;
+        document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+      } else {
+        process_successfull = false;
+      }
+      let step_stop_time = Date.now();
+      if (!process_successfull){
+        let tmp_time = (step_stop_time-logging_object.steps.localization.step_start_time)/1000;
+        document.getElementById('localization_update').innerHTML = "Running for "+tmp_time+" seconds, getting status update from the server";
+      } else {
+        clearInterval(check_localization_interval);
         add_success('process_localization');
+        document.getElementById('localization_update').innerHTML = "";
+        logging_object.steps.localization.step_stop_time = step_stop_time;
+        logging_object.steps.localization.duration = (step_stop_time-logging_object.steps.localization.step_start_time)/1000;
       }
     },
   });

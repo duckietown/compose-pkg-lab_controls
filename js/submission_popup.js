@@ -37,6 +37,8 @@
     document.getElementById('submission_tab_1').classList.add('active');
     document.getElementById('btn_start_job').disabled = true;
     let submission_table = document.getElementById("submission_table_body");
+    document.getElementById('process_bags_update').innerHTML = "";
+    document.getElementById('localization_update').innerHTML = "";
     //Fetch currently available submissions from server
     empty_body(submission_table);
     insert_submission_body(submission_table);
