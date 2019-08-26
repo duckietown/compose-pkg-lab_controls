@@ -1,8 +1,5 @@
 /////Highlight submission from list
   function highlight_submission(id){
-    if(selected_sub_id!==""){
-      document.getElementById(selected_sub_id).style.backgroundColor="";
-    }
     document.getElementById(id).style.backgroundColor="#ED9C27";
     document.getElementById('btn_start_job').disabled = false;
     selected_sub_id=id;
@@ -62,6 +59,7 @@
                                 "<br><br> ####################################### <br>";
             document.getElementById('debug_window').innerHTML += debug_string;
             document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
             logging_object.job = {};
             logging_object.job.submission_id = response.result.submission_id;
             logging_object.job.step_name = response.result.step_name;

@@ -176,6 +176,7 @@
   <div onclick="close_submission_popup()" id="submissionblackoutdiv" class=blackout></div>
   <div id="submissionPopup" class=popup>
     <button id="cancel_submission" type="button" class="btn btn-default" onclick="cancel_job()">Cancel submission</button>
+    <span id="submission_id_display"></span>
     <button id="btn_open_debug" type="button" class="btn btn-default pull-right" onclick="toggle_debug()">Open debug</button><br><br>
     <span id="submission_tabs" class="popup_content">
       <ul class="nav nav-pills">

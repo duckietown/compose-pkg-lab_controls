@@ -345,7 +345,7 @@ function start_passive_duckiebots(next_function){
           });
           if (ready){
             add_success('ready_to_move');
-
+            all_bots_ready = true;
             let debug_string="All submission bots ready to move, evaluation can be started<br><br> ####################################### <br>"
             document.getElementById('debug_window').innerHTML += debug_string;
             document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;

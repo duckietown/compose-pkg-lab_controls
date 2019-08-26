@@ -67,3 +67,5 @@
   let check_process_interval=null;
   //Interval to check if bag processing is done
   let check_localization_interval=null;
+  //Flag to start blinking the start button when all bots are ready
+  let all_bots_ready = false;

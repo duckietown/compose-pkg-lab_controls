@@ -9,7 +9,18 @@
         button.style.background="";
         button.style.color="";
       }
+      if (all_bots_ready){
+        button = document.getElementById('btn_submission_ready_to_start');
+        if (button.style.background==""){
+          button.style.background="#00bd2c";
+          button.style.color="white";
+        } else {
+          button.style.background="";
+          button.style.color="";
+        }
+      }
     }
+
   }, 500);
 
 /////Open submission popup
@@ -29,6 +40,9 @@
       document.getElementById('submission_step_'+i).style.display="none";
       document.getElementById('submission_tab_'+i).classList.remove('active');
     }
+    all_bots_ready = false;
+    document.getElementById('btn_submission_ready_to_start').style.background="";
+    document.getElementById('btn_submission_ready_to_start').style.color="";
     document.getElementById('debug_window').innerHTML="";
     document.getElementById('cancel_submission').style.display="none";
     document.getElementById('submission_step_1').style.display="block";
@@ -56,6 +70,7 @@
 /////Reset submission view after canceling or finishing
   function reset_submission_view(){
     close_submission_popup();
+    document.getElementById('submission_id_display').innerHTML = "";
     document.getElementById('submission_button').innerHTML="Evaluate submission";
     document.getElementById('submission_button').style.background="";
     document.getElementById('submission_button').style.color="";
