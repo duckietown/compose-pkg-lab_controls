@@ -1,6 +1,6 @@
 /////Define variables
   //Bots are moving
-  let bots_moving = false;
+  // let bots_moving = false;
   //Array of bot positions (and movements, only temporary)
   let bots_positions = {};
   //Current Popup name

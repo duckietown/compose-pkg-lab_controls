@@ -124,9 +124,11 @@
     if (id==5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
-      necessary_substeps=1;
+      necessary_substeps=3;
       current_button="btn_finish_job";
+      add_waiting('copy_roster');
+      add_waiting('creating_logfile');
       add_waiting('uploading_data');
-      upload_data();
+      copy_roster(create_log);
     }
   }

@@ -8,7 +8,7 @@
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
     $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
-    $param_ip_cam = Core::getSetting("ip_cam", "lab_controls");
+    $param_ip_cam = str_getcsv(Core::getSetting("ip_cam", "lab_controls"));
     $param_cam_usr = Core::getSetting("cam_usr", "lab_controls");
     $param_cam_pw = Core::getSetting("cam_pw", "lab_controls");
     $param_cam_port = Core::getSetting("cam_port", "lab_controls");
@@ -21,10 +21,80 @@
     $param_logging_server_username = Core::getSetting("logging_server_username", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
   ?>
+
+  <!-- JS to import settings from php -->
+  <script>
+    // Number of lightbulbs
+    let light_nbr = <?php echo $param_light_nbr?>;
+    //Ip address of the Hue hub
+    let ip_addr = "<?php echo $param_ip?>";
+    //API Key for the Hue hub
+    let api_key = "<?php echo $param_api?>";
+    //IP address of the Foscam
+    let ip_addr_cam = [];
+    ip_addr_cam[0]= "<?php echo $param_ip_cam[0]?>";
+    ip_addr_cam[1]= "<?php echo $param_ip_cam[1]?>";
+    ip_addr_cam[2]= "<?php echo $param_ip_cam[2]?>";
+    ip_addr_cam[3]= "<?php echo $param_ip_cam[3]?>";
+    let current_ip_cam = ip_addr_cam[0];
+    //Foscam port
+    let cam_port = "<?php echo $param_cam_port?>";
+    //Foscam user
+    let cam_usr = "<?php echo $param_cam_usr?>";
+    //Foscam pw
+    let cam_pw = "<?php echo $param_cam_pw?>";
+    //DT token
+    let dt_token = "<?php echo $param_dt_token?>";
+    //Flask url
+    let flask_url = "<?php echo $param_flask_url?>";
+    //Flask port
+    let flask_port = "<?php echo $param_flask_port?>";
+    //Flask port
+    let changelog_file = "<?php echo $param_changelog_file?>";
+    //Submission server url
+    let submission_server_url = "<?php echo $param_submission_server?>";
+    //Logging server hostname
+    let logging_server_hostname = "<?php echo $param_logging_server_hostname?>";
+    //Logging server username
+    let logging_server_username = "<?php echo $param_logging_server_username?>";
+    //Worker file for light control
+    let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
+    //Initialize Rosbridge
+    let ROS_connected = false;
+    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
+      ROS_connected = true;
+    });
+  </script>
+
+<!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
+  <script src="<?php echo Core::getJSscriptURL('js-yaml.min.js', 'lab_controls') ?>" type="text/javascript"></script>
+<!-- Import main JS file and param files-->
+  <script src="<?php echo Core::getJSscriptURL('watchtower_locations.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('global_variables.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('ip_cam.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('information_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('create_bots.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('map_visualization.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('misc_utils.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_master.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_select_job.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_select_duckiebots.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_animations.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_initialization.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_running.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_terminating.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('submission_uploading.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <script src="<?php echo Core::getJSscriptURL('maintenance_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
+
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
 
 <!-- Main html body -->
+  <!-- Logos of Duckietown and AIDO -->
+  <img src="<?php echo Core::getImageURL('duckietown_logo.png', 'lab_controls') ?>" alt="Duckietown logo not available" class="logo logo_left">
+  <img src="<?php echo Core::getImageURL('AIDO_logo.png', 'lab_controls') ?>" alt="AIDO logo not available" class="logo logo_right">
+
   <table style="width: 100%; height:100%">
   <tbody>
   <tr>
@@ -37,6 +107,23 @@
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
+      <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" style="margin-bottom:5px;" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          Select camera
+          <span class="caret"></span>
+        </button>
+        <button id="submission_button" type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="open_submission_popup()" disabled>Evaluate submission</button>
+        <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="open_docker_maintenance_popup()">Docker maintenance</button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#" onclick=change_camera(0)>Camera 1</a></li>
+          <li><a href="#" onclick=change_camera(1)>Camera 2</a></li>
+          <li><a href="#" onclick=change_camera(2)>Camera 3</a></li>
+          <li><a href="#" onclick=change_camera(3)>Camera 4</a></li>
+        </ul>
+      </div>
+
+      
+
       <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera onclick=camera_size_toggle()>
     </td>
   </tr>
@@ -76,7 +163,7 @@
           Ping
         </td>
         <td>
-          Actions
+          Actions <span class="glyphicon glyphicon-repeat" aria-hidden="true" style="cursor: pointer;" onclick="ping_bots()">
         </td>
       </thead>
       <tbody style="background-color: #ffffff" id="duckie_list_body">
@@ -96,14 +183,6 @@
     </tr>
   </tbody>
   </table>
-  <br>
-  <button id="submission_button" type="button" class="btn btn-default" onclick="open_submission_popup()" disabled>Evaluate submission</button>
-  <button type="button" class="btn btn-default" onclick="open_docker_maintenance_popup()">Docker maintenance</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(15)">Toggle switch 1</button>
-  <button type="button" class="btn btn-default" onclick="toggle_switch(16)" disabled>Toggle switch 2</button>
-  <button type="button" class="btn btn-default" onclick="ping_bots()">Update hosts</button>
-  <button type="button" class="btn btn-default" onclick="test_emergency_stop()">Emergency stop</button>
-  <button type="button" class="btn btn-default" onclick="create_log()">Test API</button>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
@@ -349,6 +428,12 @@
         <span id="body_uploading_data">
           <table width="300px"><tbody>
             <tr height="40px">
+                <td>Copying roster</td>
+                <td><span id="copy_roster"></span></td>
+            <tr height="40px">
+                <td>Creating logfile</td>
+                <td><span id="creating_logfile"></span></td>
+            <tr height="40px">
               <td>Uploading data</td>
               <td><span id="uploading_data"></span></td>
             </tr>
@@ -375,65 +460,5 @@
     <br>
     <button id="start_docker_command" type="button" class="btn btn-default" onclick="start_docker_command()">Execute docker command</button>
   </div>
-
-
-<!-- JS to import settings from php -->
-  <script>
-    // Number of lightbulbs
-    let light_nbr = <?php echo $param_light_nbr?>;
-    //Ip address of the Hue hub
-    let ip_addr = "<?php echo $param_ip?>";
-    //API Key for the Hue hub
-    let api_key = "<?php echo $param_api?>";
-    //IP address of the Foscam
-    let ip_addr_cam = "<?php echo $param_ip_cam?>";
-    //Foscam port
-    let cam_port = "<?php echo $param_cam_port?>";
-    //Foscam user
-    let cam_usr = "<?php echo $param_cam_usr?>";
-    //Foscam pw
-    let cam_pw = "<?php echo $param_cam_pw?>";
-    //DT token
-    let dt_token = "<?php echo $param_dt_token?>";
-    //Flask url
-    let flask_url = "<?php echo $param_flask_url?>";
-    //Flask port
-    let flask_port = "<?php echo $param_flask_port?>";
-    //Flask port
-    let changelog_file = "<?php echo $param_changelog_file?>";
-    //Submission server url
-    let submission_server_url = "<?php echo $param_submission_server?>";
-    //Logging server hostname
-    let logging_server_hostname = "<?php echo $param_logging_server_hostname?>";
-    //Logging server username
-    let logging_server_username = "<?php echo $param_logging_server_username?>";
-    //Worker file for light control
-    let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
-    //Initialize Rosbridge
-    let ROS_connected = false;
-    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
-      ROS_connected = true;
-    });
-  </script>
-
-<!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
-  <script src="<?php echo Core::getJSscriptURL('js-yaml.min.js', 'lab_controls') ?>" type="text/javascript"></script>
-<!-- Import main JS file and param files-->
-  <script src="<?php echo Core::getJSscriptURL('watchtower_locations.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('global_variables.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('ip_cam.js', 'lab_controls') ?>" type="text/javascript"></script>
+<!-- Must be called after HTML load -->
   <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('information_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('create_bots.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('map_visualization.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('misc_utils.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_master.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_select_job.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_select_duckiebots.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_animations.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_initialization.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_running.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_terminating.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('submission_uploading.js', 'lab_controls') ?>" type="text/javascript"></script>
-  <script src="<?php echo Core::getJSscriptURL('maintenance_popup.js', 'lab_controls') ?>" type="text/javascript"></script>

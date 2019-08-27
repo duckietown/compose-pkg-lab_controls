@@ -1,37 +1,37 @@
 /////Moving bots on the map (temporary function until watchtowers give positions)
-  function move_bots() {
-    let map = document.getElementById("map");
-    let canvas_height = map.clientHeight-18;
-    let canvas_width = map.clientWidth-18;
-    setInterval(exec_move, 10);
-    function exec_move() {
-      let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
-      for(let i=0; i<descendents.length; i++){
-        try{
-          let name = descendents[i].cells[0].innerHTML;
-          if (bots_positions[name][2] !=0){
-            let bot = document.getElementById("entity_"+name);
-            if (bots_positions[name][0] <= 0) {
-              bots_positions[name][2] = 1;
-            }
-            if (bots_positions[name][0] >= canvas_height) {
-              bots_positions[name][2] = -1;
-            }
-            if (bots_positions[name][1] <= 0) {
-              bots_positions[name][3] = 1;
-            }
-            if (bots_positions[name][1] >= canvas_width) {
-              bots_positions[name][3] = -1;
-            }
-            bots_positions[name][0]+=bots_positions[name][2];
-            bots_positions[name][1]+=bots_positions[name][3];
-            bot.style.top = bots_positions[name][0] + 'px';
-            bot.style.left = bots_positions[name][1] + 'px';
-          }
-        } catch{}
-      }
-    }
-  }
+  // function move_bots() {
+  //   let map = document.getElementById("map");
+  //   let canvas_height = map.clientHeight-18;
+  //   let canvas_width = map.clientWidth-18;
+  //   setInterval(exec_move, 10);
+  //   function exec_move() {
+  //     let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
+  //     for(let i=0; i<descendents.length; i++){
+  //       try{
+  //         let name = descendents[i].cells[0].innerHTML;
+  //         if (bots_positions[name][2] !=0){
+  //           let bot = document.getElementById("entity_"+name);
+  //           if (bots_positions[name][0] <= 0) {
+  //             bots_positions[name][2] = 1;
+  //           }
+  //           if (bots_positions[name][0] >= canvas_height) {
+  //             bots_positions[name][2] = -1;
+  //           }
+  //           if (bots_positions[name][1] <= 0) {
+  //             bots_positions[name][3] = 1;
+  //           }
+  //           if (bots_positions[name][1] >= canvas_width) {
+  //             bots_positions[name][3] = -1;
+  //           }
+  //           bots_positions[name][0]+=bots_positions[name][2];
+  //           bots_positions[name][1]+=bots_positions[name][3];
+  //           bot.style.top = bots_positions[name][0] + 'px';
+  //           bot.style.left = bots_positions[name][1] + 'px';
+  //         }
+  //       } catch{}
+  //     }
+  //   }
+  // }
 ///// Add a new entity
   function add_bot(name){
     let tmp = document.getElementById("tab_"+name);
@@ -52,7 +52,9 @@
                                     document.getElementById('tab_'+name).scrollIntoView(true);};
       document.getElementById("bots").appendChild(new_div);
       if (new_div.className=="duckiebot"){
-        bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),1,1];
+        bots_positions[name]=[Math.floor(parseInt(name.replace("autobot",""))*20),0,0,0];
+        new_div.style.top = bots_positions[name][0] + 'px';
+        new_div.style.left = bots_positions[name][1] + 'px';
       } else {
         try{
           bots_positions[name]=[watchtower_pos[name][0],watchtower_pos[name][1],0,0];
@@ -77,10 +79,11 @@
       cell2.onclick= function() { information_pop_up(name); };
       cell1.innerHTML = detected_pings[name]+" ms";
       cell2.innerHTML = "Open information window";
-      if (bots_moving == false){
-        bots_moving=true;
-        move_bots();
-      }
+      cell2.style="cursor: pointer;"
+      // if (bots_moving == false){
+      //   bots_moving=true;
+      //   move_bots();
+      // }
     }
   }
 

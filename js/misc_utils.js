@@ -25,22 +25,6 @@
     });
   };
 
-
-//TODO: remove if no longer needed
-/////Test for emergency stop
-function test_emergency_stop(){
-  publisher_emergency = new ROSLIB.Topic({
-    ros : window.ros,
-    name : '/autobot03/toggleEmergencyStop',
-    messageType : 'std_msgs/Bool',
-    queue_size : 1,
-  });
-  let emergency = new ROSLIB.Message({
-    data : true
-  });
-  publisher_emergency.publish(emergency)
-}
-
 /////Wait function
   // From http://www.endmemo.com/js/pause.php
   function wait(ms){

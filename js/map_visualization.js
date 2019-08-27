@@ -88,8 +88,8 @@ function subscriber_agents(){
           // TODO: better coordinate transform
           bots_positions[name][0]=parseInt(680-message.transform.translation.y*100/58.5*35-9);
           bots_positions[name][1]=parseInt(message.transform.translation.x*100/58.5*35+14-9);
-          bots_positions[name][2]=0;
-          bots_positions[name][3]=0;
+          // bots_positions[name][2]=0;
+          // bots_positions[name][3]=0;
           let bot = document.getElementById("entity_"+name);
           bot.style.top = bots_positions[name][0] + 'px';
           bot.style.left = bots_positions[name][1] + 'px';
