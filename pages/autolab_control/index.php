@@ -87,6 +87,8 @@
   <script src="<?php echo Core::getJSscriptURL('submission_uploading.js', 'lab_controls') ?>" type="text/javascript"></script>
   <script src="<?php echo Core::getJSscriptURL('maintenance_popup.js', 'lab_controls') ?>" type="text/javascript"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+
 <!-- Import stylesheet -->
   <link href="<?php echo Core::getCSSstylesheetURL('style.css', 'lab_controls') ?>" rel="stylesheet">
 
@@ -104,6 +106,7 @@
       </div>
       <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
       <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=ping_bots()>
+      <canvas id="bot_visualization" width="380" height="694" style="position: relative; z-index:8;"></canvas>
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -183,6 +186,8 @@
     </tr>
   </tbody>
   </table>
+
+  <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="show_trajectory()">Test API</button>
 
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->

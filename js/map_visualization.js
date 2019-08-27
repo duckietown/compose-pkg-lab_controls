@@ -1,3 +1,10 @@
+/////Tool to change metric coordinates into pixel coordinates for the map
+function transform_coordinates(y,x){
+  let trafo_x = parseInt(680-y*100/58.5*35);
+  let trafo_y = parseInt(x*100/58.5*35+14-9)
+  return {x: trafo_x, y:trafo_y} 
+}
+
 /////Ping hosts via Flex server and update the list and map
   function ping_bots(){
     document.getElementById('ping_message').style.display="block";
@@ -86,8 +93,9 @@ function subscriber_agents(){
             }
           }
           // TODO: better coordinate transform
-          bots_positions[name][0]=parseInt(680-message.transform.translation.y*100/58.5*35-9);
-          bots_positions[name][1]=parseInt(message.transform.translation.x*100/58.5*35+14-9);
+          let pixel_coordinates = transform_coordinates(message.transform.translation.y, message.transform.translation.x);
+          bots_positions[name][0]=pixel_coordinates.x-9;
+          bots_positions[name][1]=pixel_coordinates.y-9;
           // bots_positions[name][2]=0;
           // bots_positions[name][3]=0;
           let bot = document.getElementById("entity_"+name);
@@ -97,4 +105,39 @@ function subscriber_agents(){
       });
     }
   }, 1000);
+}
+
+function show_trajectory(){
+  // TODO change default variables
+  $.ajax({
+    url: flask_url+":"+flask_port+"/request_csv",
+    data: JSON.stringify({mount: logging_bag_mount, duckiebot: "405"}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      data = $.csv.toArrays(result.data);
+      let c = document.getElementById("bot_visualization");
+      let ctx = c.getContext("2d");
+      ctx.globalCompositeOperation='destination-over';
+      ctx.strokeStyle = "#b300b3";
+      ctx.lineWidth = 3;
+      let x = null;
+      let y = null;
+      data.forEach(function(entry, index){
+        if (index < 1) return;
+        x = entry[1];
+        y = entry[2];
+        let trafo = transform_coordinates(y,x);
+        if (index>1){
+          ctx.lineTo(parseInt(trafo.y), parseInt(trafo.x));
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(parseInt(trafo.y), parseInt(trafo.x));
+        }
+      });
+    },
+  });
 }
