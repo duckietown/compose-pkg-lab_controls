@@ -1,7 +1,7 @@
 /////Tool to change metric coordinates into pixel coordinates for the map
 function transform_coordinates(y,x){
   let trafo_x = parseInt(680-y*100/58.5*35);
-  let trafo_y = parseInt(x*100/58.5*35+14-9)
+  let trafo_y = parseInt(x*100/58.5*35+9)
   return {x: trafo_x, y:trafo_y} 
 }
 
