@@ -69,3 +69,5 @@
   let check_localization_interval=null;
   //Flag to start blinking the start button when all bots are ready
   let all_bots_ready = false;
+  //Camera ros subscriber
+  let ip_cam_subscriber_interval = null;

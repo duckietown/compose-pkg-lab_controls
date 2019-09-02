@@ -125,12 +125,20 @@ function show_trajectory(){
       ctx.lineWidth = 3;
       let x = null;
       let y = null;
+      let x_old = null;
+      let y_old = null;
+      let dist = 0;
       data.forEach(function(entry, index){
         if (index < 1) return;
+        if (index > 1){
+          x_old = x;
+          y_old = y;
+        }
         x = entry[1];
         y = entry[2];
         let trafo = transform_coordinates(y,x);
         if (index>1){
+          dist += Math.sqrt(Math.pow((x-x_old),2)+Math.pow((y-y_old),2))
           ctx.lineTo(parseInt(trafo.y), parseInt(trafo.x));
           ctx.stroke();
         } else {
@@ -138,6 +146,7 @@ function show_trajectory(){
           ctx.moveTo(parseInt(trafo.y), parseInt(trafo.x));
         }
       });
+      openAlert(type='success', "Total distance driven by the Duckiebot: "+dist.toFixed(2)+" m");
     },
   });
 }

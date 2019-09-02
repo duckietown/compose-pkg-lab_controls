@@ -367,36 +367,39 @@
               <td><span id="duckiebot_start"></span></td>
             </tr>
           </tbody></table>
-          <table width=65%><tbody>
+          <table width=100%><tbody>
             <tr>
-              <td width=50%>
+              <td width=25%>
                 <span id="submission_bot_title0"></span>
               </td>
-              <td width=50%>
+              <td width=25%>
                 <span id="submission_bot_title1"></span>
+              </td>
+              <td rowspan=4 width=50%>
+              <img src="" alt="No camera image available" id="submission_ip_cam" class=raspi_camera>
               </td>
             </tr>
             <tr>
-              <td width=50%>
+              <td width=25%>
                 <img src="" alt="No camera image available" id="submission_bot_stream0" class=raspi_camera>
               </td>
-              <td width=50%>
+              <td width=25%>
                 <img src="" alt="No camera image available" id="submission_bot_stream1" class=raspi_camera>
               </td>
             </tr>
             <tr>
-              <td width=50%>
+              <td width=25%>
                 <span id="submission_bot_title2"></span>
               </td>
-              <td width=50%>
+              <td width=25%>
                 <span id="submission_bot_title3"></span>
               </td>
             </tr>
             <tr>
-              <td width=50%>
+              <td width=25%>
                 <img src="" alt="No camera image available" id="submission_bot_stream2" class=raspi_camera>
               </td>
-              <td width=50%>
+              <td width=25%>
                 <img src="" alt="No camera image available" id="submission_bot_stream3" class=raspi_camera>
               </td>
             </tr>
