@@ -12,8 +12,8 @@
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
       if (current_submission_loop=="LF"){
         //TODO: Only for testing, LF needs other bot setup
-        necessary_active_bots = 0;
-        necessary_passive_bots = 1;
+        necessary_active_bots = 1;
+        necessary_passive_bots = 0;
       } else {
         necessary_active_bots = 1;
         necessary_passive_bots = 2;
@@ -25,6 +25,8 @@
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);
       insert_duckiebot_selection_body(duckiebot_selection);
+
+      //Only used for debugging when necessarybots set to 0
       if (active_bots.length==necessary_active_bots && passive_bots.length==necessary_passive_bots){
         document.getElementById('btn_bots_selected').disabled = false;
       } else {
@@ -124,11 +126,13 @@
     if (id==5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
-      necessary_substeps=3;
+      necessary_substeps=4;
       current_button="btn_finish_job";
+      add_waiting('copy_map');
       add_waiting('copy_roster');
       add_waiting('creating_logfile');
       add_waiting('uploading_data');
+      copy_map();
       copy_roster(create_log);
     }
   }

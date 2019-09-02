@@ -4,8 +4,25 @@
     document.getElementById('btn_start_job').disabled = false;
     selected_sub_id=id;
     current_submission_container = document.getElementById(id).cells[1].innerHTML;
+    current_submission_container = current_submission_container.replace("localhost","duckietown20.local")
     current_submission_loop = document.getElementById(id).cells[2].innerHTML;
   }
+
+/////Fetch submission map from submission container and display it
+function get_submission_map(map_container, challenge_name, step_name){
+  ajax_list["get_map"]=$.ajax({
+    url: flask_url+":"+flask_port+"/get_map",
+    data: JSON.stringify({container:map_container, name:challenge_name, step:step_name}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["get_map"];
+      document.getElementById('initialization_map').src = flask_url+":"+flask_port+result.data+"#svgView(viewBox(5, 0, 240, 490))";
+    },
+  });
+}
 
 /////Insert currently available submissions into submission table body
   function insert_submission_body(table){
@@ -42,7 +59,12 @@
             let container = docker_repo.registry+"/"+docker_repo.organization+"/"+docker_repo.repository+":"+docker_repo.tag;
             cell0.innerHTML=response.result.submission_id;
             cell1.innerHTML=container;
+            map_container = response.result.challenge_parameters.services.evaluator.image;
+            map_container = map_container.substring(0, map_container.indexOf('@'));
+            map_container = map_container.replace("localhost","duckietown20.local")
             let challenge_name = response.result.challenge_name;
+            let step_name = response.result.step_name;
+            get_submission_map(map_container, challenge_name, step_name);
             if (challenge_name=="aido2-LF-real-validation" || challenge_name=="aido2-LF-real-testing"){
               cell2.innerHTML="LF";
               current_demo = "lane_following"
@@ -62,7 +84,7 @@
 
             logging_object.job = {};
             logging_object.job.submission_id = response.result.submission_id;
-            logging_object.job.step_name = response.result.step_name;
+            logging_object.job.step_name = step_name;
             logging_object.job.container = container;
             logging_object.job.challenge_name = challenge_name;
             logging_object.steps = {};

@@ -40,6 +40,48 @@ function copy_roster(next_function){
   });
 }
 
+/////Copy map
+function copy_map(){
+  add_loading('copy_map');
+  let step_start_time = Date.now();
+  let map_loc = "/home/"+logging_server_username+"/duckietown-world";
+  let map_path = "src/duckietown_world/data/gd1/maps/robotarium2.yaml"
+  ajax_list["copy_map"]=$.ajax({
+    url: flask_url+":"+flask_port+"/copy_map",
+    data: JSON.stringify({mount: logging_bag_mount+"/map", map_location: map_loc, path: map_path}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["copy_map"];
+      let map_copied = true;
+      let step_stop_time = Date.now();
+
+      if (result.outcome=="Success"){
+        debug_string = "Map copied";
+        logging_object.steps.copy_map = {};
+        logging_object.steps.copy_map.step_start_time = step_start_time;
+        logging_object.steps.copy_map.step_stop_time = step_stop_time;
+        logging_object.steps.copy_map.duration = (step_stop_time-step_start_time)/1000;
+      } else {
+        map_copied = false;
+        debug_string = "Not able to copy map";
+      }
+
+      document.getElementById('debug_window').innerHTML += debug_string;
+      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+     if (!map_copied){
+       add_failure('copy_map');
+       document.getElementById('copy_map').onclick=function(){copy_map();};
+     } else {
+       add_success('copy_map');
+     }
+    },
+  });
+}
+
 /////Create log file
   function create_log(next_function){
     add_loading('creating_logfile');

@@ -53,6 +53,7 @@
     let submission_table = document.getElementById("submission_table_body");
     document.getElementById('process_bags_update').innerHTML = "";
     document.getElementById('localization_update').innerHTML = "";
+    document.getElementById('initialization_map').src = "";
     //Fetch currently available submissions from server
     empty_body(submission_table);
     insert_submission_body(submission_table);
@@ -82,6 +83,8 @@
     document.getElementById('btn_finish_job').disabled = true;
     necessary_active_bots = -1;
     necessary_passive_bots = -1;
+    clearInterval(check_process_interval);
+    clearInterval(check_localization_interval);
   }
 
 /////Cancel job

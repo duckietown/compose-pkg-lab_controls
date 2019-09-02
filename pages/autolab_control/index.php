@@ -105,7 +105,7 @@
       <div id="bots">
       </div>
       <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
-      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls') ?>" alt="No map available" class=map id="map" onload=ping_bots()>
+      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class=map id="map" onload=ping_bots()>
       <canvas id="bot_visualization" width="380" height="694" style="position: relative; z-index:8;"></canvas>
     </td>
     <!-- Camera image from Duckietown -->
@@ -302,20 +302,31 @@
         <span id="necessary_bots"></span>
         <br><br>
         <span class="submission_tab">
-          <table id="duckiebot_selection" class="history_list" cellpadding="1" border="0" >
-            <thead style="background-color: #dddddd;">
-              <td style="width:20%">
-                Duckiebot
-              </td>
-              <td>
-                Active
-              </td>
-              <td>
-                Passive
-              </td>
-            </thead>
-            <tbody style="background-color: #ffffff;" id="duckiebot_selection_body">
+          <table style="width:100%">
+            <tbody>
+              <tr>
+                <td style="width:50%; vertical-align:top">
+                  <table id="duckiebot_selection" class="history_list" cellpadding="1" border="0" >
+                    <thead style="background-color: #dddddd;">
+                      <td style="width:20%">
+                        Duckiebot
+                      </td>
+                      <td>
+                        Active
+                      </td>
+                      <td>
+                        Passive
+                      </td>
+                    </thead>
+                    <tbody style="background-color: #ffffff;" id="duckiebot_selection_body">
 
+                    </tbody>
+                  </table>
+                </td>
+                <td style="width:50%; vertical-align:top">
+                <img id="initialization_map" src="" alt="Loading initialization map">
+                </td>
+              </tr>
             </tbody>
           </table>
         </span>
@@ -435,6 +446,9 @@
         <br><br>
         <span id="body_uploading_data">
           <table width="300px"><tbody>
+            <tr height="40px">
+                <td>Copying map</td>
+                <td><span id="copy_map"></span></td>
             <tr height="40px">
                 <td>Copying roster</td>
                 <td><span id="copy_roster"></span></td>
