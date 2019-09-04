@@ -70,7 +70,8 @@
     text-align: center;
     vertical-align: middle;
     color: #ffffff;
-    z-index: 2;
+    z-index: 10;
+    cursor: pointer;
   }
 
   .watchtower {
@@ -84,7 +85,8 @@
     text-align: center;
     vertical-align: middle;
     color: #ffffff;
-    z-index: 2;
+    z-index: 10;
+    cursor: pointer;
   }
 
 /* Resizing camera image */
@@ -372,4 +374,17 @@ svg {
 
 .logo_left{
   left: 6%;
+}
+
+/* Light map entity */
+.light {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  left: 0px;
+  top: 0px;
+  opacity: 0;
+  z-index: 2;
 }

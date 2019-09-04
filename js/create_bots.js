@@ -40,6 +40,7 @@
       tmp.cells[1].innerHTML = detected_pings[name]+" ms";
     } else {
       let new_div = document.createElement('div');
+      let new_light_div = null;
       new_div.id = "entity_"+name;
       if (name.substring(0,4)=="auto"){
         new_div.className="duckiebot";
@@ -47,6 +48,10 @@
       } else {
         new_div.className="watchtower";
         new_div.innerHTML=name.replace("watchtower","");
+        new_light_div = document.createElement('div');
+        new_light_div.className="light";
+        new_light_div.id="light_"+name;
+        document.getElementById("light_map").appendChild(new_light_div);
       }
       new_div.onclick= function() { highlightBot(name);
                                     document.getElementById('tab_'+name).scrollIntoView(true);};
@@ -65,6 +70,8 @@
           new_div.style.top = bots_positions[name][0] + 'px';
           new_div.style.left = bots_positions[name][1] + 'px';
         }
+        new_light_div.style.top = eval(bots_positions[name][0]-16) + 'px';
+        new_light_div.style.left = eval(bots_positions[name][1]-16) + 'px';
       }
 
       let table = document.getElementById("duckie_list_body");

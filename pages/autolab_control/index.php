@@ -104,9 +104,16 @@
     <td rowspan=3 class="map_tab">
       <div id="bots">
       </div>
+      <div id="light_map"style="display:none;">
+      </div>
       <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
       <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class=map id="map" onload=ping_bots()>
       <canvas id="bot_visualization" width="380" height="694" style="position: relative; z-index:8;"></canvas>
+      <span style="cursor: pointer; z-index: 12; top: 5px; left: 360px; position: absolute; ">
+        <div id="light_sensor_toggle" class="fa fa-lightbulb-o" aria-hidden="true" style = "width:30px; height:30px; color:white;font-size:30px;" onclick=toggle_light_sensors()>
+        </div>
+      </span>
+      
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -158,7 +165,7 @@
     <!-- Different Duckiebots currently in town -->
     <td class="duckies_tab">
       <table id="duckie_list" class="duckie_list" cellpadding="1" border="0">
-      <thead style="background-color: #dddddd;">
+      <thead style="background-color: #dddddd;position: sticky;top: 0;">
         <td>
           Hostname
         </td>

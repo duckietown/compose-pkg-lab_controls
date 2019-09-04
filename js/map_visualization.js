@@ -5,7 +5,7 @@ function transform_coordinates(y,x){
   return {x: trafo_x, y:trafo_y} 
 }
 
-/////Ping hosts via Flex server and update the list and map
+/////Ping all hosts via Flex server and update the list and map
   function ping_bots(){
     document.getElementById('ping_message').style.display="block";
     document.getElementById('submission_button').disabled = true;
@@ -92,7 +92,7 @@ function subscriber_agents(){
               name = "watchtower"+tmp;
             }
           }
-          // TODO: better coordinate transform
+
           let pixel_coordinates = transform_coordinates(message.transform.translation.y, message.transform.translation.x);
           bots_positions[name][0]=pixel_coordinates.x-9;
           bots_positions[name][1]=pixel_coordinates.y-9;
@@ -101,6 +101,11 @@ function subscriber_agents(){
           let bot = document.getElementById("entity_"+name);
           bot.style.top = bots_positions[name][0] + 'px';
           bot.style.left = bots_positions[name][1] + 'px';
+          if (name.substring(0,4)=="watc"){
+            let light = document.getElementById("light_"+name);
+            light.style.top = eval(bots_positions[name][0]-16) + 'px';
+            light.style.left = eval(bots_positions[name][1]-16) + 'px';
+          }
         } catch {}
       });
     }
@@ -149,4 +154,16 @@ function show_trajectory(){
       openAlert(type='success', "Total distance driven by the Duckiebot: "+dist.toFixed(2)+" m");
     },
   });
+}
+
+
+///// Toggle light_map visualization
+function toggle_light_sensors(){
+  if(document.getElementById('light_map').style.display=="none"){
+    document.getElementById('light_map').style.display="block";
+    document.getElementById('light_sensor_toggle').style.color="yellow";
+  } else {
+    document.getElementById('light_map').style.display="none";
+    document.getElementById('light_sensor_toggle').style.color="white";
+  }
 }
