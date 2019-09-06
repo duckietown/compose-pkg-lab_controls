@@ -44,6 +44,7 @@ function subscriber_agents(){
     if (ROS_connected){
       clearInterval(sub_interval);
       let subs = {};
+      let light_subs = {};
       let ancestor = document.getElementById('duckie_list_body'), descendents = ancestor.children;
       for(let i=0; i<descendents.length; i++){
         let name=descendents[i].cells[0].innerHTML;
@@ -57,15 +58,29 @@ function subscriber_agents(){
           subs[name].subscribe(function(message) {
             let bot = document.getElementById("entity_"+name);
             if (parseFloat(message.data)>500){
-              bot.style.width= "30px";
-              bot.style.height= "30px";
               bot.style.backgroundColor= "LightSkyBlue";
             }else{
-              bot.style.width= "18px";
-              bot.style.height= "18px";
               bot.style.backgroundColor= document.getElementById('tab_'+name).style.backgroundColor;
             }
           });
+          light_subs[name]  = new ROSLIB.Topic({
+            ros : window.ros,
+            name : '/'+name+'/current_lux',
+            messageType : 'std_msgs/Int16',
+            queue_size : 1,
+          });
+          light_subs[name].subscribe(function(message) {
+            current_lux[name] = message.data;
+            let opacity_value = message.data/200.0;
+            if (opacity_value > 0.5){
+              opacity_value = 0.5;
+            }
+            if (opacity_value < 0){
+              opacity_value = 0;
+            }
+            document.getElementById("light_"+name).style.opacity = opacity_value;
+          });
+
         }
       }
       tf  = new ROSLIB.Topic({
@@ -103,8 +118,8 @@ function subscriber_agents(){
           bot.style.left = bots_positions[name][1] + 'px';
           if (name.substring(0,4)=="watc"){
             let light = document.getElementById("light_"+name);
-            light.style.top = eval(bots_positions[name][0]-16) + 'px';
-            light.style.left = eval(bots_positions[name][1]-16) + 'px';
+            light.style.top = eval(bots_positions[name][0]-6) + 'px';
+            light.style.left = eval(bots_positions[name][1]-6) + 'px';
           }
         } catch {}
       });

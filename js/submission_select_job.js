@@ -24,8 +24,8 @@ function get_submission_map(map_container, challenge_name, step_name){
   });
 }
 
-/////Insert currently available submissions into submission table body
-  function insert_submission_body(table){
+/////Get the next submission from the serverr
+  function fetch_submission(table){
     let debug_string = "Currently pinging the submission server <br><br>";
     let step_start_time = Date.now();
     document.getElementById('debug_window').innerHTML += debug_string;
@@ -46,6 +46,7 @@ function get_submission_map(map_container, challenge_name, step_name){
           document.getElementById('server_answer_time').innerHTML=(stop_time_ajax-start_time_ajax)/1000;
           if (response.result.submission_id != null){
             let step_stop_time = Date.now();
+            submission_evaluating = true;
             document.getElementById('submission_server_time_info').style.display="none";
             clearInterval(job_server_interval);
             let row = table.insertRow();
@@ -102,7 +103,8 @@ function get_submission_map(map_container, challenge_name, step_name){
 
 /////Watchtowers necessary for certain job
   function get_submission_watchtowers(){
-    // if (current_submission_loop=="LF" || current_submission_loop=="LFV") TODO
+    // TODO: remove comment 
+    //if (current_submission_loop=="LF" || current_submission_loop=="LFV") TODO
     if (current_submission_loop=="LFV")
     {
       return ["watchtower21","watchtower22","watchtower23","watchtower24","watchtower25","watchtower26","watchtower27","watchtower28","watchtower29","watchtower30","watchtower31","watchtower32","watchtower33","watchtower34","watchtower35"]

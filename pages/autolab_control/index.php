@@ -163,7 +163,7 @@
   </tr>
   <tr>
     <!-- Different Duckiebots currently in town -->
-    <td class="duckies_tab">
+    <td id="duckies_tab" class="duckies_tab">
       <table id="duckie_list" class="duckie_list" cellpadding="1" border="0">
       <thead style="background-color: #dddddd;position: sticky;top: 0;">
         <td>
@@ -462,6 +462,9 @@
             <tr height="40px">
                 <td>Creating logfile</td>
                 <td><span id="creating_logfile"></span></td>
+            <tr height="40px">
+              <td>Creating ipfs hashes</td>
+              <td><span id="ipfs_hash"></span></td>
             <tr height="40px">
               <td>Uploading data</td>
               <td><span id="uploading_data"></span></td>

@@ -71,3 +71,5 @@
   let all_bots_ready = false;
   //Camera ros subscriber
   let ip_cam_subscriber_interval = null;
+  // Object to store the current lux values
+  let current_lux = {};

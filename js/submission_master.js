@@ -8,10 +8,8 @@
     if (id==1){
       document.getElementById('submission_button').innerHTML="Currently evaluating";
       document.getElementById('cancel_submission').style.display="inline";
-      submission_evaluating = true;
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
       if (current_submission_loop=="LF"){
-        //TODO: Only for testing, LF needs other bot setup
         necessary_active_bots = 1;
         necessary_passive_bots = 0;
       } else {
@@ -25,13 +23,6 @@
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);
       insert_duckiebot_selection_body(duckiebot_selection);
-
-      //Only used for debugging when necessarybots set to 0
-      if (active_bots.length==necessary_active_bots && passive_bots.length==necessary_passive_bots){
-        document.getElementById('btn_bots_selected').disabled = false;
-      } else {
-        document.getElementById('btn_bots_selected').disabled = true;
-      }
     }
     if (id==2){
       current_substeps=0;
@@ -57,6 +48,7 @@
       watchtowers.forEach(function(entry){
         logging_object.agent[entry] = {};
         logging_object.agent[entry].type = "watchtower";
+        logging_object.agent[entry].lux = current_lux[entry];
       });
       active_bots.forEach(function(entry){
         logging_object.agent[entry] = {};
@@ -126,13 +118,13 @@
     if (id==5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
-      necessary_substeps=4;
+      necessary_substeps=5;
       current_button="btn_finish_job";
       add_waiting('copy_map');
       add_waiting('copy_roster');
       add_waiting('creating_logfile');
+      add_waiting('ipfs_hash');
       add_waiting('uploading_data');
-      copy_map();
-      copy_roster(create_log);
+      copy_roster(copy_map);
     }
   }

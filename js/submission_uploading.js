@@ -34,14 +34,14 @@ function copy_roster(next_function){
        document.getElementById('copy_roster').onclick=function(){copy_roster(next_function);};
      } else {
        add_success('copy_roster');
-       next_function(upload_data);
+       next_function(create_log);
      }
     },
   });
 }
 
 /////Copy map
-function copy_map(){
+function copy_map(next_function){
   add_loading('copy_map');
   let step_start_time = Date.now();
   let map_loc = "/home/"+logging_server_username+"/duckietown-world";
@@ -74,9 +74,10 @@ function copy_map(){
 
      if (!map_copied){
        add_failure('copy_map');
-       document.getElementById('copy_map').onclick=function(){copy_map();};
+       document.getElementById('copy_map').onclick=function(){copy_map(next_function);};
      } else {
        add_success('copy_map');
+       next_function(ipfs_hash)
      }
     },
   });
@@ -95,6 +96,25 @@ function copy_map(){
       success: function(result) {
         delete ajax_list["create_log_file"];
         add_success('creating_logfile');
+        next_function(upload_data);
+      },
+    });
+  }
+
+/////Create ipfs hashes
+  function ipfs_hash(next_function){
+    add_loading('ipfs_hash');
+    ajax_list["ipfs_hash"]=$.ajax({
+      url: flask_url+":"+flask_port+"/ipfs_add",
+      data: JSON.stringify({mount: logging_bag_mount}),
+      dataType: "json",
+      type: "POST",
+      contentType: 'application/json',
+      header: {},
+      success: function(result) {
+        delete ajax_list["ipfs_hash"];
+        alert(result.data.toSource());
+        add_success('ipfs_hash');
         next_function();
       },
     });

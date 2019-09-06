@@ -56,7 +56,7 @@
     document.getElementById('initialization_map').src = "";
     //Fetch currently available submissions from server
     empty_body(submission_table);
-    insert_submission_body(submission_table);
+    fetch_submission(submission_table);
   }
 
 /////Close submission popup

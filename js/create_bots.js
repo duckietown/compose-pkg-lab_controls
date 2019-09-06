@@ -54,7 +54,11 @@
         document.getElementById("light_map").appendChild(new_light_div);
       }
       new_div.onclick= function() { highlightBot(name);
-                                    document.getElementById('tab_'+name).scrollIntoView(true);};
+                                    document.getElementById('tab_'+name).scrollIntoView(true);
+                                    if (document.getElementById('duckies_tab').scrollTop<1232){
+                                      document.getElementById('duckies_tab').scrollTop -= 20;
+                                    }
+                                  };
       document.getElementById("bots").appendChild(new_div);
       if (new_div.className=="duckiebot"){
         bots_positions[name]=[Math.floor(parseInt(name.replace("autobot",""))*20),0,0,0];
@@ -70,8 +74,8 @@
           new_div.style.top = bots_positions[name][0] + 'px';
           new_div.style.left = bots_positions[name][1] + 'px';
         }
-        new_light_div.style.top = eval(bots_positions[name][0]-16) + 'px';
-        new_light_div.style.left = eval(bots_positions[name][1]-16) + 'px';
+        new_light_div.style.top = eval(bots_positions[name][0]-6) + 'px';
+        new_light_div.style.left = eval(bots_positions[name][1]-6) + 'px';
       }
 
       let table = document.getElementById("duckie_list_body");
