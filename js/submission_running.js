@@ -4,11 +4,11 @@ function start_logging(next_function){
     let step_start_time = Date.now();
     let time = new Date();
     let time_stamp = time.getFullYear().toString()+(time.getMonth()+1).toString().padStart(2,'0')+time.getDate().toString().padStart(2,'0')+"_"+time.getHours().toString().padStart(2,'0')+time.getMinutes().toString().padStart(2,'0')+time.getSeconds().toString().padStart(2,'0');
-    logging_bag_name = "submission_"+logging_object.job.submission_id+"_"+logging_object.job.step_name+"_"+time_stamp;
-    logging_bag_mount = "/home/"+logging_server_username+"/AIDO3_experiment_data/submission_"+logging_object.job.submission_id+"/"+logging_object.job.step_name+"/"+time_stamp;
+    logging_bag_name = "raw";
+    logging_bag_mount = "/home/"+logging_server_username+"/AIDO3_experiment_data/submission_"+logging_object.job.submission_id+"/"+logging_object.job.step_name+"/"+time_stamp+"/data";
     ajax_list["start_logging"]=$.ajax({
       url: flask_url+":"+flask_port+"/start_logging",
-      data: JSON.stringify({device_list:agent_list, "computer":logging_server_hostname, "filename":logging_bag_name, "mount_folder":logging_bag_mount}),
+      data: JSON.stringify({device_list:agent_list, "computer":logging_server_hostname, "filename":logging_bag_name, "mount_folder":logging_bag_mount+"/logs_raw"}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
@@ -29,7 +29,7 @@ function start_logging(next_function){
            logging_started = false;
            debug_string = "Not able to start logging!";
          }
-   
+         debug_string+="</table><br><br> ####################################### <br>"
          document.getElementById('debug_window').innerHTML += debug_string;
          document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
    

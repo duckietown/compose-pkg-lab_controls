@@ -107,7 +107,7 @@ function process_bags(next_function){
   let step_start_time = Date.now();
   ajax_list["process_bags"]=$.ajax({
     url: flask_url+":"+flask_port+"/start_bag_processing",
-    data: JSON.stringify({"input_bag_name":logging_bag_name,"output_bag_name":"processed_"+logging_bag_name, "mount_computer_side":logging_bag_mount, "mount_container_side":"/data" }),
+    data: JSON.stringify({"input_bag_name":logging_bag_name,"output_bag_name":"processed", "mount_computer_side":logging_bag_mount+"/logs_raw", "mount_container_side":"/data" }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
@@ -148,6 +148,8 @@ function process_bags(next_function){
 function check_process_bags(next_function){
   ajax_list["check_process_bags"]=$.ajax({
     url: flask_url+":"+flask_port+"/check_bag_processing",
+    data: JSON.stringify({"output_bag_name":"processed", "mount_computer_origin":logging_bag_mount+"/logs_raw", "mount_computer_destination":logging_bag_mount+"/logs_processed"}),
+    dataType: "json",
     type: "POST",
     contentType: 'application/json',
     header: {},
@@ -184,7 +186,7 @@ function process_localization(){
   let step_start_time = Date.now();
   ajax_list["process_localization"]=$.ajax({
     url: flask_url+":"+flask_port+"/process_localization",
-    data: JSON.stringify({"input_bag_name":"processed_"+logging_bag_name,"output_dir":"/data", "mount_computer_side":logging_bag_mount, "mount_container_side":"/data" }),
+    data: JSON.stringify({"input_bag_name":"processed","output_dir":"/data", "mount_computer_side":logging_bag_mount+"/logs_processed", "mount_container_side":"/data" }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',

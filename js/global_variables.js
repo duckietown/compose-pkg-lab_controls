@@ -73,3 +73,9 @@
   let ip_cam_subscriber_interval = null;
   // Object to store the current lux values
   let current_lux = {};
+  //Object to store aws_config information
+  let aws_config = null;
+  //Object to store ipfs hashes
+  let ipfs_hashes = null;
+  //ID of the currently evaluating job
+  let job_id = 0;

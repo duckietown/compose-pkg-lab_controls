@@ -120,8 +120,8 @@
       current_substeps=0;
       necessary_substeps=5;
       current_button="btn_finish_job";
-      add_waiting('copy_map');
       add_waiting('copy_roster');
+      add_waiting('copy_map');
       add_waiting('creating_logfile');
       add_waiting('ipfs_hash');
       add_waiting('uploading_data');

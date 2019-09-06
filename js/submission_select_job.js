@@ -58,6 +58,8 @@ function get_submission_map(map_container, challenge_name, step_name){
             let cell2 = row.insertCell(2);
             let docker_repo = response.result.parameters.locations[0];
             let container = docker_repo.registry+"/"+docker_repo.organization+"/"+docker_repo.repository+":"+docker_repo.tag;
+            aws_config = response.result.aws_config;
+            job_id = response.result.job_id;
             cell0.innerHTML=response.result.submission_id;
             cell1.innerHTML=container;
             map_container = response.result.challenge_parameters.services.evaluator.image;

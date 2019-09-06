@@ -91,23 +91,7 @@ function subscriber_agents(){
       });
       tf.subscribe(function(message) {
         try{
-          if (message.child_frame_id.substring(0,4)=="duck"){
-            tmp = parseInt(message.child_frame_id.replace('duckiebot_',''))-399;
-            if (tmp<10){
-              name = "autobot0"+tmp;
-            } else {
-              name = "autobot"+tmp;
-            }
-          }
-          if (message.child_frame_id.substring(0,4)=="watc"){
-            tmp = parseInt(message.child_frame_id.replace('watchtower_',''));
-            if (tmp<10){
-              name = "watchtower0"+tmp;
-            } else {
-              name = "watchtower"+tmp;
-            }
-          }
-
+          name = message.child_frame_id;
           let pixel_coordinates = transform_coordinates(message.transform.translation.y, message.transform.translation.x);
           bots_positions[name][0]=pixel_coordinates.x-9;
           bots_positions[name][1]=pixel_coordinates.y-9;
@@ -131,7 +115,7 @@ function show_trajectory(){
   // TODO change default variables
   $.ajax({
     url: flask_url+":"+flask_port+"/request_csv",
-    data: JSON.stringify({mount: logging_bag_mount, duckiebot: "405"}),
+    data: JSON.stringify({mount: logging_bag_mount+"/trajectories", duckiebot: "active"}),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',

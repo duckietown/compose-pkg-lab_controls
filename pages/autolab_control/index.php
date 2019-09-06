@@ -170,10 +170,10 @@
           Hostname
         </td>
         <td>
-          Ping
+          Ping <span class="glyphicon glyphicon-repeat" aria-hidden="true" style="cursor: pointer;" onclick="ping_bots()">
         </td>
         <td>
-          Actions <span class="glyphicon glyphicon-repeat" aria-hidden="true" style="cursor: pointer;" onclick="ping_bots()">
+          Actions
         </td>
       </thead>
       <tbody style="background-color: #ffffff" id="duckie_list_body">
@@ -195,7 +195,7 @@
   </table>
 
   <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="show_trajectory()">Test API</button>
-
+  <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="ipfs_hash()">Test hashing</button>
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="close_information_window();" id="blackoutdiv" class=blackout></div>
@@ -454,11 +454,11 @@
         <span id="body_uploading_data">
           <table width="300px"><tbody>
             <tr height="40px">
-                <td>Copying map</td>
-                <td><span id="copy_map"></span></td>
-            <tr height="40px">
                 <td>Copying roster</td>
                 <td><span id="copy_roster"></span></td>
+            <tr height="40px">
+                <td>Copying map</td>
+                <td><span id="copy_map"></span></td>
             <tr height="40px">
                 <td>Creating logfile</td>
                 <td><span id="creating_logfile"></span></td>
