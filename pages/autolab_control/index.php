@@ -15,6 +15,7 @@
     $param_dt_token = Core::getSetting("dt_token", "lab_controls");
     $param_flask_url = Core::getSetting("flask_url", "lab_controls");
     $param_flask_port = Core::getSetting("flask_port", "lab_controls");
+    $param_ip_ros = Core::getSetting("ip_rosmaster", "lab_controls");
     $param_changelog_file = Core::getSetting("changelog_file", "lab_controls");
     $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
     $param_logging_server_hostname = Core::getSetting("logging_server_hostname", "lab_controls");
@@ -28,7 +29,7 @@
     let light_nbr = <?php echo $param_light_nbr?>;
     //Ip address of the Hue hub
     let ip_addr = "<?php echo $param_ip?>";
-    //API Key for the Hue hub
+    //API Key for the Hue hubparam_cam_pw
     let api_key = "<?php echo $param_api?>";
     //IP address of the Foscam
     let ip_addr_cam = [];
@@ -59,6 +60,8 @@
     let logging_server_username = "<?php echo $param_logging_server_username?>";
     //Worker file for light control
     let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
+    //IP of the autolab ROS master
+    let ros_master_ip = "<?php echo $param_ip_ros?>";
     //Initialize Rosbridge
     let ROS_connected = false;
     $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
@@ -194,8 +197,6 @@
   </tbody>
   </table>
 
-  <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="show_trajectory()">Test API</button>
-  <button type="button" class="btn btn-default" style="margin-bottom:5px;" onclick="ipfs_hash()">Test hashing</button>
   <!-- Popup info for Duckiebots -->
   <!-- Adapted from http://jafty.com/blog/tag/javascript-popup-onclick/ -->
   <div onclick="close_information_window();" id="blackoutdiv" class=blackout></div>
@@ -204,6 +205,7 @@
       <li id="info_tab" role="presentation" class="active" onclick="showInfo();"><a href="#">Info</a></li>
       <li id="camera_tab" role="presentation" onclick="showCamera();"><a href="#">Camera</a></li>
       <li id="history_tab" role="presentation" onclick="showHistory();"><a href="#">Changelog</a></li>
+      <li id="popup_portainer" role="presentation"><a id="popup_portainer_href" href="#" target="_blank">Portainer</a></li>
     </ul>
 
     <span id="info_content" class="popup_content">
@@ -362,10 +364,7 @@
               <td>Starting passive Duckiebots</td>
               <td><span id="start_passive_duckiebots"></span></td>
             </tr><tr height="40px">
-              <td>Starting active Duckiebots</td>
-              <td><span id="start_duckiebot_container"></span></td>
-            </tr><tr height="40px">
-              <td>Duckiebots ready to move</td>
+              <td>Passive Duckiebots ready to move</td>
               <td><span id="ready_to_move"></span></td>
             </tr>
           </tbody></table>
@@ -377,6 +376,9 @@
         <span id="body_submission_running">
           The submission is currently running. Press the \'Stop submission\' button as soon as the active bot/s drive/s out of the city
           <table width="300px"><tbody>
+            </tr><tr height="40px">
+                <td>Starting active Duckiebots</td>
+                <td><span id="start_duckiebot_container"></span></td>
             </tr><tr height="40px">
                 <td>Starting logging</td>
                 <td><span id="start_logging"></span></td>
@@ -444,6 +446,9 @@
             </tr><tr height="40px">
               <td>Process localization</td>
               <td><span id="process_localization"></span><span id="localization_update"></span></td>
+            </tr><tr height="40px">
+              <td>Fail submission</td>
+              <td><input type="checkbox" id="fail_submission"></td>
             </tr>
           </tbody></table>
         </span>
@@ -466,6 +471,9 @@
               <td>Creating ipfs hashes</td>
               <td><span id="ipfs_hash"></span></td>
             <tr height="40px">
+              <td>Uploading to AWS</td>
+              <td><span id="upload_s3"></span></td>
+            <tr height="40px">
               <td>Uploading data</td>
               <td><span id="uploading_data"></span></td>
             </tr>
@@ -487,10 +495,44 @@
     </div>
     <br>
     <div class = "docker_entities" id="docker_entitites">
-
     </div>
     <br>
     <button id="start_docker_command" type="button" class="btn btn-default" onclick="start_docker_command()">Execute docker command</button>
+    <br>
+    <br>
+    Restarting the duckiebot-interface
+    <br>
+    <code>
+        docker -H &lt;HOSTNAME&gt;.local restart duckiebot-interface
+    </code>
+    <br>
+    <br>
+    Restarting the acquisition-bridge
+    <br>
+    <code>
+        docker -H &lt;HOSTNAME&gt;.local restart acquisition-bridge
+    </code>
+    <br>
+    <br>
+    Run duckiebot-interface for watchtowers
+    <br>
+    <code>
+    docker -H &lt;HOSTNAME&gt;.local run --name duckiebot-interface -v /data:/data --privileged --network=host -dit --restart unless-stopped -e ROBOT_TYPE=watchtower duckietown/dt-duckiebot-interface:daffy-arm32v7
+    </code>
+    <br>
+    <br>
+    Run acquisition-bridge for watchtowers
+    <br>
+    <code>
+    docker -H &lt;HOSTNAME&gt;.local run --name acquisition-bridge --network=host -dit -e LAB_ROS_MASTER_IP=<?php echo $param_ip_ros?> --restart unless-stopped -e ROBOT_TYPE=watchtower duckietown/acquisition-bridge:daffy
+    </code>
+    <br>
+    <br>
+    Run acquisition-bridge for duckiebots
+    <br>
+    <code>
+        docker -H &lt;HOSTNAME&gt;.local run --name acquisition-bridge --network=host -dit -e LAB_ROS_MASTER_IP=<?php echo $param_ip_ros?> --restart unless-stopped -v /data:/data duckietown/acquisition-bridge:daffy
+    </code>
   </div>
 <!-- Must be called after HTML load -->
   <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>

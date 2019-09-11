@@ -19,28 +19,10 @@
       "details" : "Number of lightbuls in the robotarium"
     },
     "ip_cam" : {
-      "title" : "IP Foscam, add up to 4 IP's in a .csv format",
+      "title" : "IP of IPcam's, add up to 4 IP's in a .csv format",
       "type" : "text",
       "default" : "192.168.1.3,192.168.1.4",
-      "details" : "IP of the lab Foscam"
-    },
-    "cam_port" : {
-      "title" : "Foscam http port",
-      "type" : "text",
-      "default" : "88",
-      "details" : "http port used by the Foscam"
-    },
-    "cam_usr" : {
-      "title" : "Foscam User",
-      "type" : "text",
-      "default" : "duckie",
-      "details" : "User account to access the Foscam"
-    },
-    "cam_pw" : {
-      "title" : "Foscam Password",
-      "type" : "text",
-      "default" : "This is a secret",
-      "details" : "Password to access the Foscam"
+      "details" : "IP of the lab IPcam"
     },
     "dt_token" : {
       "title" : "Duckietown token",
@@ -83,6 +65,12 @@
       "type" : "text",
       "default" : "",
       "details" : "Username of the logging server, needs passwordless ssh"
+    },
+    "ip_rosmaster" : {
+      "title" : "IP of the lab ROS master",
+      "type" : "text",
+      "default" : "",
+      "details" : "IP of the lab ROS master"
     }
   }
 }

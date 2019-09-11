@@ -26,7 +26,7 @@
     }
     if (id==2){
       current_substeps=0;
-      necessary_substeps=8;
+      necessary_substeps=7;
       current_button="btn_submission_ready_to_start";
       agent_list = get_submission_watchtowers();
 
@@ -71,7 +71,6 @@
       add_waiting('restart_interface');
       add_waiting('duckiebot_hold');
       add_waiting('start_passive_duckiebots');
-      add_waiting('start_duckiebot_container');
       add_waiting('ready_to_move');
 
       submission_bots = [];
@@ -86,13 +85,14 @@
     }
     if (id==3){
       current_substeps=0;
-      necessary_substeps=2;
+      necessary_substeps=3;
       current_button="btn_submission_finished";
 
+      add_waiting('start_duckiebot_container');
       add_waiting('start_logging');
       add_waiting('duckiebot_start');
       subscribe_cameras();
-      start_logging(start_duckiebots);
+      start_duckiebot_container(wait_for_active_bots);
     }
     if (id==4){
       let dt = new Date();
@@ -118,12 +118,13 @@
     if (id==5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
-      necessary_substeps=5;
+      necessary_substeps=6;
       current_button="btn_finish_job";
       add_waiting('copy_roster');
       add_waiting('copy_map');
       add_waiting('creating_logfile');
       add_waiting('ipfs_hash');
+      add_waiting('upload_s3');
       add_waiting('uploading_data');
       copy_roster(copy_map);
     }

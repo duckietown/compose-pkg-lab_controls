@@ -1,3 +1,102 @@
+/////Start containers on the Duckiebots
+function start_duckiebot_container(next_function){
+    if (active_bots.length!=0){
+      add_loading('start_duckiebot_container');
+      let step_start_time = Date.now();
+      ajax_list["start_active_containers"]=$.ajax({
+        url: flask_url+":"+flask_port+"/start_active_bots",
+        data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
+        dataType: "json",
+        type: "POST",
+        contentType: 'application/json',
+        header: {},
+        success: function(result) {
+          let not_started = false;
+          delete ajax_list["start_active_containers"];
+          result.container.forEach(function(entry, index){
+            if (entry!="Started evaluation"){
+                not_started = true;
+            }
+          });
+
+          let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Active Container</b></td></tr>";
+          result.hostname.forEach(function(entry, index){
+              debug_string+="<tr><td>"+entry+"</td><td>"+result.container[index]+"</td></tr>";
+              logging_object.agent[entry].evaluation = result.container[index];
+          });
+          debug_string+="</table><br><br> ####################################### <br>"
+          document.getElementById('debug_window').innerHTML += debug_string;
+          document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+          let step_stop_time = Date.now();
+          logging_object.steps.start_active_containers = {};
+          logging_object.steps.start_active_containers.step_start_time = step_start_time;
+          logging_object.steps.start_active_containers.step_stop_time = step_stop_time;
+          logging_object.steps.start_active_containers.duration = (step_stop_time-step_start_time)/1000;
+
+          if (not_started){
+            add_failure('start_duckiebot_container');
+            document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
+          } else {
+            
+            next_function(start_logging);
+          }
+        },
+      });
+    } else {
+      //If no active bots wanted, i.e. standard DEMO started from the interface
+      add_success('start_duckiebot_container');
+      next_function(start_logging);
+    }
+  }
+
+/////Wait for active bots
+
+/////Wait until all passive bots are ready to move
+function wait_for_active_bots(next_function){
+    if (ROS_connected){
+      active_bots.forEach(function(entry){
+        if (!(entry in sub_ready_to_move)){
+          sub_ready_to_move[entry] = new ROSLIB.Topic({
+            ros : window.ros,
+            name : '/'+entry+'/ready_to_start',
+            messageType : 'std_msgs/Bool',
+            queue_size : 1,
+          });
+        }
+        i_am_ready[entry] = false
+        sub_ready_to_move[entry].subscribe(function(message) {
+          if (message.data){
+            if (i_am_ready[entry]== false){
+              let debug_string=entry+" ready to move<br><br> ####################################### <br>"
+              document.getElementById('debug_window').innerHTML += debug_string;
+              document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+              logging_object.agent[entry].ready_to_move = true;
+            }
+            i_am_ready[entry] = true;
+          }
+          let ready = true;
+          active_bots.forEach(function(bot){
+            if(!i_am_ready[bot]){
+              ready = false;
+            }
+          });
+          if (ready){
+            let debug_string="All active bots ready to move, evaluation can be started<br><br> ####################################### <br>"
+            document.getElementById('debug_window').innerHTML += debug_string;
+            document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+            next_function(start_duckiebots);
+
+            active_bots.forEach(function(bot){
+              sub_ready_to_move[bot].unsubscribe();
+            });
+          }
+        });
+      });
+    }
+  }
+
+
 /////Start the logging containers
 function start_logging(next_function){
     add_loading('start_logging');

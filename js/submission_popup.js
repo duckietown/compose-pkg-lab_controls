@@ -54,9 +54,13 @@
     document.getElementById('process_bags_update').innerHTML = "";
     document.getElementById('localization_update').innerHTML = "";
     document.getElementById('initialization_map').src = "";
+    document.getElementById("fail_submission").checked = false;
     //Fetch currently available submissions from server
     empty_body(submission_table);
     fetch_submission(submission_table);
+    let c = document.getElementById("bot_visualization");
+    let ctx = c.getContext("2d");
+    ctx.clearRect(0,0,c.clientWidth,c.height);
   }
 
 /////Close submission popup
@@ -98,6 +102,8 @@
         sub_ready_to_move[bot].unsubscribe();
       } catch {}
     });
+    document.getElementById("fail_submission").checked = false;
+    upload_data("aborted");
     reset_submission_view();
     unsubscribe_cameras();
     openAlert(type='warning', 'Submission Nr. '+selected_sub_id+' canceled by the operator');

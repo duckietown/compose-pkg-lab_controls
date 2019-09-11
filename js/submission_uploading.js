@@ -113,7 +113,7 @@ function copy_map(next_function){
         document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
 
         add_success('creating_logfile');
-        next_function(upload_data);
+        next_function(upload_s3);
       },
     });
   }
@@ -146,29 +146,75 @@ function copy_map(next_function){
         } else {
           ipfs_hashes=result.data;
           add_success('ipfs_hash');
-          next_function();
+          next_function(upload_data);
         }
       },
     });
   }
 
+/////Create ipfs hashes
+function upload_s3(next_function){
+  add_loading('upload_s3');
+  let ignore_pattern = ["raw.bag"];
+  ajax_list["upload_s3"]=$.ajax({
+    url: flask_url+":"+flask_port+"/upload_s3",
+    data: JSON.stringify({aws_config: aws_config, path:logging_bag_mount, ignore_pattern:ignore_pattern}),
+    dataType: "json",
+    type: "POST",
+    contentType: 'application/json',
+    header: {},
+    success: function(result) {
+      delete ajax_list["upload_s3"];
+      let debug_string = "";
+      if (result.outcome!="Error"){
+        debug_string = "Successfully uploaded to S3";
+      } else {
+        debug_string = "Not able to upload to S3";
+      }
+      debug_string+="</table><br><br> ####################################### <br>"
+      document.getElementById('debug_window').innerHTML += debug_string;
+      document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+      if(result.data=="Error"){
+        add_failure('upload_s3');
+        document.getElementById('upload_s3').onclick=function(){upload_s3(next_function);};
+      } else {
+        uploaded_s3=result.data;
+        add_success('upload_s3');
+        next_function();
+      }
+    },
+  });
+}
+
 /////Upload the data TODO: a lot of defaul variables ... add S3 implementation
-  function upload_data(){
+  function upload_data(submission_result="success"){
     add_loading('uploading_data');
     endpoint_string = "/api/take-submission";
     url_string = submission_server_url;
-    let submission_result="success";
-    let scores = {"distance":10,"time":20};
-    let uploaded = {};
+    let scores = {};
+    if (document.getElementById("fail_submission").checked){
+      submission_result="failed";
+    }
+    if (submission_result=="success")
+    {
+      scores = {"survival_time_median": (stop_timestamp-start_timestamp)/1000, "driven_lanedir_consec_median": submission_dist};
+    } else if (submission_result=="aborted"){
+      scores = {"Reason": "Submission aborted by the operator"};
+    } else if (submission_result=="failed"){
+      scores = {"Reason": "Submission failed by the operator"};
+    } else {
+      scores = {"Reason": "Unknown error"};
+    }
+    
     $.ajax({
       url: flask_url+":"+flask_port+"/upload_data",
-      data: JSON.stringify({token:dt_token,endpoint:endpoint_string,url:url_string,job_id:job_id,result:submission_result,ipfs_hashes:ipfs_hashes,scores:scores,uploaded:uploaded}),
+      data: JSON.stringify({token:dt_token,endpoint:endpoint_string,url:url_string,job_id:job_id,result:submission_result,ipfs_hashes:ipfs_hashes,scores:scores,uploaded:uploaded_s3}),
       dataType: "json",
       type: "POST",
       contentType: 'application/json',
       header: {},
       success: function(result) {
-        alert(result.toSource())
       },
     });
     add_success('uploading_data');

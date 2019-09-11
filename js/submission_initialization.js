@@ -199,7 +199,7 @@
 
     if (next_function == start_passive_duckiebots){
       add_success('duckiebot_hold');
-      next_function(start_duckiebot_container)
+      next_function(wait_for_passive_bots)
     } else {
       add_success('duckiebot_stop');
     }
@@ -246,121 +246,74 @@ function start_passive_duckiebots(next_function){
           document.getElementById('start_passive_duckiebots').onclick=function(){start_passive_duckiebots(next_function);};
         } else {
           add_success('start_passive_duckiebots');
-          next_function(wait_for_all_bots);
+          next_function();
         }
       },
     });
   } else {
     add_success('start_passive_duckiebots');
-    next_function(wait_for_all_bots);
+    next_function();
   }
   
 }
 
-/////Start containers on the Duckiebots
-  function start_duckiebot_container(next_function){
-    if (active_bots.length!=0){
-      add_loading('start_duckiebot_container');
-      let step_start_time = Date.now();
-      ajax_list["start_active_containers"]=$.ajax({
-        url: flask_url+":"+flask_port+"/start_active_bots",
-        data: JSON.stringify({list:active_bots, container: current_submission_container, duration: 60}),
-        dataType: "json",
-        type: "POST",
-        contentType: 'application/json',
-        header: {},
-        success: function(result) {
-          let not_started = false;
-          delete ajax_list["start_active_containers"];
-          result.container.forEach(function(entry, index){
-            if (entry!="Started evaluation"){
-                not_started = true;
-            }
-          });
-
-          let debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Active Container</b></td></tr>";
-          result.hostname.forEach(function(entry, index){
-              debug_string+="<tr><td>"+entry+"</td><td>"+result.container[index]+"</td></tr>";
-              logging_object.agent[entry].evaluation = result.container[index];
-          });
-          debug_string+="</table><br><br> ####################################### <br>"
-          document.getElementById('debug_window').innerHTML += debug_string;
-          document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-
-          let step_stop_time = Date.now();
-          logging_object.steps.start_active_containers = {};
-          logging_object.steps.start_active_containers.step_start_time = step_start_time;
-          logging_object.steps.start_active_containers.step_stop_time = step_stop_time;
-          logging_object.steps.start_active_containers.duration = (step_stop_time-step_start_time)/1000;
-
-          if (not_started){
-            add_failure('start_duckiebot_container');
-            document.getElementById('start_duckiebot_container').onclick=function(){start_duckiebot_container(next_function);};
-          } else {
-            add_success('start_duckiebot_container');
-            next_function();
-          }
-        },
-      });
-    } else {
-      //If no active bots wanted, i.e. standard DEMO started from the interface
-      add_success('start_duckiebot_container');
-      next_function();
-    }
-  }
-
-/////Wait until all bots are ready to move
-  function wait_for_all_bots(){
+/////Wait until all passive bots are ready to move
+  function wait_for_passive_bots(){
     add_loading('ready_to_move');
     //Stop again to be sure
     current_substeps-=1;
     stop_duckiebots();
-    let step_start_time = Date.now();
-    if (ROS_connected){
-      submission_bots.forEach(function(entry){
-        if (!(entry in sub_ready_to_move)){
-          sub_ready_to_move[entry] = new ROSLIB.Topic({
-            ros : window.ros,
-            name : '/'+entry+'/ready_to_start',
-            messageType : 'std_msgs/Bool',
-            queue_size : 1,
-          });
-        }
-        i_am_ready[entry] = false
-        sub_ready_to_move[entry].subscribe(function(message) {
-          if (message.data){
-            if (i_am_ready[entry]== false){
-              let debug_string=entry+" ready to move<br><br> ####################################### <br>"
-              document.getElementById('debug_window').innerHTML += debug_string;
-              document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-              logging_object.agent[entry].ready_to_move = true;
-            }
-            i_am_ready[entry] = true;
-          }
-          let ready = true;
-          submission_bots.forEach(function(bot){
-            if(!i_am_ready[bot]){
-              ready = false;
-            }
-          });
-          if (ready){
-            add_success('ready_to_move');
-            all_bots_ready = true;
-            let debug_string="All submission bots ready to move, evaluation can be started<br><br> ####################################### <br>"
-            document.getElementById('debug_window').innerHTML += debug_string;
-            document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
-
-            let step_stop_time = Date.now();
-            logging_object.steps.ready_to_move = {};
-            logging_object.steps.ready_to_move.step_start_time = step_start_time;
-            logging_object.steps.ready_to_move.step_stop_time = step_stop_time;
-            logging_object.steps.ready_to_move.duration = (step_stop_time-step_start_time)/1000;
-
-            submission_bots.forEach(function(bot){
-              sub_ready_to_move[bot].unsubscribe();
+    if (passive_bots.length!=0){
+      let step_start_time = Date.now();
+      if (ROS_connected){
+        passive_bots.forEach(function(entry){
+          if (!(entry in sub_ready_to_move)){
+            sub_ready_to_move[entry] = new ROSLIB.Topic({
+              ros : window.ros,
+              name : '/'+entry+'/ready_to_start',
+              messageType : 'std_msgs/Bool',
+              queue_size : 1,
             });
           }
+          i_am_ready[entry] = false
+          sub_ready_to_move[entry].subscribe(function(message) {
+            if (message.data){
+              if (i_am_ready[entry]== false){
+                let debug_string=entry+" ready to move<br><br> ####################################### <br>"
+                document.getElementById('debug_window').innerHTML += debug_string;
+                document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+                logging_object.agent[entry].ready_to_move = true;
+              }
+              i_am_ready[entry] = true;
+            }
+            let ready = true;
+            passive_bots.forEach(function(bot){
+              if(!i_am_ready[bot]){
+                ready = false;
+              }
+            });
+            if (ready){
+              add_success('ready_to_move');
+              all_bots_ready = true;
+              let debug_string="All passive bots ready to move, evaluation can be started<br><br> ####################################### <br>"
+              document.getElementById('debug_window').innerHTML += debug_string;
+              document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+
+              let step_stop_time = Date.now();
+              logging_object.steps.ready_to_move = {};
+              logging_object.steps.ready_to_move.step_start_time = step_start_time;
+              logging_object.steps.ready_to_move.step_stop_time = step_stop_time;
+              logging_object.steps.ready_to_move.duration = (step_stop_time-step_start_time)/1000;
+
+              passive_bots.forEach(function(bot){
+                sub_ready_to_move[bot].unsubscribe();
+              });
+            }
+          });
         });
-      });
+      }
+    } else {
+      add_success('ready_to_move');
+      all_bots_ready = true;
     }
   }

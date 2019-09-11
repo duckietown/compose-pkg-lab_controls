@@ -74,8 +74,12 @@
   // Object to store the current lux values
   let current_lux = {};
   //Object to store aws_config information
-  let aws_config = null;
+  let aws_config = {};
   //Object to store ipfs hashes
-  let ipfs_hashes = null;
+  let ipfs_hashes = {};
+  //Object to store s3 hashes
+  let uploaded_s3 = {};
   //ID of the currently evaluating job
   let job_id = 0;
+  //Distance in meters driven during the submission
+  let submission_dist = 0;

@@ -227,6 +227,8 @@ function process_localization(){
 function check_localization(){
   ajax_list["check_localization"]=$.ajax({
     url: flask_url+":"+flask_port+"/check_localization",
+    data: JSON.stringify({"active_bot":active_bots,"passive_bots":passive_bots, "origin_path":logging_bag_mount+"/logs_processed", "destination_path":logging_bag_mount+"/trajectories" }),
+    dataType: "json",
     type: "POST",
     contentType: 'application/json',
     header: {},
@@ -248,6 +250,7 @@ function check_localization(){
       } else {
         clearInterval(check_localization_interval);
         add_success('process_localization');
+        show_trajectory();
         document.getElementById('localization_update').innerHTML = "";
         logging_object.steps.localization.step_stop_time = step_stop_time;
         logging_object.steps.localization.duration = (step_stop_time-logging_object.steps.localization.step_start_time)/1000;

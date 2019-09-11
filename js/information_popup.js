@@ -6,6 +6,7 @@
       document.getElementById('info_content').style.display="block";
       document.getElementById('camera_content').style.display="none";
       document.getElementById('history_content').style.display="none";
+      document.getElementById("popup_portainer_href").href="http://"+name+".local:9000"
       showInfo();
   }
 /////Function to hide popup on click
