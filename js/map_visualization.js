@@ -112,7 +112,6 @@ function subscriber_agents(){
 }
 
 function show_trajectory(){
-  // TODO change default variables
   $.ajax({
     url: flask_url+":"+flask_port+"/request_yaml",
     data: JSON.stringify({mount: logging_bag_mount+"/trajectories", duckiebot: "active1"}),
