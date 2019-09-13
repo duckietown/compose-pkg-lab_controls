@@ -39,6 +39,9 @@
   }
 /////Tab control for popup,showing the Camera tab
   function showCamera(){
+    try{
+      subscriber_camera.unsubscribe();
+    } catch {}
     document.getElementById('raspi_stream').src="";
     document.getElementById('info_content').style.display="none";
     document.getElementById('camera_content').style.display="block";

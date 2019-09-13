@@ -85,6 +85,7 @@ function wait_for_active_bots(next_function){
             let debug_string="All active bots ready to move, evaluation can be started<br><br> ####################################### <br>"
             document.getElementById('debug_window').innerHTML += debug_string;
             document.getElementById('debug_window').scrollTop = document.getElementById('debug_window').scrollHeight;
+            add_success('start_duckiebot_container');
             next_function(start_duckiebots);
 
             active_bots.forEach(function(bot){

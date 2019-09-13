@@ -187,7 +187,7 @@ function upload_s3(next_function){
   });
 }
 
-/////Upload the data TODO: a lot of defaul variables ... add S3 implementation
+/////Upload the data
   function upload_data(submission_result="success"){
     add_loading('uploading_data');
     endpoint_string = "/api/take-submission";

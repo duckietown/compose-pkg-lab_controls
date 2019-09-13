@@ -105,13 +105,11 @@ function get_submission_map(map_container, challenge_name, step_name){
 
 /////Watchtowers necessary for certain job
   function get_submission_watchtowers(){
-    // TODO: remove comment 
-    //if (current_submission_loop=="LF" || current_submission_loop=="LFV") TODO
-    if (current_submission_loop=="LFV")
+    if (current_submission_loop=="LF" || current_submission_loop=="LFV")
     {
       return ["watchtower21","watchtower22","watchtower23","watchtower24","watchtower25","watchtower26","watchtower27","watchtower28","watchtower29","watchtower30","watchtower31","watchtower32","watchtower33","watchtower34","watchtower35"]
     } else {
-      //TODO remove comment
+      //TODO remove comment, when watchtower07 is working again
       // return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
       return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
     }
