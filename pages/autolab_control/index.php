@@ -286,7 +286,7 @@
       <span id="submission_step_1" class="">
         <button id="btn_start_job" type="button" class="btn btn-default" onclick="next_submission_step(1)" disabled>Select job</button>
         <br><br>
-        <span id="submission_server_time_info">Currently pinging the submission server. The server answers in <span id="server_answer_time">999</span> seconds. Please wait</span>
+        <span id="submission_server_time_info">Currently pinging the submission server. The server answers in <span id="server_answer_time">999</span> seconds. Please wait<div class="lds-ring"><div></div><div></div><div></div><div></div></div></span>
         <span class="submission_tab">
           <table id="submission_table" class="history_list" cellpadding="1" border="0" >
             <thead style="background-color: #dddddd;">
@@ -334,6 +334,8 @@
                 </td>
                 <td style="width:50%; vertical-align:top">
                 <img id="initialization_map" src="" alt="Loading initialization map">
+                <br>
+                Please position the Duckiebots according to the above map. Pink Duckiebots correspond to active bots, green to passive bots.
                 </td>
               </tr>
             </tbody>
