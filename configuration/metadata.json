@@ -1,76 +1,76 @@
 {
-  "configuration_content" : {
-    "ip_hub" : {
-      "title" : "IP Hue Hub",
-      "type" : "text",
-      "default" : "192.168.1.5",
-      "details" : "IP of the Hue Hub used to control the lights"
+  "configuration_content": {
+    "ip_hub": {
+      "title": "IP Hue Hub",
+      "type": "text",
+      "default": "192.168.1.5",
+      "details": "IP of the Hue Hub used to control the lights"
     },
-    "api_key" : {
-      "title" : "API Key",
-      "type" : "text",
-      "default" : "This is a secret",
-      "details" : "Secret API key used to communicate with the Hue Hub"
+    "api_key": {
+      "title": "API Key",
+      "type": "text",
+      "default": "This is a secret",
+      "details": "Secret API key used to communicate with the Hue Hub"
     },
-    "light_nbr" : {
-      "title" : "Number of lightbulbs",
-      "type" : "text",
-      "default" : "21",
-      "details" : "Number of lightbuls in the robotarium"
+    "light_nbr": {
+      "title": "Number of lightbulbs",
+      "type": "text",
+      "default": "21",
+      "details": "Number of lightbuls in the robotarium"
     },
-    "ip_cam" : {
-      "title" : "IP of IPcam's, add up to 4 IP's in a .csv format",
-      "type" : "text",
-      "default" : "192.168.1.3,192.168.1.4",
-      "details" : "IP of the lab IPcam"
+    "ip_cam": {
+      "title": "IP of IPcam's, add up to 4 IP's in a .csv format",
+      "type": "text",
+      "default": "192.168.1.3,192.168.1.4",
+      "details": "IP of the lab IPcam"
     },
-    "dt_token" : {
-      "title" : "Duckietown token",
-      "type" : "text",
-      "default" : "This is a secret",
-      "details" : "Duckietown token"
+    "dt_token": {
+      "title": "Duckietown token",
+      "type": "text",
+      "default": "This is a secret",
+      "details": "Duckietown token"
     },
-    "flask_url" : {
-      "title" : "Flask url",
-      "type" : "text",
-      "default" : "http://duckietown20.local",
-      "details" : "URL of Flask server"
+    "flask_url": {
+      "title": "Flask url",
+      "type": "text",
+      "default": "http://duckietown3.local",
+      "details": "URL of Flask server"
     },
-    "flask_port" : {
-      "title" : "Flask port",
-      "type" : "text",
-      "default" : "5050",
-      "details" : "Port for Flask server interaction"
+    "flask_port": {
+      "title": "Flask port",
+      "type": "text",
+      "default": "5050",
+      "details": "Port for Flask server interaction"
     },
-    "changelog_file" : {
-      "title" : "Changelog file",
-      "type" : "text",
-      "default" : "https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml",
-      "details" : "Location of changelog file for Duckiebots"
+    "changelog_file": {
+      "title": "Changelog file",
+      "type": "text",
+      "default": "https://raw.githubusercontent.com/duckietown/ETHZ-autolab-fleet-roster/webeben_test/changelog/default.yaml",
+      "details": "Location of changelog file for Duckiebots"
     },
-    "submission_server_url" : {
-      "title" : "Submission server url",
-      "type" : "text",
-      "default" : "http://localhost:6544",
-      "details" : "URL of submission server"
+    "submission_server_url": {
+      "title": "Submission server url",
+      "type": "text",
+      "default": "http://localhost:6544",
+      "details": "URL of submission server"
     },
-    "logging_server_hostname" : {
-      "title" : "Hostname of the logging server",
-      "type" : "text",
-      "default" : "",
-      "details" : "Hostname of the logging server"
+    "logging_server_hostname": {
+      "title": "Hostname of the logging server",
+      "type": "text",
+      "default": "",
+      "details": "Hostname of the logging server"
     },
-    "logging_server_username" : {
-      "title" : "Username of the logging server, needs passwordless ssh",
-      "type" : "text",
-      "default" : "",
-      "details" : "Username of the logging server, needs passwordless ssh"
+    "logging_server_username": {
+      "title": "Username of the logging server, needs passwordless ssh",
+      "type": "text",
+      "default": "",
+      "details": "Username of the logging server, needs passwordless ssh"
     },
-    "ip_rosmaster" : {
-      "title" : "IP of the lab ROS master",
-      "type" : "text",
-      "default" : "",
-      "details" : "IP of the lab ROS master"
+    "ip_rosmaster": {
+      "title": "IP of the lab ROS master",
+      "type": "text",
+      "default": "",
+      "details": "IP of the lab ROS master"
     }
   }
 }
