@@ -6,6 +6,7 @@
     ROS::connect();
     $ros_connected = ROS::get_event(ROS::$ROSBRIDGE_CONNECTED);
 
+    $param_hue_enabled = Core::getSetting("hue_enabled", "lab_controls");
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
     $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
@@ -143,29 +144,33 @@
   </tr>
 
   <tr>
-    <!-- Light control -->
     <td class="controls_tab">
-      <table style="width: 100%;">
-      <tbody>
-      <tr>
-      <td>
-        <button type="button" class="btn btn-default" onclick="lights_on()">Turn Light on</button>
-      </td>
-      <td>
-        <button type="button" class="btn btn-default" onclick="lights_off()">Turn Light off</button>
-      </td>
-      <td>
-        <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
-        <p>Intensity: <span id="intensity_out"></span></p>
-        <input type="range" min="153" max="500" value="153" class="slider" id="color">
-        <p>Color: <span id="color_out"></span></p>
-        <button type="button" class="btn btn-default" onclick="lights_change()">Change lights</button>
-      </td>
-      </tr>
-      </tbody>
-      </table>
-    </td> 
+      <?php if ($param_hue_enabled){ ?>
+        <!-- Light control -->
+        <table style="width: 100%;">
+        <tbody>
+        <tr>
+        <td>
+          <button type="button" class="btn btn-default" onclick="lights_on()">Turn Light on</button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-default" onclick="lights_off()">Turn Light off</button>
+        </td>
+        <td>
+          <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
+          <p>Intensity: <span id="intensity_out"></span></p>
+          <input type="range" min="153" max="500" value="153" class="slider" id="color">
+          <p>Color: <span id="color_out"></span></p>
+          <button type="button" class="btn btn-default" onclick="lights_change()">Change lights</button>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        <?php
+      }?>
+    </td>
   </tr>
+
   <tr>
     <!-- Different Duckiebots currently in town -->
     <td id="duckies_tab" class="duckies_tab">
@@ -492,7 +497,7 @@
   </div>
   <div onclick="close_docker_maintenance_popup()" id="maintenance_blackout_div" class=blackout></div>
   <div id="docker_maintenance" class=popup>
-    Enter docker command: 
+    Enter docker command:
     <div class="input-group">
       <span class="input-group-addon" id="basic-addon1">docker -H Hostname </span>
       <input id="docker_command" type="text" class="form-control" placeholder="command" aria-describedby="basic-addon1">
