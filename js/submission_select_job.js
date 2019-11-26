@@ -24,7 +24,7 @@ function get_submission_map(map_container, challenge_name, step_name) {
   });
 }
 
-/////Get the next submission from the serverr
+/////Get the next submission from the server
 function fetch_submission(table) {
   let debug_string = "Currently pinging the submission server <br><br>";
   let step_start_time = Date.now();
@@ -44,7 +44,7 @@ function fetch_submission(table) {
         let response = JSON.parse(result);
         let stop_time_ajax = Date.now();
         document.getElementById('server_answer_time').innerHTML = (stop_time_ajax - start_time_ajax) / 1000;
-        if (response.result.submission_id != null) {
+        if (response.result.submission_id != null && (response.result.step_name == "eval0" || response.result.step_name == "eval1" || response.result.step_name == "eval2")) {
           let step_stop_time = Date.now();
           submission_evaluating = true;
           document.getElementById('submission_server_time_info').style.display = "none";
@@ -99,7 +99,7 @@ function fetch_submission(table) {
 
       },
     });
-  }, 1000);
+  }, 3000);
 }
 
 
