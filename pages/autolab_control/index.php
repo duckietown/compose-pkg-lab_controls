@@ -4,6 +4,7 @@
     use \system\packages\duckietown_duckiebot\Duckiebot;
     use \system\packages\ros\ROS;
     ROS::connect();
+    $ros_connected = ROS::get_event(ROS::$ROSBRIDGE_CONNECTED);
 
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
@@ -63,8 +64,8 @@
     //IP of the autolab ROS master
     let ros_master_ip = "<?php echo $param_ip_ros?>";
     //Initialize Rosbridge
-    let ROS_connected = false;
-    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
+    var ROS_connected = false;
+    $( document ).on("<?php echo $ros_connected ?>", function(evt){
       ROS_connected = true;
     });
   </script>
@@ -116,7 +117,7 @@
         <div id="light_sensor_toggle" class="fa fa-lightbulb-o" aria-hidden="true" style = "width:30px; height:30px; color:white;font-size:30px;" onclick=toggle_light_sensors()>
         </div>
       </span>
-      
+
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -135,11 +136,12 @@
         </ul>
       </div>
 
-      
+
 
       <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera onclick=camera_size_toggle()>
     </td>
   </tr>
+
   <tr>
     <!-- Light control -->
     <td class="controls_tab">
