@@ -101,6 +101,22 @@ function wait_for_active_bots(next_function) {
 /////Start the logging containers
 function start_logging(next_function) {
   add_loading('start_logging');
+
+  let emergency = new ROSLIB.Message({
+    data : true
+  });
+  submission_bots.forEach(function(entry){
+    if (!(entry in pub_emergency_stop)){
+      pub_emergency_stop[entry] = new ROSLIB.Topic({
+        ros : window.ros,
+        name : '/'+entry+'/toggleEmergencyStop',
+        messageType : 'std_msgs/Bool',
+        queue_size : 1,
+      });
+    }
+    pub_emergency_stop[entry].publish(emergency)
+  });
+
   let step_start_time = Date.now();
   let time = new Date();
   let time_stamp = time.getFullYear().toString() + (time.getMonth() + 1).toString().padStart(2, '0') + time.getDate().toString().padStart(2, '0') + "_" + time.getHours().toString().padStart(2, '0') + time.getMinutes().toString().padStart(2, '0') + time.getSeconds().toString().padStart(2, '0');
@@ -139,6 +155,22 @@ function start_logging(next_function) {
       } else {
         add_success('start_logging');
         wait(6000);
+        for (i = 0; i < agent_list.length; i++) {
+          
+
+          publisher_request_image = new ROSLIB.Topic({
+            ros: window.ros,
+            name: '/' + agent_list[i] + '/requestImage',
+            messageType: 'std_msgs/Bool',
+            queue_size: 1,
+          });
+
+          let stream = document.getElementById('raspi_stream');
+          let get_image = new ROSLIB.Message({
+            data: true
+          });
+          publisher_request_image.publish(get_image)
+        }
         next_function();
         next_function();
       }
