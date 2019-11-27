@@ -140,7 +140,6 @@ function start_logging(next_function) {
         add_success('start_logging');
         wait(6000);
         next_function();
-        next_function();
       }
     },
   });
@@ -150,7 +149,7 @@ function start_logging(next_function) {
 function start_duckiebots() {
   add_loading('duckiebot_start');
   if (ROS_connected) {
-
+    wait(1000);
     let dt = new Date();
     start_timestamp = dt.getTime();
 
