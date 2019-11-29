@@ -108,7 +108,7 @@ function start_logging(next_function) {
   submission_bots.forEach(function(entry){
     if (!(entry in pub_emergency_stop)){
       pub_emergency_stop[entry] = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/'+entry+'/toggleEmergencyStop',
         messageType : 'std_msgs/Bool',
         queue_size : 1,
@@ -156,10 +156,10 @@ function start_logging(next_function) {
         add_success('start_logging');
         wait(6000);
         for (i = 0; i < agent_list.length; i++) {
-          
+
 
           publisher_request_image = new ROSLIB.Topic({
-            ros: window.ros,
+            ros: window.ros['local'],
             name: '/' + agent_list[i] + '/requestImage',
             messageType: 'std_msgs/Bool',
             queue_size: 1,
@@ -181,6 +181,7 @@ function start_logging(next_function) {
 function start_duckiebots() {
   add_loading('duckiebot_start');
   if (ROS_connected) {
+    // TODO: what is this wait for?
     wait(1000);
     let dt = new Date();
     start_timestamp = dt.getTime();
