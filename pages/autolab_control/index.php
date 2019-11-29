@@ -26,7 +26,7 @@
   ?>
 
   <!-- JS to import settings from php -->
-  <script>
+  <script type="text/javascript">
     // Number of lightbulbs
     let light_nbr = <?php echo $param_light_nbr?>;
     //Ip address of the Hue hub
@@ -112,7 +112,7 @@
       <div id="light_map"style="display:none;">
       </div>
       <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
-      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class=map id="map" onload=ping_bots()>
+      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class="map" id="map" onload="ping_bots()">
       <canvas id="bot_visualization" width="380" height="694" style="position: relative; z-index:8;"></canvas>
       <span style="cursor: pointer; z-index: 12; top: 5px; left: 360px; position: absolute; ">
         <div id="light_sensor_toggle" class="fa fa-lightbulb-o" aria-hidden="true" style = "width:30px; height:30px; color:white;font-size:30px;" onclick=toggle_light_sensors()>
