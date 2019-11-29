@@ -107,7 +107,7 @@ function process_bags(next_function) {
   let step_start_time = Date.now();
   ajax_list["process_bags"] = $.ajax({
     url: flask_url + ":" + flask_port + "/start_bag_processing",
-    data: JSON.stringify({ "input_bag_name": logging_bag_name, "output_bag_name": "processed", "mount_computer_side": logging_bag_mount + "/logs_raw", "mount_container_side": "/data" }),
+    data: JSON.stringify({ device_list: agent_list, "input_bag_name": logging_bag_name, "output_bag_name": "processed", "mount_computer_side": logging_bag_mount + "/logs_raw", "mount_container_side": "/data" }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
