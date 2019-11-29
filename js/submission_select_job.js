@@ -80,7 +80,7 @@ function fetch_submission(table) {
             cell2.innerHTML = "LFVI";
             current_demo = "indefinite_navigation"
           }
-          let debug_string = "Received submission from the server: <br> " + response.toSource() +
+          let debug_string = "Received submission from the server: <br> " + JSON.stringify(response) +
             "<br><br>Running on the " + cell2.innerHTML + " loop." +
             "<br><br> ####################################### <br>";
           document.getElementById('debug_window').innerHTML += debug_string;
