@@ -543,5 +543,12 @@
         docker -H &lt;HOSTNAME&gt;.local run --name acquisition-bridge --network=host -dit -e LAB_ROS_MASTER_IP=<?php echo $param_ip_ros?> --restart unless-stopped -v /data:/data duckietown/acquisition-bridge:daffy
     </code>
   </div>
-<!-- Must be called after HTML load -->
-  <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  if ($param_hue_enabled){ ?>
+    <!-- Must be called after HTML load -->
+    <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  }else{?>
+    <script src="<?php echo Core::getJSscriptURL('fake_light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  } ?>
