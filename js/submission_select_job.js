@@ -31,7 +31,8 @@ function fetch_submission(table) {
   document.getElementById('debug_window').innerHTML += debug_string;
   endpoint_string = "/api/take-submission";
   url_string = submission_server_url;
-  job_server_interval = setInterval(function () {
+
+  let task = function () {
     let start_time_ajax = Date.now();
     $.ajax({
       url: flask_url + ":" + flask_port + "/request_submission",
@@ -99,7 +100,9 @@ function fetch_submission(table) {
 
       },
     });
-  }, 3000);
+  }
+  job_server_interval = setInterval(task, 10000);
+  task();
 }
 
 
