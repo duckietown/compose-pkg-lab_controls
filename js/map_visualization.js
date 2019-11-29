@@ -50,7 +50,7 @@ function subscriber_agents(){
         let name=descendents[i].cells[0].innerHTML;
         if (name.substring(0,4)=="watc"){
           subs[name]  = new ROSLIB.Topic({
-            ros : window.ros,
+            ros : window.ros['local'],
             name : '/'+name+'/maskNorm',
             messageType : 'std_msgs/Float32',
             queue_size : 1,
@@ -64,7 +64,7 @@ function subscriber_agents(){
             }
           });
           light_subs[name]  = new ROSLIB.Topic({
-            ros : window.ros,
+            ros : window.ros['local'],
             name : '/'+name+'/current_lux',
             messageType : 'std_msgs/Int16',
             queue_size : 1,
@@ -84,7 +84,7 @@ function subscriber_agents(){
         }
       }
       tf  = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/agent_poses',
         messageType : 'geometry_msgs/TransformStamped',
         queue_size : 1,

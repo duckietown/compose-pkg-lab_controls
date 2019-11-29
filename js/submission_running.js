@@ -58,7 +58,7 @@ function wait_for_active_bots(next_function) {
     active_bots.forEach(function (entry) {
       if (!(entry in sub_ready_to_move)) {
         sub_ready_to_move[entry] = new ROSLIB.Topic({
-          ros: window.ros,
+          ros: window.ros['local'],
           name: '/' + entry + '/ready_to_start',
           messageType: 'std_msgs/Bool',
           queue_size: 1,
@@ -164,7 +164,7 @@ function start_duckiebots() {
     submission_bots.forEach(function (entry) {
       if (!(entry in pub_emergency_stop)) {
         pub_emergency_stop[entry] = new ROSLIB.Topic({
-          ros: window.ros,
+          ros: window.ros['local'],
           name: '/' + entry + '/toggleEmergencyStop',
           messageType: 'std_msgs/Bool',
           queue_size: 1,
@@ -191,7 +191,7 @@ function subscribe_cameras() {
       submission_bots.forEach(function (entry, index) {
         if (!(entry in sub_duckiebot_cameras)) {
           sub_duckiebot_cameras[entry] = new ROSLIB.Topic({
-            ros: window.ros,
+            ros: window.ros['local'],
             name: '/' + entry + '/imageSparse/compressed',
             messageType: 'sensor_msgs/CompressedImage',
             queue_size: 1,
