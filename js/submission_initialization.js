@@ -313,6 +313,7 @@ function start_passive_duckiebots(next_function){
         });
       }
     } else {
+      stop_duckiebots();
       add_success('ready_to_move');
       all_bots_ready = true;
     }
