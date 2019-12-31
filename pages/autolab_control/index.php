@@ -353,7 +353,7 @@
         <button id="btn_submission_ready_to_start" type="button" class="btn btn-default" onclick="next_submission_step(3)" disabled>Start submission</button>
         <br><br>
         <span id="body_initialize_city">
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             <tr height="40px">
               <td>Pinging the agents</td>
               <td><span id="ping_agents"></span></td>
@@ -384,7 +384,7 @@
         <br><br>
         <span id="body_submission_running">
           The submission is currently running. Press the \'Stop submission\' button as soon as the active bot/s drive/s out of the city
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             </tr><tr height="40px">
                 <td>Starting active Duckiebots</td>
                 <td><span id="start_duckiebot_container"></span></td>
@@ -439,7 +439,7 @@
         <button id="btn_upload_data_ipfs" type="button" class="btn btn-default" onclick="next_submission_step(5)" disabled>Upload data</button>
         <br><br>
         <span id="body_submission_finished">
-          <table width="300px">
+          <table width="100%">
             <tbody><tr height="40px">
               <td>Stop logging</td>
               <td><span id="stop_logging"></span></td>
@@ -466,7 +466,7 @@
         <button id="btn_finish_job" type="button" class="btn btn-default" onclick="finish_job()" disabled>Finish job</button>
         <br><br>
         <span id="body_uploading_data">
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             <tr height="40px">
                 <td>Copying roster</td>
                 <td><span id="copy_roster"></span></td>
