@@ -2,7 +2,7 @@
   "configuration_content": {
     "hue_enabled" : {
       "title" : "Hue Hub: Enabled",
-      "type" : "bool",
+      "type" : "boolean",
       "default" : false,
       "details" : "Whether the Hue lights are present"
     },
@@ -59,6 +59,12 @@
       "type": "text",
       "default": "http://localhost:6544",
       "details": "URL of submission server"
+    },
+    "registry_hostname": {
+      "title": "Docker: Local registry hostname",
+      "type": "text",
+      "default": "docker.io",
+      "details": "Hostname of the Docker registry used for local submissions"
     },
     "logging_server_hostname": {
       "title": "Hostname of the logging server",

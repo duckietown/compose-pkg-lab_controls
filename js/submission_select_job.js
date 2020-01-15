@@ -4,7 +4,12 @@ function highlight_submission(id) {
   document.getElementById('btn_start_job').disabled = false;
   selected_sub_id = id;
   current_submission_container = document.getElementById(id).cells[1].innerHTML;
-  current_submission_container = current_submission_container.replace("localhost", "duckietown20.local")
+
+  // TODO: what is this?
+  // current_submission_container = current_submission_container.replace("localhost", "duckietown20.local");
+  current_submission_container = current_submission_container.replace("localhost", _LOCAL_DOCKER_REGISTRY);
+  // TODO: what is this?
+
   current_submission_loop = document.getElementById(id).cells[2].innerHTML;
 }
 
@@ -64,8 +69,18 @@ function fetch_submission(table) {
           cell0.innerHTML = response.result.submission_id;
           cell1.innerHTML = container;
           map_container = response.result.challenge_parameters.services.evaluator.image;
+
+          // TODO: remove this
+          console.log(map_container);
+          // TODO: remove this
+
           map_container = map_container.substring(0, map_container.indexOf('@'));
-          map_container = map_container.replace("localhost", "duckietown20.local")
+
+          // TODO: what is this?
+          // map_container = map_container.replace("localhost", "duckietown20.local");
+          map_container = map_container.replace("localhost", _LOCAL_DOCKER_REGISTRY);
+          // TODO: what is this?
+
           let challenge_name = response.result.challenge_name;
           let step_name = response.result.step_name;
           get_submission_map(map_container, challenge_name, step_name);
@@ -101,18 +116,23 @@ function fetch_submission(table) {
       },
     });
   }
-  job_server_interval = setInterval(task, 10000);
+  job_server_interval = setInterval(task, 5000);
   task();
 }
 
 
 /////Watchtowers necessary for certain job
 function get_submission_watchtowers() {
-  if (current_submission_loop == "LF" || current_submission_loop == "LFV") {
-    return ["watchtower21", "watchtower22", "watchtower23", "watchtower24", "watchtower25", "watchtower26", "watchtower27", "watchtower28", "watchtower29", "watchtower30", "watchtower31", "watchtower32", "watchtower33", "watchtower34", "watchtower35", "watchtower36"]
-  } else {
-    //TODO remove comment, when watchtower07 is working again
-    // return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
-    return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower13", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
-  }
+  // TODO: this is a hack on top of another hack
+  return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower07", "watchtower08", "watchtower09", "watchtower10"]
+
+
+  // if (current_submission_loop == "LF" || current_submission_loop == "LFV") {
+  //   return ["watchtower21", "watchtower22", "watchtower23", "watchtower24", "watchtower25", "watchtower26", "watchtower27", "watchtower28", "watchtower29", "watchtower30", "watchtower31", "watchtower32", "watchtower33", "watchtower34", "watchtower35", "watchtower36"]
+  // } else {
+  //   //TODO remove comment, when watchtower07 is working again
+  //   // return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
+  //   return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower13", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
+  // }
+
 }

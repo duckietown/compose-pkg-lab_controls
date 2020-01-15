@@ -17,8 +17,13 @@
         necessary_passive_bots = 2;
       }
 
+      // TODO: remove (active/passive)
+      // necessary_active_bots = 1;
+      // necessary_passive_bots = 0;
+      // TODO: remove
+
       document.getElementById('submission_id_display').innerHTML = "Evaluating submission: "+ logging_object.job.submission_id;
-      
+
       let html_necessary_bots = document.getElementById("necessary_bots");
       html_necessary_bots.innerHTML="Active bots needed: "+necessary_active_bots+" Passive bots needed: "+necessary_passive_bots;
       empty_body(duckiebot_selection);

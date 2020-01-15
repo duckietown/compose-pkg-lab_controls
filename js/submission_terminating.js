@@ -7,7 +7,9 @@ function stop_logging(next_function) {
   let step_start_time = Date.now();
   ajax_list["stop_logging"] = $.ajax({
     url: flask_url + ":" + flask_port + "/stop_logging",
-    data: JSON.stringify({ "computer": logging_server_hostname }),
+    // data: JSON.stringify({ "computer": logging_server_hostname }),
+    // TODO: if this works, remove `data`, `dataType`, and `contentType` fields
+    data: JSON.stringify({}),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
@@ -111,8 +113,9 @@ function process_bags(next_function) {
       device_list: agent_list,
       input_bag_name: logging_bag_name,
       output_bag_name: "processed",
-      mount_computer_side: logging_bag_mount + "/logs_raw",
-      mount_container_side: "/data"
+      mount_computer_side: logging_bag_mount,
+      mount_container_side: "/data",
+      ros_master_ip: ros_master_ip
     }),
     dataType: "json",
     type: "POST",
@@ -154,7 +157,11 @@ function process_bags(next_function) {
 function check_process_bags(next_function) {
   ajax_list["check_process_bags"] = $.ajax({
     url: flask_url + ":" + flask_port + "/check_bag_processing",
-    data: JSON.stringify({ "output_bag_name": "processed", "mount_computer_origin": logging_bag_mount + "/logs_raw", "mount_computer_destination": logging_bag_mount + "/logs_processed" }),
+    data: JSON.stringify({
+      output_bag_name: "processed",
+      mount_computer_origin: logging_bag_mount + "/logs_raw",
+      mount_computer_destination: logging_bag_mount + "/logs_processed"
+    }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
@@ -173,7 +180,7 @@ function check_process_bags(next_function) {
       let step_stop_time = Date.now();
       if (!process_successfull) {
         let tmp_time = (step_stop_time - logging_object.steps.process_bags.step_start_time) / 1000;
-        document.getElementById('process_bags_update').innerHTML = "Running for " + tmp_time + " seconds, getting status update from the server";
+        document.getElementById('process_bags_update').innerHTML = "Running for " + tmp_time.toFixed(1) + " seconds, getting status update from the server";
       } else {
         clearInterval(check_process_interval);
         add_success('process_bags');
@@ -192,7 +199,13 @@ function process_localization() {
   let step_start_time = Date.now();
   ajax_list["process_localization"] = $.ajax({
     url: flask_url + ":" + flask_port + "/process_localization",
-    data: JSON.stringify({ "input_bag_name": "processed", "output_dir": "/data", "mount_computer_side": logging_bag_mount + "/logs_processed", "mount_container_side": "/data" }),
+    data: JSON.stringify({
+      ros_master_ip: ros_master_ip,
+      input_bag_name: "processed",
+      output_dir: "/data",
+      mount_computer_side: logging_bag_mount,
+      mount_container_side: "/data"
+    }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
@@ -233,7 +246,11 @@ function process_localization() {
 function check_localization() {
   ajax_list["check_localization"] = $.ajax({
     url: flask_url + ":" + flask_port + "/check_localization",
-    data: JSON.stringify({ "active_bot": active_bots, "passive_bots": passive_bots, "origin_path": logging_bag_mount + "/logs_processed", "destination_path": logging_bag_mount + "/trajectories" }),
+    data: JSON.stringify({
+      active_bot: active_bots,
+      passive_bots: passive_bots,
+      mount_computer_side: logging_bag_mount
+    }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',

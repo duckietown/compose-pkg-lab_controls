@@ -22,6 +22,8 @@
     $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
     $param_logging_server_hostname = Core::getSetting("logging_server_hostname", "lab_controls");
     $param_logging_server_username = Core::getSetting("logging_server_username", "lab_controls");
+
+    $param_docker_registry_hostname = Core::getSetting("registry_hostname", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
   ?>
 
@@ -69,6 +71,10 @@
     $( document ).on("<?php echo $ros_connected ?>", function(evt){
       ROS_connected = true;
     });
+    // global parameters
+    var _LOCAL_DOCKER_REGISTRY = "<?php echo $param_docker_registry_hostname?>";
+
+    var TEMP_DIR = "/tmp/aido_ws";
   </script>
 
 <!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
