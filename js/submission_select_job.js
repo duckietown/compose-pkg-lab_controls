@@ -84,10 +84,10 @@ function fetch_submission(table) {
           let challenge_name = response.result.challenge_name;
           let step_name = response.result.step_name;
           get_submission_map(map_container, challenge_name, step_name);
-          if (challenge_name == "aido3-LF-real-validation" || challenge_name == "aido3-LF-real-testing") {
+          if (challenge_name == "aido3-off-LF-real-validation" || challenge_name == "aido3-off-LF-real-testing") {
             cell2.innerHTML = "LF";
             current_demo = "lane_following"
-          } else if (challenge_name == "aido3-LFV-real-validation" || challenge_name == "aido3-LFV-real-testing") {
+          } else if (challenge_name == "aido3-off-LFV-real-validation" || challenge_name == "aido3-off-LFV-real-testing") {
             cell2.innerHTML = "LFV";
             current_demo = "lane_following"
           }
