@@ -103,15 +103,15 @@ function start_logging(next_function) {
   add_loading('start_logging');
 
   let emergency = new ROSLIB.Message({
-    data : true
+    data: true
   });
-  submission_bots.forEach(function(entry){
-    if (!(entry in pub_emergency_stop)){
+  submission_bots.forEach(function (entry) {
+    if (!(entry in pub_emergency_stop)) {
       pub_emergency_stop[entry] = new ROSLIB.Topic({
-        ros : window.ros['local'],
-        name : '/'+entry+'/toggleEmergencyStop',
-        messageType : 'std_msgs/Bool',
-        queue_size : 1,
+        ros: window.ros['local'],
+        name: '/' + entry + '/toggleEmergencyStop',
+        messageType: 'std_msgs/Bool',
+        queue_size: 1,
       });
     }
     pub_emergency_stop[entry].publish(emergency)
@@ -122,8 +122,8 @@ function start_logging(next_function) {
   let time_stamp = time.getFullYear().toString() + (time.getMonth() + 1).toString().padStart(2, '0') + time.getDate().toString().padStart(2, '0') + "_" + time.getHours().toString().padStart(2, '0') + time.getMinutes().toString().padStart(2, '0') + time.getSeconds().toString().padStart(2, '0');
   logging_bag_name = "raw";
   // logging_bag_mount = "/home/" + logging_server_username + "/AIDO3_experiment_data/submission_" + logging_object.job.submission_id + "/" + logging_object.job.step_name + "/" + time_stamp + "/data";
-  logging_bag_mount = "{0}/AIDO3_experiment_data/submission_{1}/{2}/{3}/data".format(
-    TEMP_DIR,
+  logging_bag_mount = "/home/{0}/AIDO3_experiment_data/submission_{1}/{2}/{3}/data".format(
+    logging_server_username,
     logging_object.job.submission_id,
     logging_object.job.step_name,
     time_stamp
