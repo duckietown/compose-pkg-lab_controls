@@ -128,6 +128,7 @@ function start_logging(next_function) {
     logging_object.job.step_name,
     time_stamp
   );
+  let debug_string = "";
   debug_string += "</table><br><br>  <br>" + logging_bag_mount + "<br>"
   document.getElementById('debug_window').innerHTML += debug_string;
   ajax_list["start_logging"] = $.ajax({
