@@ -46,6 +46,22 @@ function start_duckiebot_container(next_function) {
   } else {
     //If no active bots wanted, i.e. standard DEMO started from the interface
     add_success('start_duckiebot_container');
+
+    let emergency = new ROSLIB.Message({
+      data: true
+    });
+    submission_bots.forEach(function (entry) {
+      if (!(entry in pub_emergency_stop)) {
+        pub_emergency_stop[entry] = new ROSLIB.Topic({
+          ros: window.ros['local'],
+          name: '/' + entry + '/toggleEmergencyStop',
+          messageType: 'std_msgs/Bool',
+          queue_size: 1,
+        });
+      }
+      pub_emergency_stop[entry].publish(emergency)
+    });
+
     next_function(start_logging);
   }
 }
