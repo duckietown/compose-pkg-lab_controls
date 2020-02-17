@@ -2,6 +2,8 @@
 function start_duckiebot_container(next_function) {
   if (active_bots.length != 0) {
     add_loading('start_duckiebot_container');
+    stop_duckiebots();
+
     let step_start_time = Date.now();
     ajax_list["start_active_containers"] = $.ajax({
       url: flask_url + ":" + flask_port + "/start_active_bots",
