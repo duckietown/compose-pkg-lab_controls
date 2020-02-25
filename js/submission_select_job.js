@@ -84,21 +84,21 @@ function fetch_submission(table) {
           let challenge_name = response.result.challenge_name;
           let step_name = response.result.step_name;
           get_submission_map(map_container, challenge_name, step_name);
-          if (challenge_name.includes('-LF-')){
+          if (challenge_name.includes('-LF-')) {
             cell2.innerHTML = "LF";
             current_demo = "lane_following";
-          }else if (challenge_name.includes('-LFV-')){
+          } else if (challenge_name.includes('-LFV-')) {
             cell2.innerHTML = "LFV";
             current_demo = "lane_following";
-          }else if (challenge_name.includes('-LFVI-')){
+          } else if (challenge_name.includes('-LFVI-')) {
             cell2.innerHTML = "LFVI";
             current_demo = "indefinite_navigation";
-          }else{
+          } else {
             cell2.innerHTML = "UNK";
             current_demo = "unknown";
           }
           let debug_string = "Received submission from the server: <pre>" +
-              JSON.stringify(response, null, 2) +
+            JSON.stringify(response, null, 2) +
             "</pre><br><br>Running on the " + cell2.innerHTML + " loop." +
             "<br><br> ####################################### <br>";
           document.getElementById('debug_window').innerHTML += debug_string;
@@ -130,11 +130,11 @@ function get_submission_watchtowers() {
   // return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower07", "watchtower08", "watchtower09", "watchtower10"]
 
   if (current_submission_loop == "LF" || current_submission_loop == "LFV") {
-    return ["watchtower21", "watchtower22", "watchtower23", "watchtower24", "watchtower25", "watchtower26", "watchtower27", "watchtower28", "watchtower29", "watchtower30", "watchtower31", "watchtower32", "watchtower33", "watchtower34", "watchtower35", "watchtower36"]
+    return ["watchtower21", "watchtower22", "watchtower23", "watchtower24", "watchtower25", "watchtower05", "watchtower27", "watchtower28", "watchtower29", "watchtower30", "watchtower31", "watchtower32", "watchtower33", "watchtower34", "watchtower35", "watchtower36"]
   } else {
     //TODO remove comment, when watchtower07 is working again
     // return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
-    return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower13", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
+    return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower26", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower13", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
   }
 
 }
