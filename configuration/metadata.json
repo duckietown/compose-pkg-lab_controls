@@ -83,6 +83,18 @@
       "type": "text",
       "default": "",
       "details": "IP of the lab ROS master"
+    },
+    "duckietown_world_fork": {
+      "title": "Town: Duckietown World fork",
+      "type": "text",
+      "default": "duckietown",
+      "details": "Name of the duckietown-world repository fork to use (e.g., 'duckietown-ttic' if the repository 'duckietown-ttic/duckietown-world' exists)"
+    },
+    "map_name": {
+      "title": "Town: Map name",
+      "type": "text",
+      "default": "robotarium2",
+      "details": "Name of the map to use (from the selected duckietown-world fork)"
     }
   }
 }

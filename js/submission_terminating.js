@@ -204,7 +204,9 @@ function process_localization() {
       input_bag_name: "processed",
       output_dir: "/data",
       mount_computer_side: logging_bag_mount,
-      mount_container_side: "/data"
+      mount_container_side: "/data",
+      duckietown_world_fork: duckietown_world_fork,
+      map_name: map_name
     }),
     dataType: "json",
     type: "POST",

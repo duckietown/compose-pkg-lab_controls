@@ -45,7 +45,7 @@ function copy_map(next_function) {
   add_loading('copy_map');
   let step_start_time = Date.now();
   let map_loc = "/root";
-  let map_path = "src/duckietown_world/data/gd1/maps/robotarium2.yaml"
+  let map_path = "src/duckietown_world/data/gd1/maps/{0}.yaml".format(map_name);
   ajax_list["copy_map"] = $.ajax({
     url: flask_url + ":" + flask_port + "/copy_map",
     data: JSON.stringify({ mount: logging_bag_mount + "/trajectories", map_location: map_loc, path: map_path }),

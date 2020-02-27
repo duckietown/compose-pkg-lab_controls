@@ -22,6 +22,8 @@
     $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
     $param_logging_server_hostname = Core::getSetting("logging_server_hostname", "lab_controls");
     $param_logging_server_username = Core::getSetting("logging_server_username", "lab_controls");
+    $param_duckietown_world_fork = Core::getSetting("duckietown_world_fork", "lab_controls");
+    $param_map_name = Core::getSetting("map_name", "lab_controls");
 
     $param_docker_registry_hostname = Core::getSetting("registry_hostname", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
@@ -62,10 +64,14 @@
     let logging_server_hostname = "<?php echo $param_logging_server_hostname?>";
     //Logging server username
     let logging_server_username = "<?php echo $param_logging_server_username?>";
-    //Worker file for light control
-    let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
+    //Name of the duckietown-world fork to use
+    let duckietown_world_fork = "<?php echo $param_duckietown_world_fork?>";
+    //Name of the map to use
+    let map_name = "<?php echo $param_map_name?>";
     //IP of the autolab ROS master
     let ros_master_ip = "<?php echo $param_ip_ros?>";
+    //Worker file for light control
+    let lights_worker_file = "<?php echo Core::getJSscriptURL('worker_lights.js', 'lab_controls') ?>";
     //Initialize Rosbridge
     var ROS_connected = false;
     $( document ).on("<?php echo $ros_connected ?>", function(evt){
