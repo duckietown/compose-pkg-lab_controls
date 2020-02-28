@@ -137,7 +137,7 @@ function get_submission_watchtowers() {
   } else {
     //TODO remove comment, when watchtower07 is working again
     // return ["watchtower01","watchtower02","watchtower03","watchtower04","watchtower05","watchtower06","watchtower07","watchtower08","watchtower09","watchtower10","watchtower11","watchtower12","watchtower13","watchtower14","watchtower15","watchtower16"]
-    return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower13", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
+    return ["watchtower01", "watchtower02", "watchtower03", "watchtower04", "watchtower05", "watchtower06", "watchtower08", "watchtower09", "watchtower10", "watchtower11", "watchtower12", "watchtower14", "watchtower15", "watchtower16", "watchtower17", "watchtower18"]
   }
 
 }
