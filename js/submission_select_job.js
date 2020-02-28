@@ -84,7 +84,10 @@ function fetch_submission(table) {
           let challenge_name = response.result.challenge_name;
           let step_name = response.result.step_name;
           get_submission_map(map_container, challenge_name, step_name);
-          if (challenge_name.includes('-LF-')) {
+          if (challenge_name.includes('-p1')) {
+            cell2.innerHTML = "LF-p1";
+            current_demo = "lane_following";
+          } else if (challenge_name.includes('-LF-')) {
             cell2.innerHTML = "LF";
             current_demo = "lane_following";
           } else if (challenge_name.includes('-LFV-')) {
