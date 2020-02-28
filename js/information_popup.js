@@ -52,13 +52,13 @@
 
     if (ROS_connected){
       subscriber_camera = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/'+current_popup+'/imageSparse/compressed',
         messageType : 'sensor_msgs/CompressedImage',
         queue_size : 1,
       });
       publisher_request_image = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/'+current_popup+'/requestImage',
         messageType : 'std_msgs/Bool',
         queue_size : 1,

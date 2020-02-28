@@ -172,7 +172,7 @@
       submission_bots.forEach(function(entry){
         if (!(entry in pub_emergency_stop)){
           pub_emergency_stop[entry] = new ROSLIB.Topic({
-            ros : window.ros,
+            ros : window.ros['local'],
             name : '/'+entry+'/toggleEmergencyStop',
             messageType : 'std_msgs/Bool',
             queue_size : 1,
@@ -269,7 +269,7 @@ function start_passive_duckiebots(next_function){
         passive_bots.forEach(function(entry){
           if (!(entry in sub_ready_to_move)){
             sub_ready_to_move[entry] = new ROSLIB.Topic({
-              ros : window.ros,
+              ros : window.ros['local'],
               name : '/'+entry+'/ready_to_start',
               messageType : 'std_msgs/Bool',
               queue_size : 1,

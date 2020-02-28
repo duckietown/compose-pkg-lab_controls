@@ -13,7 +13,7 @@ ip_cam_subscriber_interval = setInterval(function() {
     if (ROS_connected){
       clearInterval(ip_cam_subscriber_interval);
       let image_topic = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/rtsp_driver_node/image',
         messageType : 'sensor_msgs/CompressedImage',
         queue_size : 1,
@@ -31,6 +31,7 @@ ip_cam_subscriber_interval = setInterval(function() {
     }
   }, 200);
 
+
 /////Enlarge camera image
   function camera_size_toggle(){
     if (document.getElementById('stream').classList.contains('camera_click')){
@@ -45,7 +46,7 @@ ip_cam_subscriber_interval = setInterval(function() {
     current_ip_cam = ip_addr_cam[cam_id];
     if (ROS_connected){
       let change_camera = new ROSLIB.Topic({
-        ros : window.ros,
+        ros : window.ros['local'],
         name : '/rtsp_driver_node/camera_switch',
         messageType : 'std_msgs/String',
         queue_size : 1,

@@ -4,7 +4,9 @@
     use \system\packages\duckietown_duckiebot\Duckiebot;
     use \system\packages\ros\ROS;
     ROS::connect();
+    $ros_connected = ROS::get_event(ROS::$ROSBRIDGE_CONNECTED);
 
+    $param_hue_enabled = Core::getSetting("hue_enabled", "lab_controls");
     $param_ip = Core::getSetting("ip_hub", "lab_controls");
     $param_api = Core::getSetting("api_key", "lab_controls");
     $param_light_nbr = Core::getSetting("light_nbr", "lab_controls");
@@ -20,11 +22,13 @@
     $param_submission_server = Core::getSetting("submission_server_url", "lab_controls");
     $param_logging_server_hostname = Core::getSetting("logging_server_hostname", "lab_controls");
     $param_logging_server_username = Core::getSetting("logging_server_username", "lab_controls");
+
+    $param_docker_registry_hostname = Core::getSetting("registry_hostname", "lab_controls");
     $param_plug_loc = __DIR__.'/test/test.php';
   ?>
 
   <!-- JS to import settings from php -->
-  <script>
+  <script type="text/javascript">
     // Number of lightbulbs
     let light_nbr = <?php echo $param_light_nbr?>;
     //Ip address of the Hue hub
@@ -63,10 +67,14 @@
     //IP of the autolab ROS master
     let ros_master_ip = "<?php echo $param_ip_ros?>";
     //Initialize Rosbridge
-    let ROS_connected = false;
-    $( document ).on("<?php echo ROS::$ROSBRIDGE_CONNECTED ?>", function(evt){
+    var ROS_connected = false;
+    $( document ).on("<?php echo $ros_connected ?>", function(evt){
       ROS_connected = true;
     });
+    // global parameters
+    var _LOCAL_DOCKER_REGISTRY = "<?php echo $param_docker_registry_hostname?>";
+
+    var TEMP_DIR = "/tmp/aido_ws";
   </script>
 
 <!-- Import js-yaml.min.js file (sourced from https://github.com/nodeca/js-yaml/blob/master/dist/js-yaml.min.js)-->
@@ -110,13 +118,13 @@
       <div id="light_map"style="display:none;">
       </div>
       <div id="ping_message" class="hosts_loading"><span style="line-height: 55px; font-weight: bold;">Currently pinging hosts, please wait ...</span></div>
-      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class=map id="map" onload=ping_bots()>
+      <img src="<?php echo Core::getImageURL('map.png', 'lab_controls')?>"alt="No map available" class="map" id="map" onload="ping_bots()">
       <canvas id="bot_visualization" width="380" height="694" style="position: relative; z-index:8;"></canvas>
       <span style="cursor: pointer; z-index: 12; top: 5px; left: 360px; position: absolute; ">
         <div id="light_sensor_toggle" class="fa fa-lightbulb-o" aria-hidden="true" style = "width:30px; height:30px; color:white;font-size:30px;" onclick=toggle_light_sensors()>
         </div>
       </span>
-      
+
     </td>
     <!-- Camera image from Duckietown -->
     <td class="camera_tab">
@@ -135,35 +143,40 @@
         </ul>
       </div>
 
-      
+
 
       <img src="" alt="No camera image available, please change the settings page" id="stream" class=camera onclick=camera_size_toggle()>
     </td>
   </tr>
+
   <tr>
-    <!-- Light control -->
     <td class="controls_tab">
-      <table style="width: 100%;">
-      <tbody>
-      <tr>
-      <td>
-        <button type="button" class="btn btn-default" onclick="lights_on()">Turn Light on</button>
-      </td>
-      <td>
-        <button type="button" class="btn btn-default" onclick="lights_off()">Turn Light off</button>
-      </td>
-      <td>
-        <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
-        <p>Intensity: <span id="intensity_out"></span></p>
-        <input type="range" min="153" max="500" value="153" class="slider" id="color">
-        <p>Color: <span id="color_out"></span></p>
-        <button type="button" class="btn btn-default" onclick="lights_change()">Change lights</button>
-      </td>
-      </tr>
-      </tbody>
-      </table>
-    </td> 
+      <?php if ($param_hue_enabled){ ?>
+        <!-- Light control -->
+        <table style="width: 100%;">
+        <tbody>
+        <tr>
+        <td>
+          <button type="button" class="btn btn-default" onclick="lights_on()">Turn Light on</button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-default" onclick="lights_off()">Turn Light off</button>
+        </td>
+        <td>
+          <input type="range" min="1" max="254" value="254" class="slider" id="intensity">
+          <p>Intensity: <span id="intensity_out"></span></p>
+          <input type="range" min="153" max="500" value="153" class="slider" id="color">
+          <p>Color: <span id="color_out"></span></p>
+          <button type="button" class="btn btn-default" onclick="lights_change()">Change lights</button>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        <?php
+      }?>
+    </td>
   </tr>
+
   <tr>
     <!-- Different Duckiebots currently in town -->
     <td id="duckies_tab" class="duckies_tab">
@@ -346,7 +359,7 @@
         <button id="btn_submission_ready_to_start" type="button" class="btn btn-default" onclick="next_submission_step(3)" disabled>Start submission</button>
         <br><br>
         <span id="body_initialize_city">
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             <tr height="40px">
               <td>Pinging the agents</td>
               <td><span id="ping_agents"></span></td>
@@ -377,7 +390,7 @@
         <br><br>
         <span id="body_submission_running">
           The submission is currently running. Press the \'Stop submission\' button as soon as the active bot/s drive/s out of the city
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             </tr><tr height="40px">
                 <td>Starting active Duckiebots</td>
                 <td><span id="start_duckiebot_container"></span></td>
@@ -432,7 +445,7 @@
         <button id="btn_upload_data_ipfs" type="button" class="btn btn-default" onclick="next_submission_step(5)" disabled>Upload data</button>
         <br><br>
         <span id="body_submission_finished">
-          <table width="300px">
+          <table width="100%">
             <tbody><tr height="40px">
               <td>Stop logging</td>
               <td><span id="stop_logging"></span></td>
@@ -459,7 +472,7 @@
         <button id="btn_finish_job" type="button" class="btn btn-default" onclick="finish_job()" disabled>Finish job</button>
         <br><br>
         <span id="body_uploading_data">
-          <table width="300px"><tbody>
+          <table width="100%"><tbody>
             <tr height="40px">
                 <td>Copying roster</td>
                 <td><span id="copy_roster"></span></td>
@@ -490,7 +503,7 @@
   </div>
   <div onclick="close_docker_maintenance_popup()" id="maintenance_blackout_div" class=blackout></div>
   <div id="docker_maintenance" class=popup>
-    Enter docker command: 
+    Enter docker command:
     <div class="input-group">
       <span class="input-group-addon" id="basic-addon1">docker -H Hostname </span>
       <input id="docker_command" type="text" class="form-control" placeholder="command" aria-describedby="basic-addon1">
@@ -536,5 +549,12 @@
         docker -H &lt;HOSTNAME&gt;.local run --name acquisition-bridge --network=host -dit -e LAB_ROS_MASTER_IP=<?php echo $param_ip_ros?> --restart unless-stopped -v /data:/data duckietown/acquisition-bridge:daffy
     </code>
   </div>
-<!-- Must be called after HTML load -->
-  <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  if ($param_hue_enabled){ ?>
+    <!-- Must be called after HTML load -->
+    <script src="<?php echo Core::getJSscriptURL('light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  }else{?>
+    <script src="<?php echo Core::getJSscriptURL('fake_light_control.js', 'lab_controls') ?>" type="text/javascript"></script>
+  <?php
+  } ?>

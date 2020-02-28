@@ -2,6 +2,8 @@
 function start_duckiebot_container(next_function) {
   if (active_bots.length != 0) {
     add_loading('start_duckiebot_container');
+    stop_duckiebots();
+
     let step_start_time = Date.now();
     ajax_list["start_active_containers"] = $.ajax({
       url: flask_url + ":" + flask_port + "/start_active_bots",
@@ -46,6 +48,22 @@ function start_duckiebot_container(next_function) {
   } else {
     //If no active bots wanted, i.e. standard DEMO started from the interface
     add_success('start_duckiebot_container');
+
+    let emergency = new ROSLIB.Message({
+      data: true
+    });
+    submission_bots.forEach(function (entry) {
+      if (!(entry in pub_emergency_stop)) {
+        pub_emergency_stop[entry] = new ROSLIB.Topic({
+          ros: window.ros['local'],
+          name: '/' + entry + '/toggleEmergencyStop',
+          messageType: 'std_msgs/Bool',
+          queue_size: 1,
+        });
+      }
+      pub_emergency_stop[entry].publish(emergency)
+    });
+
     next_function(start_logging);
   }
 }
@@ -74,7 +92,7 @@ function wait_for_active_bots(next_function) {
     active_bots.forEach(function (entry) {
       if (!(entry in sub_ready_to_move)) {
         sub_ready_to_move[entry] = new ROSLIB.Topic({
-          ros: window.ros,
+          ros: window.ros['local'],
           name: '/' + entry + '/ready_to_start',
           messageType: 'std_msgs/Bool',
           queue_size: 1,
@@ -124,7 +142,7 @@ function start_logging(next_function) {
   submission_bots.forEach(function (entry) {
     if (!(entry in pub_emergency_stop)) {
       pub_emergency_stop[entry] = new ROSLIB.Topic({
-        ros: window.ros,
+        ros: window.ros['local'],
         name: '/' + entry + '/toggleEmergencyStop',
         messageType: 'std_msgs/Bool',
         queue_size: 1,
@@ -137,10 +155,24 @@ function start_logging(next_function) {
   let time = new Date();
   let time_stamp = time.getFullYear().toString() + (time.getMonth() + 1).toString().padStart(2, '0') + time.getDate().toString().padStart(2, '0') + "_" + time.getHours().toString().padStart(2, '0') + time.getMinutes().toString().padStart(2, '0') + time.getSeconds().toString().padStart(2, '0');
   logging_bag_name = "raw";
-  logging_bag_mount = "/home/" + logging_server_username + "/AIDO3_experiment_data/submission_" + logging_object.job.submission_id + "/" + logging_object.job.step_name + "/" + time_stamp + "/data";
+  // logging_bag_mount = "/home/" + logging_server_username + "/AIDO3_experiment_data/submission_" + logging_object.job.submission_id + "/" + logging_object.job.step_name + "/" + time_stamp + "/data";
+  logging_bag_mount = "/home/{0}/AIDO3_experiment_data/submission_{1}/{2}/{3}/data".format(
+    logging_server_username,
+    logging_object.job.submission_id,
+    logging_object.job.step_name,
+    time_stamp
+  );
+  let debug_string = "";
+  debug_string += "</table><br><br>  <br>" + logging_bag_mount + "<br>"
+  document.getElementById('debug_window').innerHTML += debug_string;
   ajax_list["start_logging"] = $.ajax({
     url: flask_url + ":" + flask_port + "/start_logging",
-    data: JSON.stringify({ device_list: agent_list, "computer": logging_server_hostname, "filename": logging_bag_name, "mount_folder": logging_bag_mount + "/logs_raw" }),
+    data: JSON.stringify({
+      device_list: agent_list,
+      // computer: logging_server_hostname,
+      filename: logging_bag_name,
+      mount_folder: logging_bag_mount + "/logs_raw"
+    }),
     dataType: "json",
     type: "POST",
     contentType: 'application/json',
@@ -171,7 +203,20 @@ function start_logging(next_function) {
       } else {
         add_success('start_logging');
         wait(6000);
+        for (i = 0; i < agent_list.length; i++) {
+          publisher_request_image = new ROSLIB.Topic({
+            ros: window.ros['local'],
+            name: '/' + agent_list[i] + '/requestImage',
+            messageType: 'std_msgs/Bool',
+            queue_size: 1,
+          });
 
+          let stream = document.getElementById('raspi_stream');
+          let get_image = new ROSLIB.Message({
+            data: true
+          });
+          publisher_request_image.publish(get_image)
+        }
         next_function();
       }
     },
@@ -182,6 +227,7 @@ function start_logging(next_function) {
 function start_duckiebots() {
   add_loading('duckiebot_start');
   if (ROS_connected) {
+    // TODO: what is this wait for?
     wait(1000);
     let dt = new Date();
     start_timestamp = dt.getTime();
@@ -196,7 +242,7 @@ function start_duckiebots() {
     submission_bots.forEach(function (entry) {
       if (!(entry in pub_emergency_stop)) {
         pub_emergency_stop[entry] = new ROSLIB.Topic({
-          ros: window.ros,
+          ros: window.ros['local'],
           name: '/' + entry + '/toggleEmergencyStop',
           messageType: 'std_msgs/Bool',
           queue_size: 1,
@@ -236,7 +282,7 @@ function subscribe_cameras() {
       submission_bots.forEach(function (entry, index) {
         if (!(entry in sub_duckiebot_cameras)) {
           sub_duckiebot_cameras[entry] = new ROSLIB.Topic({
-            ros: window.ros,
+            ros: window.ros['local'],
             name: '/' + entry + '/imageSparse/compressed',
             messageType: 'sensor_msgs/CompressedImage',
             queue_size: 1,

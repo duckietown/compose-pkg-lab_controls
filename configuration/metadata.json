@@ -1,28 +1,34 @@
 {
   "configuration_content": {
+    "hue_enabled" : {
+      "title" : "Hue Hub: Enabled",
+      "type" : "boolean",
+      "default" : false,
+      "details" : "Whether the Hue lights are present"
+    },
     "ip_hub": {
-      "title": "IP Hue Hub",
+      "title": "Hue Hub: Hostname",
       "type": "text",
       "default": "192.168.1.5",
       "details": "IP of the Hue Hub used to control the lights"
     },
     "api_key": {
-      "title": "API Key",
+      "title": "Hue Hub: API Key",
       "type": "text",
       "default": "This is a secret",
       "details": "Secret API key used to communicate with the Hue Hub"
     },
     "light_nbr": {
-      "title": "Number of lightbulbs",
+      "title": "Hue Hub: Number of lightbulbs",
       "type": "text",
       "default": "21",
       "details": "Number of lightbuls in the robotarium"
     },
     "ip_cam": {
-      "title": "IP of IPcam's, add up to 4 IP's in a .csv format",
+      "title": "IP Cameras: Cameras' hostnames",
       "type": "text",
       "default": "192.168.1.3,192.168.1.4",
-      "details": "IP of the lab IPcam"
+      "details": "A comma-separated list of cameras' hostnames (or IPs)"
     },
     "dt_token": {
       "title": "Duckietown token",
@@ -53,6 +59,12 @@
       "type": "text",
       "default": "http://localhost:6544",
       "details": "URL of submission server"
+    },
+    "registry_hostname": {
+      "title": "Docker: Local registry hostname",
+      "type": "text",
+      "default": "docker.io",
+      "details": "Hostname of the Docker registry used for local submissions"
     },
     "logging_server_hostname": {
       "title": "Hostname of the logging server",
