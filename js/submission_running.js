@@ -175,7 +175,7 @@ function start_logging(next_function) {
         logging_object.steps.start_logging.duration = (step_stop_time - step_start_time) / 1000;
       } else {
         logging_started = false;
-        debug_string = "Not able to start logging!";
+        debug_string = "Not able to start logging!" + result.outcome;
       }
       debug_string += "</table><br><br> ####################################### <br>"
       document.getElementById('debug_window').innerHTML += debug_string;
