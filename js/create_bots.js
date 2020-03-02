@@ -60,20 +60,38 @@
                                     }
                                   };
       document.getElementById("bots").appendChild(new_div);
-      if (new_div.className=="duckiebot"){
-        bots_positions[name]=[Math.floor(parseInt(name.replace("autobot",""))*20),0,0,0];
-        new_div.style.top = bots_positions[name][0] + 'px';
-        new_div.style.left = bots_positions[name][1] + 'px';
-      } else {
-        try{
-          bots_positions[name]=[watchtower_pos[name][0],watchtower_pos[name][1],0,0];
-          new_div.style.top = bots_positions[name][0] + 'px';
-          new_div.style.left = bots_positions[name][1] + 'px';
-        } catch {
-          bots_positions[name]=[Math.floor(Math.random()*300),Math.floor(Math.random()*300),0,0];
-          new_div.style.top = bots_positions[name][0] + 'px';
-          new_div.style.left = bots_positions[name][1] + 'px';
+
+      // try to use last know location for device produced by localization (from localStorage)
+      try{
+        let known_pos = JSON.parse(
+          localStorage.getItem('DUCKIETOWN_DEVICE_2D_POSITION_{0}'.format(name))
+        );
+        bots_positions[name]=[
+            known_pos.x,
+            known_pos.y,
+            0,
+            0
+        ];
+      } catch (e) {
+        // we don't have a last known location for this device, place it in order to the left
+        let x_base = 690;
+        if (new_div.className === "duckiebot"){
+          x_base = 0;
         }
+        bots_positions[name]=[
+            x_base - Math.floor(parseInt(name.replace("watchtower",""))*20),
+            -30,
+            0,
+            0
+        ];
+      }
+
+      // assign new location on the map
+      new_div.style.top = bots_positions[name][0] + 'px';
+      new_div.style.left = bots_positions[name][1] + 'px';
+
+      // also assign firing feedback to the watchtowers
+      if (new_div.className === "watchtower"){
         new_light_div.style.top = eval(bots_positions[name][0]-6) + 'px';
         new_light_div.style.left = eval(bots_positions[name][1]-6) + 'px';
       }
@@ -91,10 +109,6 @@
       cell1.innerHTML = detected_pings[name]+" ms";
       cell2.innerHTML = "Open information window";
       cell2.style="cursor: pointer;"
-      // if (bots_moving == false){
-      //   bots_moving=true;
-      //   move_bots();
-      // }
     }
   }
 

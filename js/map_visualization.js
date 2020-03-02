@@ -1,7 +1,7 @@
 /////Tool to change metric coordinates into pixel coordinates for the map
 function transform_coordinates(y,x){
   let trafo_x = parseInt(680-y*100/58.5*35);
-  let trafo_y = parseInt(x*100/58.5*35+9)
+  let trafo_y = parseInt(x*100/58.5*35+9);
   return {x: trafo_x, y:trafo_y} 
 }
 
@@ -91,8 +91,16 @@ function subscriber_agents(){
       });
       tf.subscribe(function(message) {
         try{
-          name = message.child_frame_id;
-          let pixel_coordinates = transform_coordinates(message.transform.translation.y, message.transform.translation.x);
+          let name = message.child_frame_id;
+          let pixel_coordinates = transform_coordinates(
+              message.transform.translation.y,
+              message.transform.translation.x
+          );
+          // store last known location for this device
+          localStorage.setItem(
+              'DUCKIETOWN_DEVICE_2D_POSITION_{0}'.format(name),
+              JSON.stringify(pixel_coordinates)
+          );
           bots_positions[name][0]=pixel_coordinates.x-9;
           bots_positions[name][1]=pixel_coordinates.y-9;
           // bots_positions[name][2]=0;
