@@ -5,7 +5,7 @@
     document.getElementById('submission_step_'+id).style.display="none";
     document.getElementById('submission_step_'+eval(id+1)).style.display="block";
     //Actual submission evaluation starts here
-    if (id==1){
+    if (id === 1){
       document.getElementById('submission_button').innerHTML="Currently evaluating";
       document.getElementById('cancel_submission').style.display="inline";
       let duckiebot_selection = document.getElementById("duckiebot_selection_body");
@@ -29,7 +29,7 @@
       empty_body(duckiebot_selection);
       insert_duckiebot_selection_body(duckiebot_selection);
     }
-    if (id==2){
+    if (id === 2){
       current_substeps=0;
       necessary_substeps=7;
       current_button="btn_submission_ready_to_start";
@@ -88,7 +88,7 @@
       ping_list(memory_check);
       reset_lights();
     }
-    if (id==3){
+    if (id === 3){
       current_substeps=0;
       necessary_substeps=3;
       current_button="btn_submission_finished";
@@ -99,7 +99,7 @@
       subscribe_cameras();
       start_duckiebot_container(wait_for_active_bots);
     }
-    if (id==4){
+    if (id === 4){
       let dt = new Date();
       stop_timestamp = dt.getTime();
 
@@ -120,7 +120,7 @@
       stop_duckiebot_containers();
       unsubscribe_cameras();
     }
-    if (id==5){
+    if (id === 5){
       //Upload bags to ipfs and finish job
       current_substeps=0;
       necessary_substeps=6;
