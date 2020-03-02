@@ -84,21 +84,21 @@ function fetch_submission(table) {
           let challenge_name = response.result.challenge_name;
           let step_name = response.result.step_name;
           get_submission_map(map_container, challenge_name, step_name);
-          if (challenge_name.includes('-LF-')){
+          if (challenge_name.includes('-LF-')) {
             cell2.innerHTML = "LF";
             current_demo = "lane_following";
-          }else if (challenge_name.includes('-LFV-')){
+          } else if (challenge_name.includes('-LFV-')) {
             cell2.innerHTML = "LFV";
             current_demo = "lane_following";
-          }else if (challenge_name.includes('-LFVI-')){
+          } else if (challenge_name.includes('-LFVI-')) {
             cell2.innerHTML = "LFVI";
             current_demo = "indefinite_navigation";
-          }else{
+          } else {
             cell2.innerHTML = "UNK";
             current_demo = "unknown";
           }
           let debug_string = "Received submission from the server: <pre>" +
-              JSON.stringify(response, null, 2) +
+            JSON.stringify(response, null, 2) +
             "</pre><br><br>Running on the " + cell2.innerHTML + " loop." +
             "<br><br> ####################################### <br>";
           document.getElementById('debug_window').innerHTML += debug_string;
