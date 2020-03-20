@@ -73,6 +73,22 @@ function start_duckiebot_container(next_function) {
 /////Wait until all passive bots are ready to move
 function wait_for_active_bots(next_function) {
   if (ROS_connected) {
+
+    let emergency = new ROSLIB.Message({
+      data: true
+    });
+    submission_bots.forEach(function (entry) {
+      if (!(entry in pub_emergency_stop)) {
+        pub_emergency_stop[entry] = new ROSLIB.Topic({
+          ros: window.ros,
+          name: '/' + entry + '/toggleEmergencyStop',
+          messageType: 'std_msgs/Bool',
+          queue_size: 1,
+        });
+      }
+      pub_emergency_stop[entry].publish(emergency)
+    });
+    
     active_bots.forEach(function (entry) {
       if (!(entry in sub_ready_to_move)) {
         sub_ready_to_move[entry] = new ROSLIB.Topic({
@@ -189,8 +205,6 @@ function start_logging(next_function) {
         add_success('start_logging');
         wait(6000);
         for (i = 0; i < agent_list.length; i++) {
-
-
           publisher_request_image = new ROSLIB.Topic({
             ros: window.ros['local'],
             name: '/' + agent_list[i] + '/requestImage',
@@ -238,7 +252,20 @@ function start_duckiebots() {
       pub_emergency_stop[entry].publish(emergency)
     });
     add_success('duckiebot_start');
+    for (i = 0; i < agent_list.length; i++) {
+      publisher_request_image = new ROSLIB.Topic({
+        ros: window.ros,
+        name: '/' + agent_list[i] + '/requestImage',
+        messageType: 'std_msgs/Bool',
+        queue_size: 1,
+      });
 
+      let stream = document.getElementById('raspi_stream');
+      let get_image = new ROSLIB.Message({
+        data: true
+      });
+      publisher_request_image.publish(get_image)
+    };
     debug_string = "<table style='width:100%'><tr><td><b>Hostname</b></td><td><b>Emergency stop</b></td></tr>";
     submission_bots.forEach(function (entry) {
       debug_string += "<tr><td>" + entry + "</td><td>Emergency stop released</td></tr>";
